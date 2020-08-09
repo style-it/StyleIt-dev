@@ -1,0 +1,78 @@
+{
+  "name": "styleit",
+  "version": "1.0.0",
+  "description": "StyleIt.js is a text editor API ",
+  "main": "lib/StyleIt.js",
+  "files": [
+    "src/",
+    "dist/",
+    "lib/"
+  ],
+  "scripts": {
+    "start": "webpack-dev-server --open",
+    "test": "cross-env NODE_ENV=test mocha --require @babel/register --colors ./test/*.spec.js",
+    "coverage": "nyc --reporter=text --reporter=lcov npm test",
+    "lint": "eslint src/**/*.js --fix",
+    "build:umdmin": "webpack --mode=production --output-library-target=umd",
+    "build:umd": "webpack --mode=development --output-library-target=umd",
+    "build:commonjs": "webpack --mode=development --output-library-target=commonjs2",
+    "build": "npm-run-all build:*",
+    "dev:umd": "webpack --progress --colors --watch --mode=development --output-library-target=umd",
+    "dev:commonjs": "webpack --progress --colors --watch --mode=development --output-library-target=commonjs2",
+    "dev": "npm-run-all --parallel dev:*",
+    "clean": "rimraf dist lib coverage",
+    "prepare": "npm-run-all clean build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webizzart/StyleIt.git"
+  },
+  "keywords": [
+    "wysiwyg",
+    "rich text",
+    "editor",
+    "editor api",
+    "api",
+    "styleit",
+    "style it",
+    "javascript",
+    "html",
+    "contentEditable",
+    "editing",
+    "operational transformation",
+    "ot",
+    "collaboration",
+    "collaborative",
+    "real-time",
+    "framework"
+  ],
+  "author": "Adi L, jonathan C",
+  "license": "GNU‏",
+  "bugs": {
+    "url": "https://github.com/webizzart/StyleIt/issues"
+  },
+  "homepage": "",
+  "devDependencies": {
+    "@babel/core": "~7.6.0",
+    "@babel/plugin-proposal-object-rest-spread": "~7.5.5",
+    "@babel/preset-env": "~7.6.0",
+    "@babel/register": "~7.6.0",
+    "babel-loader": "~8.0.6",
+    "chai": "~4.2.0",
+    "cross-env": "~6.0.0",
+    "eslint": "~6.4.0",
+    "eslint-loader": "^3.0.4",
+    "html-webpack-plugin": "^4.3.0",
+    "mocha": "~6.2.0",
+    "npm-run-all": "~4.1.5",
+    "nyc": "~14.1.1",
+    "rimraf": "~3.0.0",
+    "sinon": "~7.4.2",
+    "sinon-chai": "~3.3.0",
+    "webpack": "~4.40.2",
+    "webpack-cli": "~3.3.9",
+    "webpack-dev-server": "^3.11.0",
+    "yargs": "~14.1.0"
+  },
+  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
+}
