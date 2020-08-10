@@ -1,6 +1,6 @@
 import { normalizeClassName } from "./className.service";
 import { UseRules } from "../rules/rules";
-
+import { getSelectedElement } from "./elements.service";
 
 export function getInheirtCss(fromElement, toElement) {
     var intailStyle = {};
@@ -59,7 +59,10 @@ export function setStyle(element, key, value) {
     //TODO:review
     UseRules({element:element,key:key,value:value});
 }
-
+export const collectStyleFromSelectedElement = (connectecElement) =>{   
+    const selectedElement = getSelectedElement();                
+    return getInheirtCss(selectedElement,connectecElement);
+}
 export function normalizeStyle(element) {
     //TODO:review
     const style = element.getAttribute('style');

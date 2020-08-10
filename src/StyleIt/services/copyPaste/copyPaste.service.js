@@ -1,5 +1,5 @@
 
-import { Ranger } from '../range.service';
+import { stringToHTML} from '../range.service';
 import { normalizeElement } from '../textEditor.service';
 import { getInheirtCss, setStyles, getStyle, normalizeStyle } from '../style.service';
 // import { elementToJson } from '../elements.service';
@@ -27,8 +27,7 @@ export default class CopyPaste {
             const isLocalElement = markup.querySelector(`.${this.uniqeID}`);
             if (isLocalElement) {
                 // review: should we create new on every paste ?
-                const range = new Ranger();
-                range.pasteHtmlAtCaret(isLocalElement.outerHTML);
+                ranger.pasteHtmlAtCaret(isLocalElement.outerHTML);
                 let pastedElement = this.target.querySelector(`.${this.uniqeID}`);
                 if (pastedElement) {
                     Array.from(pastedElement.querySelectorAll('span')).forEach(child => {
@@ -43,7 +42,7 @@ export default class CopyPaste {
                             }
                         }
                     });
-                    const arr = Array.from(this.target.querySelectorAll(`.${this.uniqeID}`)).forEach(flag => flag.classList.remove(this.uniqeID));
+                    Array.from(this.target.querySelectorAll(`.${this.uniqeID}`)).forEach(flag => flag.classList.remove(this.uniqeID));
                     normalizeElement(this.target);
                 }
 
@@ -58,9 +57,8 @@ export default class CopyPaste {
             e.preventDefault();
         }
         this.onCopy = (e) => {
-            const ranger = new Ranger();
             //review: what should we can do here... it always array of one element..
-            const ranges = ranger.insertRangeAtDom();
+            const ranges = insertRangeAtDom();
             if(ranges.length === 0){
                 console.warn('no selected elements..');
             }

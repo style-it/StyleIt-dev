@@ -1,11 +1,11 @@
-import { Ranger } from "./services/range.service";
+import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes } from "./services/range.service";
 import { Modes } from './constants/Modes';
 import { splitHTML } from "./utilis/splitHTML";
-import { setStyle, toggleStyle } from "./services/style.service";
+import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
 import { normalizeElement } from "./services/textEditor.service";
 import Connector from './connector';
 import './components/custom/textSelected';
-import { elementToJson, JsonToElement } from "./services/elements.service";
+import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
@@ -15,7 +15,9 @@ export default class Core {
         this.__config = {
             onInspect:undefined
         };
-        this.ranger = new Ranger();
+        this.events = {
+            styleChanged: config.onInspect,
+        }
         this.Connector = new Connector();
         this.modeHandlers = {
             [Modes.Toggle]: (v, key, value, OnOff) => this.onToggle(v, key, value, OnOff),
@@ -49,7 +51,8 @@ export default class Core {
             console.warn("className must be a string..");
             return null;
         }
-        const elements  = this.ranger.insertRangeAtDom();
+        
+        const elements  = wrapRangeWithElement();
         if (elements.length === 0) {
             return;
         }
@@ -73,10 +76,11 @@ export default class Core {
         }
      
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        const { firstFlag, lastFlag } = this.ranger.setSelectionFlags(elements[0],elements[elements.length - 1]); //Set Flag at last
+        const { firstFlag, lastFlag } = setSelectionFlags(elements[0],elements[elements.length - 1]); //Set Flag at last
 
-        normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
-        this.ranger.setSelectionBetweenTwoNodes(firstFlag,lastFlag);
+        normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
+         
+        setSelectionBetweenTwoNodes(firstFlag,lastFlag);
     }
     execCmd(key, value, mode, options) {
         this.connectedElement.normalize();
@@ -85,12 +89,14 @@ export default class Core {
         if (!this.isValid(key, value)) {
             return;
         }
-        this.ELEMENTS = this.ranger.insertRangeAtDom();
+        
+        this.ELEMENTS =wrapRangeWithElement();
         if (this.ELEMENTS.length === 0) {
             return;
         }
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        const { firstFlag, lastFlag } = this.ranger.setSelectionFlags(this.ELEMENTS[0],this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
+        
+        const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0],this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
         //======================================================================//
 
         let ToggleMode;//Declare toggle mode, The first element determines whether it is on or off
@@ -103,9 +109,13 @@ export default class Core {
 
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
         //use the first and last flags to make the text selection and unwrap them..
-        this.ranger.setSelectionBetweenTwoNodes(firstFlag,lastFlag);
+        setSelectionBetweenTwoNodes(firstFlag,lastFlag);
+        this.dispatchEvent('styleChanged',collectStyleFromSelectedElement(this.connectedElement));
     }
-
+    dispatchEvent(event, payload){
+        if (this.events[event])
+        this.events[event](payload);
+    }
     onToggle(element, key, value, OnOff) {
         // detect if there is any parent with style to split.
         //TODO: use the catch from options to detect more than one style or tag element.
@@ -118,10 +128,10 @@ export default class Core {
             // if there is no split elements, its error!
             if (splitElements) {
                 toggleStyle(splitElements.center, key, value, OnOff);
-                const s = document.createElement("span");
-                s.innerHTML = "&#200B"
-                splitElements.center.appendChild(s);
-                this.ranger.setCaretAt(s,s.textContent.length);
+                //  const s = document.createElement("ssss");
+                //     s.innerHTML = "&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;"
+                //  splitElements.center.appendChild(s);
+                //  this.ranger.setCaretAt(s,s.textContent.length);
 
             } else {
                 console.error('splitHTML return null');
@@ -166,7 +176,7 @@ export default class Core {
         if (typeof key !== "string" && typeof value !== "string") {
             return false;
         }
-        var selectedElement = this.ranger.getSelectedElement();
+        var selectedElement = getSelectedElement();
         if (selectedElement && ( selectedElement.ischildOf(this.connectedElement) || selectedElement === this.connectedElement)) {
             return true;
         }

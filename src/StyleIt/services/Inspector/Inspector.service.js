@@ -1,6 +1,5 @@
 
-import { Ranger } from '../range.service';
-import {  getInheirtCss } from '../style.service';
+import {   collectStyleFromSelectedElement } from '../style.service';
 
 
 //TODO: review
@@ -16,21 +15,18 @@ export default class Inpsector {
         //TODO: use the validator
         this.onInspect = onInspect;
         this.target = target;
-        this.ranger = new Ranger();
-        this.collectStyleFromSelectedElement = () =>{
-            const selectedElement = this.ranger.getSelectedElement();                
-            return getInheirtCss(selectedElement,this.target);
-        }
-        this.onKeyDown = () => {
-            const collectedStyle =  this.collectStyleFromSelectedElement();
+       
+        const launchInspect = () => {
+            const collectedStyle =  collectStyleFromSelectedElement(  this.target );
             if(typeof(this.onInspect) === "function")
             this.onInspect(collectedStyle);
-            console.log('inspect Style', collectedStyle);
+        }
+        this.onKeyDown = (e) => {
+            e.preventDefault();
+            launchInspect();
         }
         this.onClick = () => {
-           const collectedStyle =  this.collectStyleFromSelectedElement();
-           console.log('inspect Style', collectedStyle);
-           this.onInspect(collectedStyle);
+            launchInspect();
         }
 
         this.target.addEventListener('click', this.onClick);

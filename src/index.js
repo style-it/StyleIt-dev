@@ -44,7 +44,9 @@ export default class StyleIt {
   </style>
   `;
       document.body.appendChild(root);
+      //================================================================
       const config = {
+     
         onInspect: (styles) => {
           inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
         },
@@ -54,7 +56,7 @@ export default class StyleIt {
         }
       }
       const styleIt = new StyleIt('editor', config);
-
+//================================================================
       const btns = [
         { text: "toggle class", onclick: () => styleIt.AddClass("test") },
         { text: "Bold", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },

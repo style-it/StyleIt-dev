@@ -2,6 +2,20 @@ import { getStyle, JsonObjectToStyleString } from "./style.service";
 import { Types } from '../constants/elementTypes';
 import Levels from '../constants/Levels.json';
 
+export function  getSelectedElement(){
+    var node = document.getSelection();
+    if (node !== null) {
+      var ancNode = node.anchorNode;
+      if (ancNode !== null) {
+        while (ancNode.nodeType === 3) {
+          ancNode = ancNode.parentNode;
+        }
+        // const el = (ancNode.nodeType === 3 ? ancNode.parentNode : node);
+        return ancNode;
+      }
+      return null;
+    }
+  }
 export function JsonToElement(jsonObject, parentElement) {
     //TODO: create parentelement and jsonobject validation
     const renderAttrs = (jsElement, element) => {
