@@ -47,12 +47,11 @@ export function setCaretAt(element, charIndex) {
   var node = element;
   node.focus();
   var textNode = Array.from(node.childNodes).filter(child => child.nodeType === Node.TEXT_NODE);
-
   var caret = charIndex;
   var range = document.createRange();
   range.setStart(textNode[0], caret);
   range.setEnd(textNode[0], caret);
-  var sel = window.getSeonsclection();
+  var sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
 }
