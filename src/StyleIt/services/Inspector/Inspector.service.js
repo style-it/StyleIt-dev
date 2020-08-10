@@ -22,7 +22,6 @@ export default class Inpsector {
             this.onInspect(collectedStyle);
         }
         this.onKeyDown = (e) => {
-            e.preventDefault();
             launchInspect();
         }
         this.onClick = () => {
