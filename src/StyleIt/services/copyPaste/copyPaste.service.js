@@ -1,5 +1,5 @@
 
-import { wrapRangeWithElement} from '../range.service';
+import { wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes} from '../range.service';
 import { normalizeElement } from '../textEditor.service';
 import { getInheirtCss, setStyles, getStyle, normalizeStyle } from '../style.service';
 // import { elementToJson } from '../elements.service';
@@ -69,9 +69,11 @@ export default class CopyPaste {
                 setStyles(el, collectStyle);
                 return el.cloneNode(true);
             });
-            const { firstFlag, lastFlag } = ranger.setSelectionFlags(ranges[0], ranges[ranges.length - 1]);
+            
+            const { firstFlag, lastFlag } = setSelectionFlags(ranges[0], ranges[ranges.length - 1]);
             ranges.forEach(we => we.unwrap());
-            ranger.setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+            
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
             this.target.normalize();
 
             const element = document.createElement('span');
