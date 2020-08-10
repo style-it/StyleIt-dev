@@ -152,6 +152,7 @@ export default class Core {
         return OnOff;
     }
     onExtend(element, key, value) {
+        debugger
         const elementToSplit = element.closest(`[style*='${key}']`);;
         if (elementToSplit) {
             const splitElements = splitHTML(element, elementToSplit);
