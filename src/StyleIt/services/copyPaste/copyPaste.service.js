@@ -1,5 +1,5 @@
 
-import { stringToHTML} from '../range.service';
+import { wrapRangeWithElement} from '../range.service';
 import { normalizeElement } from '../textEditor.service';
 import { getInheirtCss, setStyles, getStyle, normalizeStyle } from '../style.service';
 // import { elementToJson } from '../elements.service';
@@ -58,7 +58,7 @@ export default class CopyPaste {
         }
         this.onCopy = (e) => {
             //review: what should we can do here... it always array of one element..
-            const ranges = insertRangeAtDom();
+            const ranges = wrapRangeWithElement();
             if(ranges.length === 0){
                 console.warn('no selected elements..');
             }
