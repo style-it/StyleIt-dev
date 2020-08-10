@@ -1,4 +1,4 @@
-import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes } from "./services/range.service";
+import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes, setCaretAt } from "./services/range.service";
 import { Modes } from './constants/Modes';
 import { splitHTML } from "./utilis/splitHTML";
 import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
@@ -13,7 +13,7 @@ export default class Core {
     //TODO: add target validations..;
     constructor(target, config) {
         this.__config = {
-            onInspect:undefined
+            onInspect: undefined
         };
         this.events = {
             styleChanged: config.onInspect,
@@ -23,7 +23,7 @@ export default class Core {
             [Modes.Toggle]: (v, key, value, OnOff) => this.onToggle(v, key, value, OnOff),
             [Modes.Extend]: (v, key, value) => this.onExtend(v, key, value),
         }
-        this.config = config ? Object.assign( this.__config, config) : this.__config;
+        this.config = config ? Object.assign(this.__config, config) : this.__config;
         this.connectedElement = this.Connector.Connect(target, this.config);
     }
 
@@ -39,48 +39,48 @@ export default class Core {
         const json = elementToJson(this.connectedElement);
     }
     Load(json) {
-        const html = JsonToElement(json,this.connectedElement);
+        const html = JsonToElement(json, this.connectedElement);
     }
-    Destroy(){
+    Destroy() {
 
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
     addClass(className) {
-        if(typeof(className) !== "string") {
+        if (typeof (className) !== "string") {
             console.warn("className must be a string..");
             return null;
         }
-        
-        const elements  = wrapRangeWithElement();
+
+        const elements = wrapRangeWithElement();
         if (elements.length === 0) {
             return;
         }
         const isToggleOn = elements[0].closest(`[class='${className}']`);
-        if(!isToggleOn){
-            elements.forEach(el=>el.classList.add(className));
-        }else{
-            elements.forEach(el=>{
-                if(el.parentElement){
+        if (!isToggleOn) {
+            elements.forEach(el => el.classList.add(className));
+        } else {
+            elements.forEach(el => {
+                if (el.parentElement) {
                     const closestClass = el.parentElement.closest(`[class='${className}']`);
-                    if(closestClass){
-                        const split = splitHTML(el,closestClass);
-                        if(split){
+                    if (closestClass) {
+                        const split = splitHTML(el, closestClass);
+                        if (split) {
                             split.center.removeClassName(className);
                         }
                     }
-                }else{
+                } else {
                     el.removeClassName(className);
                 }
             })
         }
-     
+
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        const { firstFlag, lastFlag } = setSelectionFlags(elements[0],elements[elements.length - 1]); //Set Flag at last
+        const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
 
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
-         
-        setSelectionBetweenTwoNodes(firstFlag,lastFlag);
+
+        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
     }
     execCmd(key, value, mode, options) {
         this.connectedElement.normalize();
@@ -89,14 +89,14 @@ export default class Core {
         if (!this.isValid(key, value)) {
             return;
         }
-        
-        this.ELEMENTS =wrapRangeWithElement();
+
+        this.ELEMENTS = wrapRangeWithElement();
         if (this.ELEMENTS.length === 0) {
             return;
         }
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        
-        const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0],this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
+
+        const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
         //======================================================================//
 
         let ToggleMode;//Declare toggle mode, The first element determines whether it is on or off
@@ -109,12 +109,12 @@ export default class Core {
 
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
         //use the first and last flags to make the text selection and unwrap them..
-        setSelectionBetweenTwoNodes(firstFlag,lastFlag);
-        this.dispatchEvent('styleChanged',collectStyleFromSelectedElement(this.connectedElement));
+        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
     }
-    dispatchEvent(event, payload){
+    dispatchEvent(event, payload) {
         if (this.events[event])
-        this.events[event](payload);
+            this.events[event](payload);
     }
     onToggle(element, key, value, OnOff) {
         // detect if there is any parent with style to split.
@@ -128,10 +128,14 @@ export default class Core {
             // if there is no split elements, its error!
             if (splitElements) {
                 toggleStyle(splitElements.center, key, value, OnOff);
-                //  const s = document.createElement("ssss");
-                //     s.innerHTML = "&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;"
-                //  splitElements.center.appendChild(s);
-                //  this.ranger.setCaretAt(s,s.textContent.length);
+                if (this.ELEMENTS.length === 1 && !this.ELEMENTS[0].textContent.trim()) {
+                    console.log('asdasdas44545')
+                    splitElements.center.innerHTML += "&#8203;"
+                    const s = document.createElement("span");
+                    s.innerHTML = "&#8203;"
+                    splitElements.center.appendChild(s);
+                    setCaretAt(s);
+                }
 
             } else {
                 console.error('splitHTML return null');
@@ -144,7 +148,7 @@ export default class Core {
             toggleStyle(element, key, value, OnOff);
             normalizeElement(element);
         }
-        
+
         return OnOff;
     }
     onExtend(element, key, value) {
@@ -177,9 +181,9 @@ export default class Core {
             return false;
         }
         var selectedElement = getSelectedElement();
-        if (selectedElement && ( selectedElement.ischildOf(this.connectedElement) || selectedElement === this.connectedElement)) {
+        if (selectedElement && (selectedElement.ischildOf(this.connectedElement) || selectedElement === this.connectedElement)) {
             return true;
         }
-;
+        ;
     }
 }
