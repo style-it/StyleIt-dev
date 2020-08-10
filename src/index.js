@@ -59,8 +59,11 @@ export default class StyleIt {
 //================================================================
       const btns = [
         { text: "toggle class", onclick: () => styleIt.AddClass("test") },
-        { text: "Bold", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
-        { text: "Underline", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle) },
+        { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
+        { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle) },
+        { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
+        { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
+        { text: "Red", onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend) },
       ]
       btns.forEach(btn => {
         const _btn = root.addElement('button');
