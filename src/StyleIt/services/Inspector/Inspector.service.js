@@ -1,12 +1,12 @@
 
-import {   collectStyleFromSelectedElement } from '../style.service';
+import { collectStyleFromSelectedElement } from '../style.service';
 
 
 //TODO: review
 //question: how can we expose the collectedStyle ? 
 //question: should we use this ? https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
 export default class Inpsector {
-    constructor(target,onInspect) {
+    constructor(target, onInspect) {
 
         if (!target) {
             console.error('[-] Inpsector => target is null');
@@ -15,13 +15,18 @@ export default class Inpsector {
         //TODO: use the validator
         this.onInspect = onInspect;
         this.target = target;
-       
+
         const launchInspect = () => {
-            const collectedStyle =  collectStyleFromSelectedElement(  this.target );
-            if(typeof(this.onInspect) === "function")
-            this.onInspect(collectedStyle);
+            const collectedStyle = collectStyleFromSelectedElement(this.target);
+            if (typeof (this.onInspect) === "function")
+                this.onInspect(collectedStyle);
         }
         this.onKeyDown = (e) => {
+            //TODO: review
+            if (e.keyCode === 8 && this.target.children.length <= 1 && !this.target.textContent) {
+                e.preventDefault();
+                return false;
+            }
             launchInspect();
         }
         this.onClick = () => {
