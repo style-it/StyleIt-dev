@@ -41,7 +41,6 @@ export function normalizeElement(el) {
         let mergedStyles = false;
         let mergedContent  = false;
         do {
-            console.log('merge',element)
             _normalize(element);
              mergedStyles = mergeNodesStyles(element);
             mergedContent = mergeNodesContent(element);
@@ -62,8 +61,4 @@ export function normalizeElement(el) {
             return unwrapped.parentElement;
         }
     }
-}
-
-export function Save (){
-    
 }

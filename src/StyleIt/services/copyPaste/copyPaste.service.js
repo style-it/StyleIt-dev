@@ -1,5 +1,5 @@
 
-import { wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes} from '../range.service';
+import { wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes, pasteHtmlAtCaret} from '../range.service';
 import { normalizeElement } from '../textEditor.service';
 import { getInheirtCss, setStyles, getStyle, normalizeStyle } from '../style.service';
 // import { elementToJson } from '../elements.service';
@@ -27,7 +27,7 @@ export default class CopyPaste {
             const isLocalElement = markup.querySelector(`.${this.uniqeID}`);
             if (isLocalElement) {
                 // review: should we create new on every paste ?
-                ranger.pasteHtmlAtCaret(isLocalElement.outerHTML);
+                pasteHtmlAtCaret(isLocalElement.outerHTML);
                 let pastedElement = this.target.querySelector(`.${this.uniqeID}`);
                 if (pastedElement) {
                     Array.from(pastedElement.querySelectorAll('span')).forEach(child => {

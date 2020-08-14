@@ -7,13 +7,13 @@ export default class StyleIt {
     const styleIt = new Core(target, config);
     if (styleIt) {
       this.ExecCmd = styleIt.execCmd;
-      this.AddClass = styleIt.addClass;
+      this.ExecClassName = styleIt.ExecClassName;
       this.Save = styleIt.Save;
       this.Load = styleIt.Load;
       this.Destroy = styleIt.Destroy;
       this.Modes = Modes;
       //========================================//
-      this.AddClass = this.AddClass.bind(styleIt);
+      this.ExecClassName = this.ExecClassName.bind(styleIt);
       this.ExecCmd = this.ExecCmd.bind(styleIt);
       this.Save = this.Save.bind(styleIt);
       this.Load = this.Load.bind(styleIt);
@@ -30,14 +30,14 @@ export default class StyleIt {
       root.id = 'root';
       root.innerHTML = `<div id="editor" contenteditable="true">
   <p>
-  Hello world</p>
+  Hello world<thisTagGoingToBeIgnore>im ignored</thisTagGoingToBeIgnore>
+  </p>
   </div>
   <style>
   .test{
-    font-size:3rem;
-	letter-spacing:0.1em;
+	letter-spacing:0.2em;
   -webkit-text-fill-color: transparent;
-  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #b50064;
   text-shadow: 3px 2px 3px #0a0a0a, 1px 3px 6px #000000;
   }
@@ -46,7 +46,6 @@ export default class StyleIt {
       document.body.appendChild(root);
       //================================================================
       const config = {
-     
         onInspect: (styles) => {
           inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
         },
@@ -58,7 +57,7 @@ export default class StyleIt {
       const styleIt = new StyleIt('editor', config);
 //================================================================
       const btns = [
-        { text: "toggle class", onclick: () => styleIt.AddClass("test") },
+        { text: "toggle class", onclick: () => styleIt.ExecClassName("test") },
         { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
         { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle) },
         { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
@@ -74,13 +73,27 @@ export default class StyleIt {
       const key = root.addElement('input');
       const value = root.addElement('input');
 
-
       const ok = root.addElement('button');
       ok.innerHTML = "go"
       ok.onclick = () => {
         styleIt.ExecCmd(key.value, value.value, styleIt.Modes.Extend);
       }
+      
       const inspect = root.addElement('div');
+      const save = root.addElement('button');
+      save.innerHTML = "Save"
+      let savedData;
+      save.onclick=()=>{      
+        savedData = styleIt.Save();
+        inspect.innerHTML = JSON.stringify(savedData);
+      }
+
+      const load = root.addElement('button');
+      load.innerHTML = "Load"
+      load.onclick=()=>{
+        if(savedData)
+        styleIt.Load(savedData);
+      }
     });
   }
   init();
