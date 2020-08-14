@@ -9,7 +9,7 @@ import { elementToJson, JsonToElement, getSelectedElement } from "./services/ele
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
-    // *config =>  configuration passed to Tool constructor
+    // *config =>  configuration passed t   o Tool constructor
     //TODO: add target validations..;
     constructor(target, config) {
         this.__config = {
@@ -36,17 +36,18 @@ export default class Core {
      *  @param {Object} [options] - options 
      */
     Save() {
-        const json = elementToJson(this.connectedElement);
+        return elementToJson(this.connectedElement);
     }
     Load(json) {
-        const html = JsonToElement(json, this.connectedElement);
+        return JsonToElement(json, this.connectedElement);
     }
     Destroy() {
 
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
-    addClass(className) {
+    ExecClassName(className,isON) {
+        //here
         if (typeof (className) !== "string") {
             console.warn("className must be a string..");
             return null;
@@ -56,7 +57,7 @@ export default class Core {
         if (elements.length === 0) {
             return;
         }
-        const isToggleOn = elements[0].closest(`[class='${className}']`);
+        const isToggleOn =(typeof(isON) === "boolean") ? isON : elements[0].closest(`[class='${className}']`);
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
         } else {
@@ -82,8 +83,10 @@ export default class Core {
 
         setSelectionBetweenTwoNodes(firstFlag, lastFlag);
     }
+
     execCmd(key, value, mode, options) {
         this.connectedElement.normalize();
+
         mode = mode ? mode : Modes.Extend;
         this.options = typeof options === 'object' ? options : {};
         if (!this.isValid(key, value)) {
@@ -110,6 +113,7 @@ export default class Core {
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
         //use the first and last flags to make the text selection and unwrap them..
         setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+
         this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
     }
     dispatchEvent(event, payload) {
@@ -129,7 +133,6 @@ export default class Core {
             if (splitElements) {
                 toggleStyle(splitElements.center, key, value, OnOff);
                 if (this.ELEMENTS.length === 1 && !this.ELEMENTS[0].textContent.trim()) {
-                    console.log('asdasdas44545')
                     splitElements.center.innerHTML += "&#8203;"
                     const s = document.createElement("span");
                     s.innerHTML = "&#8203;"
@@ -152,7 +155,6 @@ export default class Core {
         return OnOff;
     }
     onExtend(element, key, value) {
-        debugger
         const elementToSplit = element.closest(`[style*='${key}']`);;
         if (elementToSplit) {
             const splitElements = splitHTML(element, elementToSplit);
