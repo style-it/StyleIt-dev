@@ -86,7 +86,6 @@ export default class Core {
 
     execCmd(key, value, mode, options) {
         this.connectedElement.normalize();
-
         mode = mode ? mode : Modes.Extend;
         this.options = typeof options === 'object' ? options : {};
         if (!this.isValid(key, value)) {
@@ -94,9 +93,7 @@ export default class Core {
         }
 
         this.ELEMENTS = wrapRangeWithElement();
-        if (this.ELEMENTS.length === 0) {
-            return;
-        }
+        
         //This is how i make the text selection, i dont know if this is good way, but it works..
 
         const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
