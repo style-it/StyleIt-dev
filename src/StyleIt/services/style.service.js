@@ -52,17 +52,18 @@ export function setStyles(element, jsonStyle) {
 export function setStyle(element, key, value) {
     element.style[key] = value;
     Array.from(element.querySelectorAll(`[style*='${key}']`)).forEach(el => {
-        el.style[key] = "";
+        el.style[key] = null;
         normalizeStyle(el)
     });
     //experimental: style the text decorations with color..
     //TODO:review
-    UseRules({element:element,key:key,value:value});
+    // UseRules({element:element,key:key,value:value});
 }
 export const collectStyleFromSelectedElement = (connectecElement) =>{   
     const selectedElement = getSelectedElement();                
     return getInheirtCss(selectedElement,connectecElement);
 }
+
 export function normalizeStyle(element) {
     //TODO:review
     const style = element.getAttribute('style');
@@ -72,8 +73,9 @@ export function normalizeStyle(element) {
         const collectStyles = getStyle(element);
         for (const key in collectStyles) {
             if (collectStyles.hasOwnProperty(key)) {
+                UseRules({element:element,key:key,value:collectStyles[key]});
                 Array.from(element.querySelectorAll(`[style*='${collectStyles[key]}']`)).forEach(el => {
-                    el.style[key] = "";
+                    el.style[key] = null;
                     normalizeStyle(el);
                 });
             }
