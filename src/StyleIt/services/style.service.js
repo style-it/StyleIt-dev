@@ -55,12 +55,11 @@ export function setStyles(element, jsonStyle) {
 export function setStyle(element, key, value) {
     element.style[key] = value;
     if(key === "color"){
-        debugger
         UseRules({element:element,key:'color',value:value});
     }
     Array.from(element.querySelectorAll(`[style*='${key}']`)).forEach(el => {
         el.style[key] = null;
-        normalizeStyle(el)
+        normalizeStyle(el);
     });
     //experimental: style the text decorations with color..
     //TODO:review
