@@ -17,7 +17,7 @@ export function  getSelectedElement(){
     }
   }
 export function JsonToElement(jsonObject, parentElement) {
-    //TODO: create parentelement and jsonobject validation
+    //TODO: create parentelement and jsonobject validation   
     const renderAttrs = (jsElement, element) => {
         if (jsElement.classList) {
             element.classList = [...jsElement.classList];
@@ -59,7 +59,10 @@ export function JsonToElement(jsonObject, parentElement) {
         }
         return element;
     }
-    if (Array.isArray(jsonObject.children)) {
+    if(!parentElement && jsonObject.type === Levels['0']) {
+        parentElement = createHtmlElement(jsonObject);
+    }
+     if (Array.isArray(jsonObject.children)) {
         jsonObject.children.forEach(jsChild => {
             const htmlElement = createHtmlElement(jsChild);
             if (htmlElement) {
@@ -75,7 +78,9 @@ export function JsonToElement(jsonObject, parentElement) {
 export function elementToJson(node, level) {
     if (typeof (level) !== "number") level = 0;
     const nodeType = Types[node.nodeName];
+
     let json = {};
+    let isValid = true;
 
     if (Levels[level]) {
         json.type = Levels[level];
@@ -85,7 +90,9 @@ export function elementToJson(node, level) {
     switch (nodeType) {
         case Types["#text"]:
             json.tag = nodeType;
-            json.textContent = node.textContent;
+            json.textContent = node.textContent.replace(/\u200B/g,'');
+            //question: replace \n ?
+            if(!json.textContent.trim()) isValid = false;
             break;
         case Types.A:
             json.tag = nodeType;
@@ -103,6 +110,7 @@ export function elementToJson(node, level) {
             //TODO: should we unwrap this node ? 
             break;
     }
+    if(!isValid) return null;
     //TODO: get attrs 
     const style = getStyle(node);
     if (Object.keys(style).length > 0) {
@@ -112,7 +120,7 @@ export function elementToJson(node, level) {
         json.classList = [...node.classList];
 
     if (node.childNodes && node.childNodes.length > 0)
-        json.children = [...node.childNodes].map((cn) => elementToJson(cn, level));
+        json.children = [...node.childNodes].map((cn) => elementToJson(cn, level)).filter(v=>v);
     return json;
 
 }
