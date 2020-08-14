@@ -13,7 +13,7 @@ export function UseRules(data) {
                 if (splits) {
                     normalizeStyle();
                     setStyle(splits.center, 'text-decoration-color', `${data.value}`);
-                    for (const key in spelits) {
+                    for (const key in splits) {
                         const element = splits[key];
                         normalizeElement(element);
                     }
