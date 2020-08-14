@@ -41,6 +41,7 @@ export function toggleStyle(element, key, value, isOn) {
     })
 }
 //EXTEND
+//TODO: fix name
 export function setStyles(element, jsonStyle) {
     for (const key in jsonStyle) {
         if (jsonStyle.hasOwnProperty(key)) {
@@ -49,8 +50,14 @@ export function setStyles(element, jsonStyle) {
         }
     }
 }
+//TOGGLE
+//TODO: fix name
 export function setStyle(element, key, value) {
     element.style[key] = value;
+    if(key === "color"){
+        debugger
+        UseRules({element:element,key:'color',value:value});
+    }
     Array.from(element.querySelectorAll(`[style*='${key}']`)).forEach(el => {
         el.style[key] = null;
         normalizeStyle(el)
@@ -65,6 +72,7 @@ export const collectStyleFromSelectedElement = (connectecElement) =>{
 }
 
 export function normalizeStyle(element) {
+    if(!element) return null;
     //TODO:review
     const style = element.getAttribute('style');
     if (!style) {
@@ -73,7 +81,6 @@ export function normalizeStyle(element) {
         const collectStyles = getStyle(element);
         for (const key in collectStyles) {
             if (collectStyles.hasOwnProperty(key)) {
-                UseRules({element:element,key:key,value:collectStyles[key]});
                 Array.from(element.querySelectorAll(`[style*='${collectStyles[key]}']`)).forEach(el => {
                     el.style[key] = null;
                     normalizeStyle(el);

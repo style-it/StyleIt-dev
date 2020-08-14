@@ -63,6 +63,10 @@ export default class StyleIt {
         { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
         { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
         { text: "Red", onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend) },
+        { text: "yellow", onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend) },
+        { text: "blue", onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend) },
+        { text: "green", onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend) },
+
       ]
       btns.forEach(btn => {
         const _btn = root.addElement('button');
