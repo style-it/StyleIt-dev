@@ -131,7 +131,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
     }
     const clearElementStyles = (node, commonStyles) => {
         for (const s in commonStyles)
-            node.style[s] = "";
+            node.style[s] = null;
     }
     const elements = [elementOne, elementTwo];
     elements.forEach(e => {
