@@ -51,5 +51,8 @@ export default class Connector {
         
         emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
     }
+    Destroy(){
+        
+    }
 }
 
