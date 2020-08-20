@@ -206,10 +206,8 @@ export function wrapRangeText(wrapperEl, range) {
   wrapNode = createWrapperFunction(wrapperEl, range)
 
   nodes = getRangeTextNodes(range)
-
+  
   nodes = nodes.map(wrapNode);
-  //TODO: review
-  nodes.map(txtNode=> txtNode.innerHTML = txtNode.innerHTML.replace(/\u200B/g,''))
   return nodes
 }
 export function setSelectionBetweenTwoNodes(firstFlag, lastFlag) {
