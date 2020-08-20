@@ -6,7 +6,6 @@ import { mergeNodeContect, mergeTwoNodes } from "../utilis/merger";
  * @param {Element} DomElement - element to normalize
  */
 export function normalizeElement(el) {
-   
     const recurse = (element) => {
         Array.from(element.children).forEach((child) => {
             recurse(child);
@@ -26,7 +25,7 @@ export function normalizeElement(el) {
             })
             return merged;
         }
-        
+
         const mergeNodesContent = element => {
             let merged = false;
             Array.from(element.children).forEach((child) => {
@@ -39,16 +38,16 @@ export function normalizeElement(el) {
             return merged;
         }
         let mergedStyles = false;
-        let mergedContent  = false;
+        let mergedContent = false;
         do {
             _normalize(element);
-             mergedStyles = mergeNodesStyles(element);
+            mergedStyles = mergeNodesStyles(element);
             mergedContent = mergeNodesContent(element);
         } while (mergedContent);
     }
     el.normalize();
     recurse(el);
-  
+
     function _normalize(element) {
         element.normalize();
         normalizeClassName(element);
@@ -61,4 +60,19 @@ export function normalizeElement(el) {
             return unwrapped.parentElement;
         }
     }
+}
+
+
+/**
+ * @param {Array} textNodes - textnode to remove the zero space like : u200B
+ */
+export function removeZeroSpace(textNodes) {
+    if (!Array.isArray(textNodes)) {
+        textNodes = [textNodes];
+    }
+    textNodes.forEach(el => {
+        if (el.nodeType === Node.TEXT_NODE && el.parentElement && el.parentElement.nodeName !== "TEXT-SELECTION") {
+            el.textContent = el.textContent.replace(/\u200B/g, '');
+        }
+    })
 }
