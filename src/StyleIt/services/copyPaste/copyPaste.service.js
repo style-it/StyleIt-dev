@@ -95,8 +95,9 @@ export default class CopyPaste {
         this.target.addEventListener('paste', this.onPaste);
         this.target.addEventListener('copy', this.onCopy);
     }
-    destroy() {
+    Destroy() {
         this.target.removeEventListener('paste', this.onPaste);
         this.target.removeEventListener('copy', this.onCopy);
+        this.target = null;
     }
 }
