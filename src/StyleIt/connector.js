@@ -52,7 +52,13 @@ export default class Connector {
         emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
     }
     Destroy(){
-        
+      for (const key in this.plugins) {
+          if (this.plugins.hasOwnProperty(key)) {
+              const plugin = this.plugins[key];
+              debugger
+              plugin.Destroy();   
+          }
+      }  
     }
 }
 
