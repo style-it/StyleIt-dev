@@ -1,8 +1,8 @@
-import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes, setCaretAt } from "./services/range.service";
+import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes, setCaretAt, getTextNodes, getRanges } from "./services/range.service";
 import { Modes } from './constants/Modes';
 import { splitHTML } from "./utilis/splitHTML";
 import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
-import { normalizeElement } from "./services/textEditor.service";
+import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
 import Connector from './connector';
 import './components/custom/textSelected';
 import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
@@ -42,11 +42,17 @@ export default class Core {
         return JsonToElement(json, this.connectedElement);
     }
     Destroy() {
-
+        this.Connector.Destroy();
+        const self = this;
+        for (const key in self) {
+            const instance = this[key];
+            instance = null;
+        }
+        this.connectedElement = null;
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
-    ExecClassName(className,isON) {
+    ExecClassName(className, isON) {
         //here
         if (typeof (className) !== "string") {
             console.warn("className must be a string..");
@@ -57,7 +63,7 @@ export default class Core {
         if (elements.length === 0) {
             return;
         }
-        const isToggleOn =(typeof(isON) === "boolean") ? isON : elements[0].closest(`[class='${className}']`);
+        const isToggleOn = (typeof (isON) === "boolean") ? isON : elements[0].closest(`[class='${className}']`);
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
         } else {
@@ -86,6 +92,8 @@ export default class Core {
 
     execCmd(key, value, mode, options) {
         this.connectedElement.normalize();
+        const txtNodes = getTextNodes(this.connectedElement);
+
         mode = mode ? mode : Modes.Extend;
         this.options = typeof options === 'object' ? options : {};
         if (!this.isValid(key, value)) {
@@ -93,11 +101,12 @@ export default class Core {
         }
 
         this.ELEMENTS = wrapRangeWithElement();
-        
+
         //This is how i make the text selection, i dont know if this is good way, but it works..
 
         const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
         //======================================================================//
+        removeZeroSpace(getTextNodes(this.connectedElement));
 
         let ToggleMode;//Declare toggle mode, The first element determines whether it is on or off
 
@@ -106,11 +115,10 @@ export default class Core {
             if (mode === Modes.Toggle && typeof (ToggleMode) === 'undefined')
                 ToggleMode = result;
         });
-
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
         //use the first and last flags to make the text selection and unwrap them..
-        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
 
+        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
         this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
     }
     dispatchEvent(event, payload) {
