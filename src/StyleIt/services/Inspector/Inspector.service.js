@@ -36,9 +36,10 @@ export default class Inpsector {
         this.target.addEventListener('click', this.onClick);
         this.target.addEventListener('keydown', this.onKeyDown);
 
-        this.destroy = () => {
+        this.Destroy = () => {
             this.target.removeEventListener('click', this.onClick);
             this.target.removeEventListener('keydown', this.onKeyDown);
+            this.target = null;
         }
     }
 }
