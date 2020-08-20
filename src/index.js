@@ -30,8 +30,10 @@ export default class StyleIt {
       root.id = 'root';
       root.innerHTML = `<div id="editor" contenteditable="true">
   <p>
-  Hello world<thisTagGoingToBeIgnore>im ignored</thisTagGoingToBeIgnore>
+  Hello world<thisTagGoingToBeIgnore>im   ignored</thisTagGoingToBeIgnore>
   </p>
+  <p>is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+  
   </div>
   <style>
   .test{
@@ -73,6 +75,14 @@ export default class StyleIt {
         _btn.onclick = btn.onclick;
         _btn.innerHTML = btn.text;
       });
+      const slider = root.addElement('input');
+      slider.type = "range";
+      slider.step="1";
+      slider.value = 0;
+      slider.oninput = (e) =>{
+        console.log(e.target.value)
+        styleIt.ExecCmd("font-size",`${e.target.value}px`, styleIt.Modes.Extend)
+      }
       root.addElement('div');
       const key = root.addElement('input');
       const value = root.addElement('input');
@@ -80,7 +90,7 @@ export default class StyleIt {
       const ok = root.addElement('button');
       ok.innerHTML = "go"
       ok.onclick = () => {
-        styleIt.ExecCmd(key.value, value.value, styleIt.Modes.Extend);
+      styleIt.ExecCmd(key.value, value.value, styleIt.Modes.Extend);
       }
       
       const inspect = root.addElement('div');
@@ -97,6 +107,11 @@ export default class StyleIt {
       load.onclick=()=>{
         if(savedData)
         styleIt.Load(savedData);
+      }
+      const destroy = root.addElement('button');
+      destroy.innerHTML = "Destroy";
+      destroy.onclick = () =>{
+        styleIt.Destroy();
       }
     });
   }
