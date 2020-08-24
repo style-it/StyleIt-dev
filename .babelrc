@@ -1,6 +1,12 @@
 {
   "presets": ["@babel/env"],
   "plugins": [
-    "@babel/plugin-proposal-object-rest-spread"
-  ]
+    "@babel/plugin-proposal-object-rest-spread",
+    "transform-remove-debugger",
+    "@babel/plugin-transform-function-name",
+    "transform-remove-console",
+    "transform-minify-booleans",
+    "minify-dead-code-elimination"
+  ],
+  "comments": false
 }

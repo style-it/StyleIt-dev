@@ -2,11 +2,11 @@ const webpack = require('webpack');
 const mode = require('yargs').argv.mode;
 const libraryTarget = require('yargs').argv['output-library-target'];
 const pkg = require('./package.json');
-var path = require('path');
-
+// var path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 //TODO: load on dev only
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const libraryName = pkg.name;
 const banner = `${pkg.name}
@@ -18,12 +18,15 @@ ${pkg.description}\n
 
 const plugins = [
   new webpack.BannerPlugin(banner),
-  new HtmlWebpackPlugin()
+  new HtmlWebpackPlugin(),
+  new webpack.SourceMapDevToolPlugin({
+    filename: '[name].js.map',
+  })
 ];
 
 module.exports = {
   entry: `${__dirname}/index.js`,
-  devtool: 'source-map',
+  devtool: false,
   output: {
     path: `${__dirname}/${libraryTarget === 'umd' ? 'dist' : 'lib'}`,
     filename: mode === 'development' ? `${libraryName}.js` : `${libraryName}.min.js`,
@@ -55,6 +58,17 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     contentBase: './dist',
+  },
+  optimization:{
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          sourceMap: true,
+          keep_fnames: true,
+        },
+      }),
+    ],
   },
   plugins: plugins
 };
