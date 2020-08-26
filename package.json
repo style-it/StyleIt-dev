@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/webizzart/StyleIt.git"
+    "url": "git+https://github.com/style-it/StyleIt-dev.git"
   },
   "keywords": [
     "wysiwyg",
@@ -48,7 +48,7 @@
   "author": "Adi L, jonathan C",
   "license": "GNU‏",
   "bugs": {
-    "url": "https://github.com/webizzart/StyleIt/issues"
+    "url": "https://github.com/style-it/StyleIt-dev/issues"
   },
   "homepage": "",
   "devDependencies": {
