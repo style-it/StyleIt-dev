@@ -1,5 +1,5 @@
 {
-  "name": "styleit",
+  "name": "styleit-api",
   "version": "1.0.0",
   "description": "StyleIt.js is a text editor API ",
   "main": "prod/lib/StyleIt.js",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/style-it/StyleIt-dev.git"
+    "url": "git+https://github.com/style-it/StyleIt-prod.git"
   },
   "keywords": [
     "wysiwyg",
@@ -48,7 +48,7 @@
   "author": "Adi L, jonathan C",
   "license": "GNU‏",
   "bugs": {
-    "url": "https://github.com/style-it/StyleIt-dev/issues"
+    "url": "https://github.com/style-it/StyleIt-prod/issues"
   },
   "homepage": "",
   "devDependencies": {
