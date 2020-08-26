@@ -2,10 +2,10 @@
   "name": "styleit",
   "version": "1.0.0",
   "description": "StyleIt.js is a text editor API ",
-  "main": "lib/StyleIt.js",
+  "main": "prod/lib/StyleIt.js",
   "files": [
-    "dist/",
-    "lib/"
+    "prod/dist/",
+    "prod/lib/"
   ],
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",

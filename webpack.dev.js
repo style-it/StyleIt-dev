@@ -16,11 +16,11 @@ const plugins = [
 module.exports = merge(common, {
     mode: 'development',
     output: {
-        path: `${__dirname}/lib`,
+        path: `${__dirname}/prod/lib`,
     },
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: './dist',
+        contentBase: './prod/dist',
     },
     plugins: plugins
 });

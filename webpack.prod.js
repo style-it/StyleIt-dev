@@ -14,7 +14,7 @@ const plugins = [
 
 module.exports = merge(common,{
     output:{
-        path: `${__dirname}/dist`,
+        path: `${__dirname}/prod/dist`,
     },
     mode: 'production',
     devtool: 'source-map',
