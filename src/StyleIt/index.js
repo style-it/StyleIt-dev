@@ -15,26 +15,20 @@ export default class Core {
         this.__config = {
             onInspect: undefined
         };
-        this.events = {
-            styleChanged: config.onInspect,
-        }
+   
         this.Connector = new Connector();
         this.modeHandlers = {
             [Modes.Toggle]: (v, key, value, OnOff) => this.onToggle(v, key, value, OnOff),
             [Modes.Extend]: (v, key, value) => this.onExtend(v, key, value),
         }
         this.config = config ? Object.assign(this.__config, config) : this.__config;
+        this.events = {
+            styleChanged:  this.config.onInspect,
+        }
         this.connectedElement = this.Connector.Connect(target, this.config);
     }
 
-    /**
-     * @param {String} key - key of css 
-     *  @param {String} value - value of css
-     *  @param {(Object | String)} Modes - mode from Modes => Extend or Toggle
-     *  @param {string} Modes.Extend - override style
-     *  @param {string} Modes.toggle - toggle style
-     *  @param {Object} [options] - options 
-     */
+
     Save() {
         return elementToJson(this.connectedElement);
     }
@@ -52,7 +46,7 @@ export default class Core {
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
-    ExecClassName(className, isON) {
+    ToggleClass(className, isON) {
         //here
         if (typeof (className) !== "string") {
             console.warn("className must be a string..");
@@ -89,7 +83,14 @@ export default class Core {
 
         setSelectionBetweenTwoNodes(firstFlag, lastFlag);
     }
-
+    /**
+        * @param {String} key - key of css 
+        *  @param {String} value - value of css
+        *  @param {(Object | String)} Modes - mode from Modes => Extend or Toggle
+        *  @param {string} Modes.Extend - override style
+        *  @param {string} Modes.toggle - toggle style
+        *  @param {Object} [options] - options 
+        */
     execCmd(key, value, mode, options) {
         this.connectedElement.normalize();
         const txtNodes = getTextNodes(this.connectedElement);
