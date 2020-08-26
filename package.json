@@ -4,21 +4,20 @@
   "description": "StyleIt.js is a text editor API ",
   "main": "lib/StyleIt.js",
   "files": [
-    "src/",
     "dist/",
     "lib/"
   ],
   "scripts": {
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server --open --config webpack.dev.js",
     "test": "cross-env NODE_ENV=test mocha --require @babel/register --colors ./test/*.spec.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm test",
     "lint": "eslint src/**/*.js --fix",
-    "build:umdmin": "webpack --mode=production --output-library-target=umd",
-    "build:umd": "webpack --mode=development --output-library-target=umd",
-    "build:commonjs": "webpack --mode=development --output-library-target=commonjs2",
+    "build:umdmin": "webpack --config webpack.prod.js --output-library-target=umd",
+    "build:umd": "webpack --config webpack.dev.js --output-library-target=umd",
+    "build:commonjs": "webpack --config webpack.dev.js --output-library-target=commonjs2",
     "build": "npm-run-all build:*",
-    "dev:umd": "webpack --progress --colors --watch --mode=development --output-library-target=umd",
-    "dev:commonjs": "webpack --progress --colors --watch --mode=development --output-library-target=commonjs2",
+    "dev:umd": "webpack --progress --colors --watch --config webpack.dev.js --output-library-target=umd",
+    "dev:commonjs": "webpack --progress --colors --watch --config webpack.dev.js --output-library-target=commonjs2",
     "dev": "npm-run-all --parallel dev:*",
     "clean": "rimraf dist lib coverage",
     "prepare": "npm-run-all clean build"
@@ -80,6 +79,7 @@
     "webpack": "~4.40.2",
     "webpack-cli": "~3.3.9",
     "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.1.2",
     "yargs": "~14.1.0"
   },
   "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
