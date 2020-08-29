@@ -2,9 +2,12 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 var path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const plugins = [
-   
+    new HtmlWebpackPlugin({
+        template: './index.html', 
+    }),
 ];
 
 module.exports = merge(common, {

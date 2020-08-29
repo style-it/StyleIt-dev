@@ -2,8 +2,6 @@ const webpack = require('webpack');
 const libraryTarget = require('yargs').argv['output-library-target'];
 const pkg = require('./package.json');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-//TODO: load on dev only
 
 const libraryName = pkg.name;
 const banner = `${pkg.name}
@@ -16,10 +14,6 @@ ${pkg.description}\n
 const plugins = [
     new webpack.BannerPlugin(banner),
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-        template: './index.html', 
-        
-    }),
 ];
 
 module.exports = {
