@@ -30,5 +30,14 @@ module.exports = merge(common,{
         }),
       ],
     },
+    module: {
+      rules: [
+          {
+              test: /(\.jsx|\.js)$/,
+              loader: 'babel-loader',
+              exclude: /(node_modules|bower_components)/
+          },
+      ]
+  },
     plugins: plugins
   }); 
