@@ -1,5 +1,5 @@
 import Core from './StyleIt/index';
-import { Modes } from './StyleIt/constants/Modes';
+import  Modes  from './StyleIt/constants/Modes.json';
 
 export default class StyleIt {
   //expose only the relevant methods..
