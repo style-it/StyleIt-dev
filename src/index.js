@@ -1,11 +1,7 @@
 import Core from './StyleIt/index';
-<<<<<<< HEAD
-import  MODES  from './StyleIt/constants/Modes.json';
-=======
 import  Modes  from './StyleIt/constants/Modes.json';
->>>>>>> devMode
 
-export class StyleIt {
+export default class StyleIt {
   //expose only the relevant methods..
   constructor(target, config) {
     //TODO: validate target & config..
@@ -16,7 +12,7 @@ export class StyleIt {
       this.Save = styleIt.Save;
       this.Load = styleIt.Load;
       this.Destroy = styleIt.Destroy;
-      this.Modes = MODES;
+      this.Modes = Modes;
       //========================================//
       this.ToggleClass = this.ToggleClass.bind(styleIt);
       this.ExecCmd = this.ExecCmd.bind(styleIt);
@@ -26,4 +22,3 @@ export class StyleIt {
     }
   }
 }
-export const Modes = MODES;

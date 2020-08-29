@@ -1,13 +1,16 @@
+const webpack = require('webpack');
+const pkg = require('./package.json');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 //TODO: load on dev only
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
-var path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const plugins = [
     new HtmlWebpackPlugin({
-        template: './index.html', 
+        template: './index.html',
     }),
+    new CleanWebpackPlugin(),
 ];
 
 module.exports = merge(common, {
@@ -17,7 +20,7 @@ module.exports = merge(common, {
     },
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: path.join(__dirname, 'prod/dist'),
+        contentBase: './prod/dist',
     },
     plugins: plugins
 });
