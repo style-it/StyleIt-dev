@@ -1,5 +1,9 @@
 import Core from './StyleIt/index';
+<<<<<<< HEAD
 import  MODES  from './StyleIt/constants/Modes.json';
+=======
+import  Modes  from './StyleIt/constants/Modes.json';
+>>>>>>> devMode
 
 export class StyleIt {
   //expose only the relevant methods..
