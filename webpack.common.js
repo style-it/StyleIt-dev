@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const libraryTarget = require('yargs').argv['output-library-target'];
 const pkg = require('./package.json');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 //TODO: load on dev only
 
 const libraryName = pkg.name;
@@ -15,6 +16,10 @@ ${pkg.description}\n
 const plugins = [
     new webpack.BannerPlugin(banner),
     new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+        template: './index.html', 
+        
+    }),
 ];
 
 module.exports = {
@@ -26,15 +31,7 @@ module.exports = {
         globalObject: '(typeof self !== \'undefined\' ? self : this)', // TODO Hack (for Webpack 4+) to enable create UMD build which can be required by Node without throwing error for window being undefined (https://github.com/webpack/webpack/issues/6522)
         umdNamedDefine: true
     },
-    module: {
-        rules: [
-            {
-                test: /(\.jsx|\.js)$/,
-                loader: 'babel-loader',
-                exclude: /(node_modules|bower_components)/
-            },
-        ]
-    },
+ 
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
