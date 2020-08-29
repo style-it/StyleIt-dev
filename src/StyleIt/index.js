@@ -1,5 +1,5 @@
 import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes, setCaretAt, getTextNodes, getRanges } from "./services/range.service";
-import { Modes } from './constants/Modes';
+import  Modes  from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
 import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
 import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
