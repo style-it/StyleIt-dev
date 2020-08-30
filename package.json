@@ -1,5 +1,5 @@
 {
-  "name": "styleit_api",
+  "name": "styleit-api",
   "version": "1.0.3",
   "description": "StyleIt is a simple text editor API built for Developers. ",
   "main": "prod/lib/styleit-api.js",
