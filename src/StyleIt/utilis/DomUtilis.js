@@ -66,12 +66,14 @@ Element.prototype.ischildOf = function(parent) {
   }
   return false;
 }
-Element.prototype.wrap = function(wrapper) {
+const _wrap = function(wrapper) {
   if (!this.parentNode) return false;
   this.parentNode.insertBefore(wrapper, this);
   wrapper.appendChild(this);
-  return true;
+  return wrapper;
 }
+Text.prototype.wrap = _wrap;
+Element.prototype.wrap = _wrap;
 Element.prototype.insertAfter = function (newNode) {
   this.parentNode.insertBefore(newNode, this.nextSibling);
 }

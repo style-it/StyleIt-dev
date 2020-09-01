@@ -1,5 +1,10 @@
-import { Ranger, wrapRangeWithElement, setSelectionFlags, setSelectionBetweenTwoNodes, setCaretAt, getTextNodes, getRanges } from "./services/range.service";
-import  Modes  from './constants/Modes.json';
+import { Ranger, wrapRangeWithElement,
+     setSelectionFlags, 
+     setSelectionBetweenTwoNodes,
+      setCaretAt, 
+      getTextNodes,
+      getCaretCharacterOffsetWithin } from "./services/range.service";
+import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
 import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
 import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
@@ -13,9 +18,9 @@ export default class Core {
     //TODO: add target validations..;
     constructor(target, config) {
         this.__config = {
-            onInspect: undefined
+            onInspect: undefined,
         };
-   
+
         this.Connector = new Connector();
         this.modeHandlers = {
             [Modes.Toggle]: (v, key, value, OnOff) => this.onToggle(v, key, value, OnOff),
@@ -23,12 +28,10 @@ export default class Core {
         }
         this.config = config ? Object.assign(this.__config, config) : this.__config;
         this.events = {
-            styleChanged:  this.config.onInspect,
+            styleChanged: this.config.onInspect,
         }
         this.connectedElement = this.Connector.Connect(target, this.config);
     }
-
-
     Save() {
         return elementToJson(this.connectedElement);
     }
@@ -46,7 +49,7 @@ export default class Core {
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
-    ToggleClass(className, isON) {
+    ToggleClass(className, isON, options) {
         //here
         if (typeof (className) !== "string") {
             console.warn("className must be a string..");
@@ -57,6 +60,8 @@ export default class Core {
         if (elements.length === 0) {
             return;
         }
+        if (!options) options = {}
+        if (typeof (options.selection) !== "boolean") options.selection = true;
         const isToggleOn = (typeof (isON) === "boolean") ? isON : elements[0].closest(`[class='${className}']`);
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
@@ -75,13 +80,16 @@ export default class Core {
                 }
             })
         }
-
-        //This is how i make the text selection, i dont know if this is good way, but it works..
-        const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
-
+        const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(elements[0], elements[elements.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
-
-        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        if (firstFlag && lastFlag) {
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        }else{
+            const sel = window.getSelection ();
+            if(sel.removeAllRanges){
+                sel.removeAllRanges ();
+            }
+        }
     }
     /**
         * @param {String} key - key of css 
@@ -92,20 +100,30 @@ export default class Core {
         *  @param {Object} [options] - options 
         */
     execCmd(key, value, mode, options) {
-        this.connectedElement.normalize();
-        const txtNodes = getTextNodes(this.connectedElement);
 
+        this.connectedElement.normalize();
+        let indexCaret;
         mode = mode ? mode : Modes.Extend;
-        this.options = typeof options === 'object' ? options : {};
+        if (!options) options = {};
+        if (typeof (options.selection) !== "boolean") options.selection = true;
         if (!this.isValid(key, value)) {
             return;
         }
-
-        this.ELEMENTS = wrapRangeWithElement();
+        if (options.target === "block") {
+            const selectedElement = getSelectedElement();
+            if (selectedElement) {
+                const block = selectedElement.closest('p') || selectedElement.closest('div');
+                 indexCaret = getCaretCharacterOffsetWithin(block);
+                this.ELEMENTS = [block];    
+                // const txtNodes = getTextNodes(block);
+                // this.ELEMENTS  = txtNodes.map(t=>t.wrap(document.createElement('span')));             
+            }
+        } else {
+            this.ELEMENTS = wrapRangeWithElement();
+        }
 
         //This is how i make the text selection, i dont know if this is good way, but it works..
-
-        const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]); //Set Flag at last
+        const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
         //======================================================================//
         removeZeroSpace(getTextNodes(this.connectedElement));
 
@@ -118,8 +136,17 @@ export default class Core {
         });
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
         //use the first and last flags to make the text selection and unwrap them..
-
-        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        debugger
+        if (firstFlag && lastFlag) {
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        }else{
+            const sel = window.getSelection ();
+            if(sel.removeAllRanges){
+                sel.removeAllRanges ();
+            }
+            const target = this.ELEMENTS[0];
+            setCaretAt(target,indexCaret);
+        }
         this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
     }
     dispatchEvent(event, payload) {
@@ -162,7 +189,7 @@ export default class Core {
     }
     onExtend(element, key, value) {
         const elementToSplit = element.closest(`[style*='${key}']`);;
-        if (elementToSplit) {
+        if (elementToSplit && elementToSplit !== element) {
             const splitElements = splitHTML(element, elementToSplit);
             if (splitElements) {
                 setStyle(splitElements.center, key, value);

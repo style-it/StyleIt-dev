@@ -47,7 +47,10 @@
 //================================================================
       const btns = [
         { text: "toggle class", onclick: () => styleIt.ToggleClass("test") },
-        { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
+        { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle,{
+          target:"block",
+          selection:true
+        }) },
         { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle) },
         { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
         { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
@@ -55,7 +58,9 @@
         { text: "yellow", onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend) },
         { text: "blue", onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend) },
         { text: "green", onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend) },
-
+        { text: "left", onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend,{target:'block',selection:false}) },
+        { text: "center", onclick: () => styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend,{target:'block',selection:false}) },
+        { text: "right", onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend,{target:'block',selection:false}) },
       ]
       btns.forEach(btn => {
         const _btn = root.addElement('button');
