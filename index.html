@@ -47,13 +47,19 @@
 //================================================================
       const btns = [
         { text: "toggle class", onclick: () => styleIt.ToggleClass("test") },
-        { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle,{
+        { text: "B:Block", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle,{
           target:"block",
-          selection:true
+          selection:false
         }) },
+        { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
+
         { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle) },
         { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
         { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
+        { text: "30px:Block", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend,{
+          target:"block",
+          selection:false
+        }) },
         { text: "Red", onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend) },
         { text: "yellow", onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend) },
         { text: "blue", onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend) },
