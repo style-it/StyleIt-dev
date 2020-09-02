@@ -1,9 +1,11 @@
-import { Ranger, wrapRangeWithElement,
-     setSelectionFlags, 
-     setSelectionBetweenTwoNodes,
-      setCaretAt, 
-      getTextNodes,
-      getCaretCharacterOffsetWithin } from "./services/range.service";
+import {
+    Ranger, wrapRangeWithElement,
+    setSelectionFlags,
+    setSelectionBetweenTwoNodes,
+    setCaretAt,
+    getTextNodes,
+    getCaretCharacterOffsetWithin
+} from "./services/range.service";
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
 import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
@@ -84,10 +86,10 @@ export default class Core {
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-        }else{
-            const sel = window.getSelection ();
-            if(sel.removeAllRanges){
-                sel.removeAllRanges ();
+        } else {
+            const sel = window.getSelection();
+            if (sel.removeAllRanges) {
+                sel.removeAllRanges();
             }
         }
     }
@@ -102,25 +104,41 @@ export default class Core {
     execCmd(key, value, mode, options) {
 
         this.connectedElement.normalize();
-        let indexCaret;
+        let caretElement;
+        this.ELEMENTS = [];
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
         if (typeof (options.selection) !== "boolean") options.selection = true;
         if (!this.isValid(key, value)) {
             return;
         }
-        if (options.target === "block") {
+        if (!options.selection) {
             const selectedElement = getSelectedElement();
             if (selectedElement) {
-                const block = selectedElement.closest('p') || selectedElement.closest('div');
-                 indexCaret = getCaretCharacterOffsetWithin(block);
-                this.ELEMENTS = [block];    
-                // const txtNodes = getTextNodes(block);
-                // this.ELEMENTS  = txtNodes.map(t=>t.wrap(document.createElement('span')));             
+                caretElement = {};
+                caretElement.el = selectedElement;
+                caretElement.index = getCaretCharacterOffsetWithin(selectedElement);
             }
+        }
+
+        if (options.target === "block") {
+            let nodes = wrapRangeWithElement();
+            nodes.map(el => {
+                const block = el.closest('p');
+                if ((block && block === this.connectedElement) || !block) {
+                    const newBlock = this.createWrapperElement(this.connectedElement, { el: "p" });
+                    this.ELEMENTS.push(newBlock);
+                } else {
+                    this.ELEMENTS.push(block);
+                }
+            });
         } else {
             this.ELEMENTS = wrapRangeWithElement();
         }
+
+
+
+
 
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
@@ -136,16 +154,16 @@ export default class Core {
         });
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
         //use the first and last flags to make the text selection and unwrap them..
-        debugger
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-        }else{
-            const sel = window.getSelection ();
-            if(sel.removeAllRanges){
-                sel.removeAllRanges ();
+        } else {
+            const sel = window.getSelection();
+            if (sel.removeAllRanges) {
+                sel.removeAllRanges();
             }
-            const target = this.ELEMENTS[0];
-            setCaretAt(target,indexCaret);
+            if (caretElement.el && caretElement.index) {
+                setCaretAt(caretElement.el, caretElement.index);
+            }
         }
         this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
     }
@@ -156,8 +174,14 @@ export default class Core {
     onToggle(element, key, value, OnOff) {
         // detect if there is any parent with style to split.
         //TODO: use the catch from options to detect more than one style or tag element.
-        const elementToSplit = element.closest(`[style*='${value}']`);
-        if (elementToSplit) {
+        let elementToSplit = element.closest(`[style*='${value}']`);
+        if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
+            let innerSpan = this.createWrapperElement(elementToSplit);
+            elementToSplit.style[key] = null;
+            innerSpan.style[key] = value;
+            return this.onToggle(element, key, value, false);
+        }
+        if (elementToSplit && elementToSplit !== element) {
             if (typeof (OnOff) === 'undefined')
                 OnOff = false;
             //unbold
@@ -167,10 +191,10 @@ export default class Core {
                 toggleStyle(splitElements.center, key, value, OnOff);
                 if (this.ELEMENTS.length === 1 && !this.ELEMENTS[0].textContent.trim()) {
                     splitElements.center.innerHTML += "&#8203;"
-                    const s = document.createElement("span");
-                    s.innerHTML = "&#8203;"
-                    splitElements.center.appendChild(s);
-                    setCaretAt(s);
+                    const zeroSpace = document.createElement("span");
+                    zeroSpace.innerHTML = "&#8203;"
+                    splitElements.center.appendChild(zeroSpace);
+                    setCaretAt(zeroSpace);
                 }
 
             } else {
@@ -178,8 +202,11 @@ export default class Core {
             }
         }
         else {
-            if (typeof (OnOff) === 'undefined')
+            if (typeof (OnOff) === 'undefined' && elementToSplit) {
+                OnOff = false;
+            } else if (typeof (OnOff) === 'undefined') {
                 OnOff = true;
+            }
             //bold
             toggleStyle(element, key, value, OnOff);
             normalizeElement(element);
@@ -188,7 +215,13 @@ export default class Core {
         return OnOff;
     }
     onExtend(element, key, value) {
-        const elementToSplit = element.closest(`[style*='${key}']`);;
+        const elementToSplit = element.closest(`[style*='${key}']`);
+        if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
+            let innerSpan = this.createWrapperElement(elementToSplit);
+            innerSpan.style[key] = elementToSplit.style[key];
+            elementToSplit.style[key] = null;
+            return this.onExtend(element, key, value);
+        }
         if (elementToSplit && elementToSplit !== element) {
             const splitElements = splitHTML(element, elementToSplit);
             if (splitElements) {
@@ -204,6 +237,14 @@ export default class Core {
 
 
 
+
+    createWrapperElement(element, options) {
+        if (typeof (options) !== "object") options = {};
+        let innerSpan = document.createElement(options.el || "span");
+        Array.from(element.childNodes).forEach(child => innerSpan.appendChild(child));
+        element.appendChild(innerSpan);
+        return innerSpan;
+    }
 
     isValid(key, value) {
         if (!this.connectedElement) {

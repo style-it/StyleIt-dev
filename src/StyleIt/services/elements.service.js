@@ -5,7 +5,7 @@ import Levels from '../constants/Levels.json';
 export function  getSelectedElement(){
     var node = document.getSelection();
     if (node !== null) {
-      var ancNode = node.anchorNode;
+      var ancNode = node.extentNode;
       if (ancNode !== null) {
         while (ancNode.nodeType === 3) {
           ancNode = ancNode.parentNode;
