@@ -26,7 +26,6 @@ export default class CopyPaste {
             const markup = stringToHTML(clip);
             const isLocalElement = markup.querySelector(`.${this.uniqeID}`);
             if (isLocalElement) {
-                // review: should we create new on every paste ?
                 pasteHtmlAtCaret(isLocalElement.outerHTML);
                 let pastedElement = this.target.querySelector(`.${this.uniqeID}`);
                 if (pastedElement) {
