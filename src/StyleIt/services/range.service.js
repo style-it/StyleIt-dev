@@ -90,8 +90,15 @@ export function pasteHtmlAtCaret(html) {
       // Range.createContextualFragment() would be useful here but is
       // only relatively recently standardized and is not supported in
       // some browsers (IE9, for one)
-      var el = document.createElement("div");
-      el.innerHTML = html;
+      let el;
+      if(typeof(html) === "string"){
+         el= document.createElement("div");
+        el.innerHTML = html;
+      }
+      else if(typeof(html) === "object"){
+        el = html;
+      }
+    
       var frag = document.createDocumentFragment(), node, lastNode;
       while ((node = el.firstChild)) {
         lastNode = frag.appendChild(node);
