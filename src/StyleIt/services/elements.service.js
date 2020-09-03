@@ -2,20 +2,20 @@ import { getStyle, JsonObjectToStyleString } from "./style.service";
 import { Types } from '../constants/elementTypes';
 import Levels from '../constants/Levels.json';
 
-export function  getSelectedElement(){
+export function getSelectedElement() {
     var node = document.getSelection();
     if (node !== null) {
-      var ancNode = node.extentNode;
-      if (ancNode !== null) {
-        while (ancNode.nodeType === 3) {
-          ancNode = ancNode.parentNode;
+        var ancNode = node.extentNode;
+        if (ancNode !== null) {
+            while (ancNode.nodeType === 3) {
+                ancNode = ancNode.parentNode;
+            }
+            // const el = (ancNode.nodeType === 3 ? ancNode.parentNode : node);
+            return ancNode;
         }
-        // const el = (ancNode.nodeType === 3 ? ancNode.parentNode : node);
-        return ancNode;
-      }
-      return null;
+        return null;
     }
-  }
+}
 export function JsonToElement(jsonObject, parentElement) {
     //TODO: create parentelement and jsonobject validation   
     const renderAttrs = (jsElement, element) => {
@@ -44,6 +44,14 @@ export function JsonToElement(jsonObject, parentElement) {
             case Types.SPAN:
             case Types.DIV:
             case Types.P:
+            case Types.CODE:
+            case Types.PRE:
+            case Types.H1:
+            case Types.H2:
+            case Types.H3:
+            case Types.H4:
+            case Types.H5:
+            case Types.H6:
                 element = document.createElement(nodeType);
                 isShouldRenderAttrs = true;
                 break;
@@ -59,10 +67,10 @@ export function JsonToElement(jsonObject, parentElement) {
         }
         return element;
     }
-    if(!parentElement && jsonObject.type === Levels['0']) {
+    if (!parentElement && jsonObject.type === Levels['0']) {
         parentElement = createHtmlElement(jsonObject);
     }
-     if (Array.isArray(jsonObject.children)) {
+    if (Array.isArray(jsonObject.children)) {
         jsonObject.children.forEach(jsChild => {
             const htmlElement = createHtmlElement(jsChild);
             if (htmlElement) {
@@ -90,19 +98,26 @@ export function elementToJson(node, level) {
     switch (nodeType) {
         case Types["#text"]:
             json.tag = nodeType;
-            json.textContent = node.textContent.replace(/\u200B/g,'');
+            json.textContent = node.textContent.replace(/\u200B/g, '');
             //question: replace \n ?
-            if(!json.textContent.trim()) isValid = false;
+            if (!json.textContent.trim()) isValid = false;
             break;
         case Types.A:
             json.tag = nodeType;
             json.href = node.href;
             json.target = node.target;
             break;
-        case Types.DIV:
         case Types.SPAN:
-        case Types.BR:
+        case Types.DIV:
         case Types.P:
+        case Types.CODE:
+        case Types.PRE:
+        case Types.H1:
+        case Types.H2:
+        case Types.H3:
+        case Types.H4:
+        case Types.H5:
+        case Types.H6:
             json.tag = nodeType;
             break;
         default:
@@ -110,7 +125,7 @@ export function elementToJson(node, level) {
             //TODO: should we unwrap this node ? 
             break;
     }
-    if(!isValid) return null;
+    if (!isValid) return null;
     //TODO: get attrs 
     const style = getStyle(node);
     if (Object.keys(style).length > 0) {
@@ -120,7 +135,7 @@ export function elementToJson(node, level) {
         json.classList = [...node.classList];
 
     if (node.childNodes && node.childNodes.length > 0)
-        json.children = [...node.childNodes].map((cn) => elementToJson(cn, level)).filter(v=>v);
+        json.children = [...node.childNodes].map((cn) => elementToJson(cn, level)).filter(v => v);
     return json;
 
 }
