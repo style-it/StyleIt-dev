@@ -8,12 +8,115 @@
 <body>
     <div id="root">
         <div id="editor" contenteditable="true">
-            <p>
-            Hello world<thisTagGoingToBeIgnore>im   ignored</thisTagGoingToBeIgnore>
-            </p>
-            <p>is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-            
-            </div>
+          <h1>TextEditor-API concepts</h1>
+        <p>
+          StyleIt.js is a simple text editor API built for Developers. <br /> It
+          outputs clean data in JSON instead of heavy HTML-markup for efficent data
+          saving. <br /> More important StyleIt.js knows how to use ANY Css rule.
+        </p>
+
+        <ul>
+          <li>1. Clean data output</li>
+          <li>2. Use of any CSS rules</li>
+          <li>3. Style with classes</li>
+        </ul>
+
+        <h1>Getting started</h1>
+
+        <h3>Installation</h3>
+
+        1. Node package 2. Source from CDN 3. Local file from project
+
+        <h3>Node module</h3>
+        <h6>Install the package via npm</h6>
+        <ul>
+          <li><code> npm i styleit-api --save </code></li>
+          <li>
+            <p>Include the module in your application</p>
+            <pre>
+<code>
+import StyelIt from 'styleit-api';
+</code>
+</pre>
+          </li>
+        </ul>
+        <br />
+
+        <br />
+        <br />
+        <h2>
+          Initialization
+        </h2>
+        <p>
+          In order to inizialize StyleIt, you need to pass the Element Object or
+          Element Id to the StyleIt constracture. Note that StyleIt will be
+          available only on this element and its child nodes.
+        </p>
+        <div>
+          <pre><code>
+import StyleIt from 'styleit-api';
+<br />
+<br />
+<span
+                style="margin-top:20px">const styleIt = new  StyleIt(*Element Object or Element Id*);</span>
+</code></pre>
+          <br />
+          <br />
+        </div>
+
+        <h2>
+          StyleIt provides two working modes
+        </h2>
+        <pre><code>import StyleIt from 'styleit-api';
+cont modes = StyleIt.Modes</code></pre>
+
+        <table style="width:100%">
+          <tr>
+            <th>Mode</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>Toggle</td>
+            <td>String</td>
+            <td>
+              Style elements with on/off functionality => like
+              bold,underline,italic
+            </td>
+          </tr>
+          <tr>
+            <td>Extend</td>
+            <td>String</td>
+            <td>
+              Only extends the currect style => font-size, color, backgorund
+            </td>
+          </tr>
+        </table>
+        <div>
+          Note that the Extend mod will not cancel the style when selecting the
+          same rule twice.
+        </div>
+        <br />
+        <h2>
+          How to use
+        </h2>
+        <p>Modes.Toggle</p>
+        <pre><code>styleIt.execCmd('text-decoration', 'underline', Modes.Toggle);</code></pre>
+        <br />
+        <pre><code>styleIt.execCmd('font-weight', 'bold', Modes.Toggle);</code></pre>
+        <br />
+        <p>Modes.Extend</p>
+        <pre><code>styleIt.execCmd('color', color, Modes.Extend);</code></pre>
+        <pre><code>styleIt.execCmd('font-size', size, Modes.Extend);</code></pre>
+
+        <br />
+        <span class="inline-block h-1 w-10 rounded bg-indigo-500 mt-8 mb-6" />
+        <h2 class="text-gray-900 font-medium title-font tracking-wider text-sm">
+          HOLDEN CAULFIELD
+        </h2>
+        <p class="text-gray-500">Senior Product Designer</p>
+      </div>
+    </div>
             <style>
             .test{
               letter-spacing:0.2em;
