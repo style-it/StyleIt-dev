@@ -126,7 +126,7 @@ export default class Core {
             nodes.map(el => {
                 const block = el.closest('p');
                 if ((block && block === this.connectedElement) || !block) {
-                    const newBlock = this.createWrapperElement(this.connectedElement, { el: "p" });
+                    const newBlock = this.createWrapperElement(el, { el: "p" });
                     this.ELEMENTS.push(newBlock);
                 } else {
                     this.ELEMENTS.push(block);
