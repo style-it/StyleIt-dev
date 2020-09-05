@@ -3,7 +3,6 @@ import { splitHTML } from "../utilis/splitHTML";
 import { normalizeElement } from "../services/textEditor.service";
 
 //TODO:review
-//question: should i add all the rules in one array or dispatch by css keys..
 export function UseRules(data) {
     const ColorTextDecorationRule = (data) => {
         if (data.key === "color") {
