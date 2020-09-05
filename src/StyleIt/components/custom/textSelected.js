@@ -4,7 +4,11 @@ class TextSelection extends HTMLElement {
       super();
     }
     connectedCallback(){
-      this.innerHTML = "&#8203;";
+      const createZeroSpace = this.getAttribute('zero-space');
+      if(createZeroSpace === "true"){
+        this.innerHTML = "&#8203;";
+
+      }
     }
   }
   customElements.define('text-selection', TextSelection); 
