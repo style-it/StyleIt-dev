@@ -8,5 +8,5 @@
     "transform-minify-booleans",
     "minify-dead-code-elimination"
   ],
-  "comments": false
+  "comments": true
 }
