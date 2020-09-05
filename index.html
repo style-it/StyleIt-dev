@@ -1,229 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>styleit - Development</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>styleit - Development</title>
 </head>
+
 <body>
-    <div id="root">
-        <div id="editor" contenteditable="true">
-          <h1>TextEditor-API concepts</h1>
-        <p>
-          StyleIt.js is a simple text editor API built for Developers. <br /> It
-          outputs clean data in JSON instead of heavy HTML-markup for efficent data
-          saving. <br /> More important StyleIt.js knows how to use ANY Css rule.
-        </p>
+  <div id="root">
+    <div id="editor" contenteditable="true">
+      <h1>TextEditor-API concepts</h1>
+      <p>
+        StyleIt.js is a simple text editor API built for Developers. <br /> It
+        outputs clean data in JSON instead of heavy HTML-markup for efficent data
+        saving. <br /> More important StyleIt.js knows how to use ANY Css rule.
+      </p>
 
-        <ul>
-          <li>1. Clean data output</li>
-          <li>2. Use of any CSS rules</li>
-          <li>3. Style with classes</li>
-        </ul>
-
-        <h1>Getting started</h1>
-
-        <h3>Installation</h3>
-
-        1. Node package 2. Source from CDN 3. Local file from project
-
-        <h3>Node module</h3>
-        <h6>Install the package via npm</h6>
-        <ul>
-          <li><code> npm i styleit-api --save </code></li>
-          <li>
-            <p>Include the module in your application</p>
-            <pre>
-<code>
-import StyelIt from 'styleit-api';
-</code>
-</pre>
-          </li>
-        </ul>
-        <br />
-
+      <ul>
+        <li>Clean data output</li>
+        <li>Use of any CSS rules</li>
+        <li>Style with classes</li>
+      </ul>
+      <h3>Node module</h3>
+      <ul>
+        <li>
+          <p> npm i styleit-api --save </p>
+        </li>
+        <li>
+          <p>Include the module in your application</p>
+        </li>
+      </ul>
+      <div>
         <br />
         <br />
-        <h2>
-          Initialization
-        </h2>
-        <p>
-          In order to inizialize StyleIt, you need to pass the Element Object or
-          Element Id to the StyleIt constracture. Note that StyleIt will be
-          available only on this element and its child nodes.
-        </p>
-        <div>
-          <pre><code>
-import StyleIt from 'styleit-api';
-<br />
-<br />
-<span
-                style="margin-top:20px">const styleIt = new  StyleIt(*Element Object or Element Id*);</span>
-</code></pre>
-          <br />
-          <br />
-        </div>
-
-        <h2>
-          StyleIt provides two working modes
-        </h2>
-        <pre><code>import StyleIt from 'styleit-api';
-cont modes = StyleIt.Modes</code></pre>
-
-        <table style="width:100%">
-          <tr>
-            <th>Mode</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-          <tr>
-            <td>Toggle</td>
-            <td>String</td>
-            <td>
-              Style elements with on/off functionality => like
-              bold,underline,italic
-            </td>
-          </tr>
-          <tr>
-            <td>Extend</td>
-            <td>String</td>
-            <td>
-              Only extends the currect style => font-size, color, backgorund
-            </td>
-          </tr>
-        </table>
-        <div>
-          Note that the Extend mod will not cancel the style when selecting the
-          same rule twice.
-        </div>
-        <br />
-        <h2>
-          How to use
-        </h2>
-        <p>Modes.Toggle</p>
-        <pre><code>styleIt.execCmd('text-decoration', 'underline', Modes.Toggle);</code></pre>
-        <br />
-        <pre><code>styleIt.execCmd('font-weight', 'bold', Modes.Toggle);</code></pre>
-        <br />
-        <p>Modes.Extend</p>
-        <pre><code>styleIt.execCmd('color', color, Modes.Extend);</code></pre>
-        <pre><code>styleIt.execCmd('font-size', size, Modes.Extend);</code></pre>
-
-        <br />
-        <span class="inline-block h-1 w-10 rounded bg-indigo-500 mt-8 mb-6" />
-        <h2 class="text-gray-900 font-medium title-font tracking-wider text-sm">
-          HOLDEN CAULFIELD
-        </h2>
-        <p class="text-gray-500">Senior Product Designer</p>
       </div>
+
+
+      <table style="width:100%">
+        <tr>
+          <th>Mode</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>Toggle</td>
+          <td>String</td>
+          <td>
+            Style elements with on/off functionality => like
+            bold,underline,italic
+          </td>
+        </tr>
+        <tr>
+          <td>Extend</td>
+          <td>String</td>
+          <td>
+            Only extends the currect style => font-size, color, backgorund
+          </td>
+        </tr>
+      </table>
     </div>
-            <style>
-            .test{
-              letter-spacing:0.2em;
-            -webkit-text-fill-color: transparent;
-            -webkit-text-stroke-width: 1px;
-            -webkit-text-stroke-color: #b50064;
-            text-shadow: 3px 2px 3px #0a0a0a, 1px 3px 6px #000000;
+  </div>
+  <style>
+    .test {
+      letter-spacing: 0.2em;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke-width: 1px;
+      -webkit-text-stroke-color: #b50064;
+      text-shadow: 3px 2px 20px #0a0a0a, 1px 3px 6px #ff0c0c;
+    }
+  </style>
+  </div>
+  <script>
+
+    (function () {
+
+      const init = () => {
+        window.addEventListener('DOMContentLoaded', (event) => {
+          const root = document.querySelector('#root');
+
+          document.body.appendChild(root);
+          //================================================================
+          const config = {
+            onInspect: (styles) => {
+              inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
+            },  
+             //TODO:Rules
+            rules: {
+              filter:[{el:"DIV",replaceWith:"P"}]
             }
-            </style> 
-    </div>
-    <script>
-        
-(function () {
+          }
+          const styleIt = new styleit('editor', config);
+          //================================================================
+          const btns = [
+            { text: "toggle class", onclick: () => styleIt.ToggleClass("test") },
+            {
+              text: "B:Block", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+                target: "block",
+                selection: false
+              })
+            },
+            { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
 
-  const init = () => {
-    window.addEventListener('DOMContentLoaded', (event) => {
-      const root = document.querySelector('#root');
-      
-      document.body.appendChild(root);
-      //================================================================
-      const config = {
-        onInspect: (styles) => {
-          inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
-        },
-        style: {
-          selectionColor: "blue",//TODO
-          caretColor: "red"//TODO
-        }
-      }
-      const styleIt = new styleit('editor',config);
-//================================================================
-      const btns = [
-        { text: "toggle class", onclick: () => styleIt.ToggleClass("test") },
-        { text: "B:Block", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle,{
-          target:"block",
-          selection:false
-        }) },
-        { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
+            { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle,{
+              selection:false
+            }) },
+            { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
+            { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
+            {
+              text: "30px:Block", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend, {
+                target: "block",
+                selection: false
+              })
+            },
+            { text: "Red", onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend) },
+            { text: "yellow", onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend) },
+            { text: "blue", onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend) },
+            { text: "green", onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend) },
+            { text: "left", onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend, { target: 'block', selection: false }) },
+            { text: "center", onclick: () => styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend, { target: 'block', selection: false }) },
+            { text: "right", onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend, { target: 'block', selection: false }) },
+          ]
+          btns.forEach(btn => {
+            const _btn = root.addElement('button');
+            _btn.onclick = btn.onclick;
+            _btn.innerHTML = btn.text;
+          });
+          const slider = root.addElement('input');
+          slider.type = "range";
+          slider.step = "1";
+          slider.value = 0;
+          slider.oninput = (e) => {
+            console.log(e.target.value)
+            styleIt.ExecCmd("font-size", `${e.target.value}px`, styleIt.Modes.Extend)
+          }
+          root.addElement('div');
+          const key = root.addElement('input');
+          const value = root.addElement('input');
 
-        { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle) },
-        { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
-        { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
-        { text: "30px:Block", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend,{
-          target:"block",
-          selection:false
-        }) },
-        { text: "Red", onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend) },
-        { text: "yellow", onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend) },
-        { text: "blue", onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend) },
-        { text: "green", onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend) },
-        { text: "left", onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend,{target:'block',selection:false}) },
-        { text: "center", onclick: () => styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend,{target:'block',selection:false}) },
-        { text: "right", onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend,{target:'block',selection:false}) },
-      ]
-      btns.forEach(btn => {
-        const _btn = root.addElement('button');
-        _btn.onclick = btn.onclick;
-        _btn.innerHTML = btn.text;
-      });
-      const slider = root.addElement('input');
-      slider.type = "range";
-      slider.step="1";
-      slider.value = 0;
-      slider.oninput = (e) =>{
-        console.log(e.target.value)
-        styleIt.ExecCmd("font-size",`${e.target.value}px`, styleIt.Modes.Extend)
-      }
-      root.addElement('div');
-      const key = root.addElement('input');
-      const value = root.addElement('input');
+          const ok = root.addElement('button');
+          ok.innerHTML = "go"
+          ok.onclick = () => {
+            styleIt.ExecCmd(key.value, value.value, styleIt.Modes.Extend);
+          }
 
-      const ok = root.addElement('button');
-      ok.innerHTML = "go"
-      ok.onclick = () => {
-      styleIt.ExecCmd(key.value, value.value, styleIt.Modes.Extend);
+          const inspect = root.addElement('div');
+          const save = root.addElement('button');
+          save.innerHTML = "Save"
+          let savedData;
+          save.onclick = () => {
+            savedData = styleIt.Save();
+            inspect.innerHTML = JSON.stringify(savedData);
+          }
+
+          const load = root.addElement('button');
+          load.innerHTML = "Load"
+          load.onclick = () => {
+            if (savedData)
+              styleIt.Load(savedData);
+          }
+          const destroy = root.addElement('button');
+          destroy.innerHTML = "Destroy";
+          destroy.onclick = () => {
+            styleIt.Destroy();
+          }
+        });
       }
-      
-      const inspect = root.addElement('div');
-      const save = root.addElement('button');
-      save.innerHTML = "Save"
-      let savedData;
-      save.onclick=()=>{      
-        savedData = styleIt.Save();
-        inspect.innerHTML = JSON.stringify(savedData);
+      init();
+      Element.prototype.addElement = function (type) {
+        const element = document.createElement(type);
+        this.appendChild(element);
+        return element;
       }
 
-      const load = root.addElement('button');
-      load.innerHTML = "Load"
-      load.onclick=()=>{
-        if(savedData)
-        styleIt.Load(savedData);
-      }
-      const destroy = root.addElement('button');
-      destroy.innerHTML = "Destroy";
-      destroy.onclick = () =>{
-        styleIt.Destroy();
-      }
-    });
-  }
-  init();
-  Element.prototype.addElement = function (type) {
-    const element = document.createElement(type);
-    this.appendChild(element);
-    return element;
-  }
-
-})();
-    </script>
+    })();
+  </script>
 </body>
+
 </html>
