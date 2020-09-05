@@ -1,4 +1,48 @@
+import {TYPESBLOCK} from '../constants/elementTypes';
 
+export function createInnerWrapperElement(element, options) {
+  if (typeof (options) !== "object") options = {};
+  let innerSpan = document.createElement(options.el || "span");
+  Array.from(element.childNodes).forEach(child => innerSpan.appendChild(child));
+  element.appendChild(innerSpan);
+  return innerSpan;
+}
+export function wrapRangeWithBlockElement(connectedElement) {
+  const elements = [];
+  let nodes = wrapRangeWithElement();
+  // map not working for some reason..
+  nodes.map(el => {
+    let parentElement = el;
+    let blockElement;
+    while (parentElement) {
+      const display = TYPESBLOCK[parentElement.nodeName];
+      if (display) {
+        blockElement = parentElement;
+        break;
+      }
+      if (!parentElement.ischildOf(connectedElement)) {
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+    if ((blockElement && blockElement === connectedElement)) {
+      const newBlock = createWrapperElement(blockElement, { el: "div" });
+      elements.push(newBlock);
+    } else if (!blockElement) {
+      const newBlock = createWrapperElement(el, { el: "div" });
+      elements.push(newBlock);
+    }
+    else {
+      if(elements[elements.length-1] !== blockElement)
+      elements.push(blockElement);
+    }
+  });
+  return {
+    nodes:nodes,
+    blocks:elements
+  }
+  return elements;
+}
 export function wrapRangeWithElement() {
   const ranges = getRanges();
   return ranges.map(r => {
@@ -49,20 +93,20 @@ export function getCaretCharacterOffsetWithin(element) {
   var win = doc.defaultView || doc.parentWindow;
   var sel;
   if (typeof win.getSelection != "undefined") {
-      sel = win.getSelection();
-      if (sel.rangeCount > 0) {
-          var range = win.getSelection().getRangeAt(0);
-          var preCaretRange = range.cloneRange();
-          preCaretRange.selectNodeContents(element);
-          preCaretRange.setEnd(range.endContainer, range.endOffset);
-          caretOffset = preCaretRange.toString().length;
-      }
-  } else if ( (sel = doc.selection) && sel.type != "Control") {
-      var textRange = sel.createRange();
-      var preCaretTextRange = doc.body.createTextRange();
-      preCaretTextRange.moveToElementText(element);
-      preCaretTextRange.setEndPoint("EndToEnd", textRange);
-      caretOffset = preCaretTextRange.text.length;
+    sel = win.getSelection();
+    if (sel.rangeCount > 0) {
+      var range = win.getSelection().getRangeAt(0);
+      var preCaretRange = range.cloneRange();
+      preCaretRange.selectNodeContents(element);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      caretOffset = preCaretRange.toString().length;
+    }
+  } else if ((sel = doc.selection) && sel.type != "Control") {
+    var textRange = sel.createRange();
+    var preCaretTextRange = doc.body.createTextRange();
+    preCaretTextRange.moveToElementText(element);
+    preCaretTextRange.setEndPoint("EndToEnd", textRange);
+    caretOffset = preCaretTextRange.text.length;
   }
   return caretOffset;
 }
@@ -70,10 +114,9 @@ export function setCaretAt(element, charIndex) {
   var node = element;
   node.focus();
   var textNode = Array.from(node.childNodes).filter(child => child.nodeType === Node.TEXT_NODE);
-  var caret = charIndex;
   var range = document.createRange();
-  range.setStart(textNode[0], caret);
-  range.setEnd(textNode[0], caret);
+  range.setStart(textNode[0], charIndex);
+  range.setEnd(textNode[0], charIndex);
   var sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
@@ -91,14 +134,14 @@ export function pasteHtmlAtCaret(html) {
       // only relatively recently standardized and is not supported in
       // some browsers (IE9, for one)
       let el;
-      if(typeof(html) === "string"){
-         el= document.createElement("div");
+      if (typeof (html) === "string") {
+        el = document.createElement("div");
         el.innerHTML = html;
       }
-      else if(typeof(html) === "object"){
+      else if (typeof (html) === "object") {
         el = html;
       }
-    
+
       var frag = document.createDocumentFragment(), node, lastNode;
       while ((node = el.firstChild)) {
         lastNode = frag.appendChild(node);
@@ -185,7 +228,7 @@ export function createWrapperFunction(wrapperEl, range) {
       endNode = currentWrapper;
       endOffset = 1
     }
-    currentRange.surroundContents(currentWrapper)    
+    currentRange.surroundContents(currentWrapper)
     return currentWrapper
   }
 }
@@ -236,7 +279,7 @@ export function wrapRangeText(wrapperEl, range) {
   wrapNode = createWrapperFunction(wrapperEl, range)
 
   nodes = getRangeTextNodes(range)
-  
+
   nodes = nodes.map(wrapNode);
   return nodes
 }
@@ -245,8 +288,12 @@ export function setSelectionBetweenTwoNodes(firstFlag, lastFlag) {
   [firstFlag, lastFlag].forEach(e => e.unwrap());
 }
 export function setSelectionFlags(firstElement, LastElement) {
+  const selection  = window.getSelection();
   const firstFlag = document.createElement('text-selection');
+  firstFlag.setAttribute('zero-space',firstElement.textContent.length  === 0)
   const lastFlag = document.createElement('text-selection');
+  lastFlag.setAttribute('zero-space',LastElement.textContent.length === 0)
+
   firstElement.prepend(firstFlag); //Set flag the first
   LastElement.appendChild(lastFlag); //Set Flag at last
   return { firstFlag, lastFlag };
