@@ -1,10 +1,12 @@
 import {
-    Ranger, wrapRangeWithElement,
+    wrapRangeWithElement,
     setSelectionFlags,
     setSelectionBetweenTwoNodes,
-    setCaretAt,
     getTextNodes,
-    getCaretCharacterOffsetWithin
+    createInnerWrapperElement,
+    wrapRangeWithBlockElement,
+    pasteHtmlAtCaret,
+    setCaretAt
 } from "./services/range.service";
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
@@ -94,17 +96,16 @@ export default class Core {
         }
     }
     /**
-        * @param {String} key - key of css 
-        *  @param {String} value - value of css
-        *  @param {(Object | String)} Modes - mode from Modes => Extend or Toggle
-        *  @param {string} Modes.Extend - override style
-        *  @param {string} Modes.toggle - toggle style
-        *  @param {Object} [options] - options 
-        */
+    * @param {String} key - key of css 
+    *  @param {String} value - value of css
+    *  @param {(Object | String)} Modes - mode from Modes => Extend or Toggle
+    *  @param {string} Modes.Extend - override style
+    *  @param {string} Modes.toggle - toggle style
+    *  @param {Object} [options] - options 
+    */
     execCmd(key, value, mode, options) {
 
         this.connectedElement.normalize();
-        let caretElement;
         this.ELEMENTS = [];
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
@@ -112,33 +113,24 @@ export default class Core {
         if (!this.isValid(key, value)) {
             return;
         }
-        if (!options.selection) {
-            const selectedElement = getSelectedElement();
-            if (selectedElement) {
-                caretElement = {};
-                caretElement.el = selectedElement;
-                caretElement.index = getCaretCharacterOffsetWithin(selectedElement);
-            }
-        }
 
+        //==============review===============//
         if (options.target === "block") {
-            let nodes = wrapRangeWithElement();
-            nodes.map(el => {
-                const block = el.closest('p');
-                if ((block && block === this.connectedElement) || !block) {
-                    const newBlock = this.createWrapperElement(el, { el: "p" });
-                    this.ELEMENTS.push(newBlock);
-                } else {
-                    this.ELEMENTS.push(block);
-                }
-            });
+            const dataResult = wrapRangeWithBlockElement(this.connectedElement);
+            this.ELEMENTS = dataResult.blocks;
+            if (!options.selection) {
+                const lastNode = dataResult.nodes[dataResult.nodes.length - 1];
+                if (lastNode)
+                    this.caretHolder = this.createCaretPlacement(lastNode);
+            }
         } else {
             this.ELEMENTS = wrapRangeWithElement();
+            if (!options.selection) {
+                const lastNode = this.ELEMENTS[this.ELEMENTS.length - 1];
+                if (lastNode)
+                    this.caretHolder = this.createCaretPlacement(lastNode);
+            }
         }
-
-
-
-
 
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
@@ -161,12 +153,22 @@ export default class Core {
             if (sel.removeAllRanges) {
                 sel.removeAllRanges();
             }
-            if (caretElement.el && caretElement.index) {
-                setCaretAt(caretElement.el, caretElement.index);
+            if (this.caretHolder) {
+                setCaretAt(this.caretHolder, this.caretHolder.textContent.length);
+                this.caretHolder.unwrap();
+                this.caretHolder = null;
             }
         }
         this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
     }
+    createCaretPlacement(atNode) {
+        if (!atNode) return null;
+        const caretHolder = document.createElement('text-selection');
+        caretHolder.setAttribute('zero-space', 'true');
+        atNode.appendChild(caretHolder);
+        return caretHolder;
+    }
+
     dispatchEvent(event, payload) {
         if (this.events[event])
             this.events[event](payload);
@@ -176,7 +178,7 @@ export default class Core {
         //TODO: use the catch from options to detect more than one style or tag element.
         let elementToSplit = element.closest(`[style*='${value}']`);
         if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
-            let innerSpan = this.createWrapperElement(elementToSplit);
+            let innerSpan = createInnerWrapperElement(elementToSplit);
             elementToSplit.style[key] = null;
             innerSpan.style[key] = value;
             return this.onToggle(element, key, value, false);
@@ -189,14 +191,6 @@ export default class Core {
             // if there is no split elements, its error!
             if (splitElements) {
                 toggleStyle(splitElements.center, key, value, OnOff);
-                if (this.ELEMENTS.length === 1 && !this.ELEMENTS[0].textContent.trim()) {
-                    splitElements.center.innerHTML += "&#8203;"
-                    const zeroSpace = document.createElement("span");
-                    zeroSpace.innerHTML = "&#8203;"
-                    splitElements.center.appendChild(zeroSpace);
-                    setCaretAt(zeroSpace);
-                }
-
             } else {
                 console.error('splitHTML return null');
             }
@@ -217,7 +211,7 @@ export default class Core {
     onExtend(element, key, value) {
         const elementToSplit = element.closest(`[style*='${key}']`);
         if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
-            let innerSpan = this.createWrapperElement(elementToSplit);
+            let innerSpan = createInnerWrapperElement(elementToSplit);
             innerSpan.style[key] = elementToSplit.style[key];
             elementToSplit.style[key] = null;
             return this.onExtend(element, key, value);
@@ -238,13 +232,7 @@ export default class Core {
 
 
 
-    createWrapperElement(element, options) {
-        if (typeof (options) !== "object") options = {};
-        let innerSpan = document.createElement(options.el || "span");
-        Array.from(element.childNodes).forEach(child => innerSpan.appendChild(child));
-        element.appendChild(innerSpan);
-        return innerSpan;
-    }
+
 
     isValid(key, value) {
         if (!this.connectedElement) {
