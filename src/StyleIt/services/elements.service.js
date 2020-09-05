@@ -1,5 +1,5 @@
 import { getStyle, JsonObjectToStyleString } from "./style.service";
-import { Types } from '../constants/elementTypes';
+import { TYPES } from '../constants/elementTypes';
 import Levels from '../constants/Levels.json';
 
 export function getSelectedElement() {
@@ -29,37 +29,24 @@ export function JsonToElement(jsonObject, parentElement) {
         //TODO: other attrs...
     }
     const createHtmlElement = (jsElement) => {
-        const nodeType = Types[jsElement.tag];
+        const nodeType = jsElement.tag;
         let element;
         let isShouldRenderAttrs;
         switch (nodeType) {
-            case Types["#text"]:
+            case TYPES["#text"]:
                 element = document.createTextNode(jsElement.textContent);
                 break;
-            case Types.A:
+            case TYPES.A:
                 element = document.createElement(nodeType);
                 element.href = jsElement.href;
                 element.target = jsElement.target;
                 break;
-            case Types.SPAN:
-            case Types.DIV:
-            case Types.P:
-            case Types.CODE:
-            case Types.PRE:
-            case Types.H1:
-            case Types.H2:
-            case Types.H3:
-            case Types.H4:
-            case Types.H5:
-            case Types.H6:
-                element = document.createElement(nodeType);
-                isShouldRenderAttrs = true;
-                break;
-            case Types.BR:
+            case TYPES.BR:
                 element = document.createElement(nodeType);
                 break;
             default:
-                console.log("this tag element is not on the valids elements", nodeType)
+                element = document.createElement(nodeType);
+                isShouldRenderAttrs = true;
                 break;
         }
         if (isShouldRenderAttrs && element) {
@@ -84,9 +71,14 @@ export function JsonToElement(jsonObject, parentElement) {
     return parentElement;
 }
 export function elementToJson(node, level) {
+    
     if (typeof (level) !== "number") level = 0;
-    const nodeType = Types[node.nodeName];
-
+    const nodeType = node.nodeName;
+    if(nodeType === "UL"){
+        debugger
+    }
+    console.log(nodeType)
+    let isShouldRenderAttrs = true;
     let json = {};
     let isValid = true;
 
@@ -96,46 +88,54 @@ export function elementToJson(node, level) {
     }
 
     switch (nodeType) {
-        case Types["#text"]:
+        case TYPES["#text"]:
             json.tag = nodeType;
             json.textContent = node.textContent.replace(/\u200B/g, '');
+            isShouldRenderAttrs = false;
             //question: replace \n ?
             if (!json.textContent.trim()) isValid = false;
             break;
-        case Types.A:
+        case TYPES.A:
             json.tag = nodeType;
             json.href = node.href;
             json.target = node.target;
             break;
-        case Types.SPAN:
-        case Types.DIV:
-        case Types.P:
-        case Types.CODE:
-        case Types.PRE:
-        case Types.H1:
-        case Types.H2:
-        case Types.H3:
-        case Types.H4:
-        case Types.H5:
-        case Types.H6:
+        // case TYPES.SPAN:
+        // case TYPES.DIV:
+        // case TYPES.P:
+        // case TYPES.CODE:
+        // case TYPES.PRE:
+        // case TYPES.H1:
+        // case TYPES.H2:
+        // case TYPES.H3:
+        // case TYPES.H4:
+        // case TYPES.H5:
+        // case TYPES.H6:
+        //     json.tag = nodeType;
+        //     break;
+        case TYPES.BR:
             json.tag = nodeType;
+            isShouldRenderAttrs = false;
             break;
         default:
-            console.log("this tag element is not on the valids elements", node.nodeName)
+            json.tag = nodeType;
             //TODO: should we unwrap this node ? 
             break;
     }
     if (!isValid) return null;
-    //TODO: get attrs 
-    const style = getStyle(node);
-    if (Object.keys(style).length > 0) {
-        json.style = style;
-    }
-    if (node.classList && node.classList.length > 0)
-        json.classList = [...node.classList];
+    if (isShouldRenderAttrs) {
+        //TODO: get attrs 
+        const style = getStyle(node);
+        if (Object.keys(style).length > 0) {
+            json.style = style;
+        }
+        if (node.classList && node.classList.length > 0)
+            json.classList = [...node.classList];
 
-    if (node.childNodes && node.childNodes.length > 0)
-        json.children = [...node.childNodes].map((cn) => elementToJson(cn, level)).filter(v => v);
+        if (node.childNodes && node.childNodes.length > 0)
+            json.children = [...node.childNodes].map((cn) => elementToJson(cn, level)).filter(v => v);
+    }
+
     return json;
 
 }
