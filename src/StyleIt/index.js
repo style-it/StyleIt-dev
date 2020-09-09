@@ -5,8 +5,8 @@ import {
     getTextNodes,
     createInnerWrapperElement,
     wrapRangeWithBlockElement,
-    pasteHtmlAtCaret,
-    setCaretAt
+    setCaretAt,
+    GetClosestBlockElement
 } from "./services/range.service";
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
@@ -15,6 +15,7 @@ import { normalizeElement, removeZeroSpace } from "./services/textEditor.service
 import Connector from './connector';
 import './components/custom/textSelected';
 import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
+
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
@@ -27,8 +28,8 @@ export default class Core {
 
         this.Connector = new Connector();
         this.modeHandlers = {
-            [Modes.Toggle]: (v, key, value, OnOff) => this.onToggle(v, key, value, OnOff),
-            [Modes.Extend]: (v, key, value) => this.onExtend(v, key, value),
+            [Modes.Toggle]: (v, key, value, options) => this.onToggle(v, key, value, options),
+            [Modes.Extend]: (v, key, value, options) => this.onExtend(v, key, value, options),
         }
         this.config = config ? Object.assign(this.__config, config) : this.__config;
         this.events = {
@@ -53,7 +54,7 @@ export default class Core {
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
-    ToggleClass(className, isON, options) {
+    ToggleClass(className, options) {
         //here
         if (typeof (className) !== "string") {
             console.warn("className must be a string..");
@@ -66,7 +67,7 @@ export default class Core {
         }
         if (!options) options = {}
         if (typeof (options.selection) !== "boolean") options.selection = true;
-        const isToggleOn = (typeof (isON) === "boolean") ? isON : elements[0].closest(`[class='${className}']`);
+        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elements[0].closest(`[class='${className}']`);
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
         } else {
@@ -140,7 +141,8 @@ export default class Core {
         let ToggleMode;//Declare toggle mode, The first element determines whether it is on or off
 
         this.ELEMENTS.forEach((element, i) => {
-            const result = this.modeHandlers[mode](element, key, value, ToggleMode);
+            options.onOff = ToggleMode;
+            const result = this.modeHandlers[mode](element, key, value, options);
             if (mode === Modes.Toggle && typeof (ToggleMode) === 'undefined')
                 ToggleMode = result;
         });
@@ -173,7 +175,11 @@ export default class Core {
         if (this.events[event])
             this.events[event](payload);
     }
-    onToggle(element, key, value, OnOff) {
+    onToggle(element, key, value, options) {
+        if(options.target === "block"){
+            console.error("Target:block will works on extend mode only");
+            return null;
+        }
         // detect if there is any parent with style to split.
         //TODO: use the catch from options to detect more than one style or tag element.
         let elementToSplit = element.closest(`[style*='${value}']`);
@@ -184,56 +190,72 @@ export default class Core {
             return this.onToggle(element, key, value, false);
         }
         if (elementToSplit && elementToSplit !== element) {
-            if (typeof (OnOff) === 'undefined')
-                OnOff = false;
+            if (typeof (options.onOff) === 'undefined')
+            options.onOff = false;
             //unbold
             const splitElements = splitHTML(element, elementToSplit);
             // if there is no split elements, its error!
             if (splitElements) {
-                toggleStyle(splitElements.center, key, value, OnOff);
+                toggleStyle(splitElements.center, key, value, options.onOff);
             } else {
                 console.error('splitHTML return null');
             }
         }
         else {
-            if (typeof (OnOff) === 'undefined' && elementToSplit) {
-                OnOff = false;
-            } else if (typeof (OnOff) === 'undefined') {
-                OnOff = true;
+            if (typeof (options.onOff) === 'undefined' && elementToSplit) {
+                options.onOff = false;
+            } else if (typeof (options.onOff) === 'undefined') {
+                options.onOff = true;
             }
-            //bold
-            toggleStyle(element, key, value, OnOff);
+            toggleStyle(element, key, value, options.onOff);
             normalizeElement(element);
         }
 
-        return OnOff;
+        return options.onOff;
     }
-    onExtend(element, key, value) {
+    onExtend(element, key, value, options) {
+        debugger
         const elementToSplit = element.closest(`[style*='${key}']`);
-        if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
-            let innerSpan = createInnerWrapperElement(elementToSplit);
-            innerSpan.style[key] = elementToSplit.style[key];
-            elementToSplit.style[key] = null;
-            return this.onExtend(element, key, value);
-        }
-        if (elementToSplit && elementToSplit !== element) {
-            const splitElements = splitHTML(element, elementToSplit);
-            if (splitElements) {
-                setStyle(splitElements.center, key, value);
-            } else {
-                console.error('splitHTML return null');
+        if (elementToSplit) {
+            if (window.getComputedStyle(elementToSplit).display === "block" && options.target === "block") {
+
             }
-        }
-        else {
+                const splitBlocks = splitHTML(element, elementToSplit);
+                if (splitBlocks) {
+                    setStyle(splitBlocks.center, key, value);
+                }
+                else if (options.target === "block") {
+                    elementToSplit.style[key] = value;
+                }
+                else if (options.target !== "block") {
+                    let innerSpan = createInnerWrapperElement(elementToSplit, { el: 'span' });
+                    setStyle(innerSpan, key, value);
+                    elementToSplit.style[key] = null;
+                    return this.onExtend(element, key, value);
+
+                }
+                else if (elementToSplit !== element) {
+                    const splitElements = splitHTML(element, elementToSplit);
+                    if (splitElements) {
+                        setStyle(splitElements.center, key, value);
+                    } else {
+                        console.error('splitHTML return null');
+                    }
+                }
+            
+        }else if (window.getComputedStyle(element).display !== "block" && options.target === "block") {
+            const blockElement = GetClosestBlockElement(element);
+            if (blockElement && blockElement.ischildOf(this.connectedElement)) {
+                setStyle(parentElement, key, value);
+            } else {
+                const wrapper = document.createElement("div");
+                parentElement.wrap(wrapper);
+                setStyle(wrapper, key, value);
+            }
+        } else {
             setStyle(element, key, value);
         }
     }
-
-
-
-
-
-
     isValid(key, value) {
         if (!this.connectedElement) {
             console.error('please use connectWith method')
