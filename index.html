@@ -9,56 +9,64 @@
 
 <body>
   <div id="root">
-    <div id="editor" contenteditable="true">
+    <div contenteditable="true" id="editor" spellcheck="false">
       <h1>TextEditor-API concepts</h1>
-      <p>
-        StyleIt.js is a simple text editor API built for Developers. <br /> It
+      <p>StyleIt.js is a simple text editor API built for Developers. <br> It
         outputs clean data in JSON instead of heavy HTML-markup for efficent data
-        saving. <br /> More important StyleIt.js knows how to use ANY Css rule.
-      </p>
-
+        saving. <br> More important StyleIt.js knows how to use ANY Css rule.</p>
       <ul>
-        <li>Clean data output</li>
-        <li>Use of any CSS rules</li>
-        <li>Style with classes</li>
+        <li>1. Clean data output</li>
+        <li>2. Use of any CSS rules</li>
+        <li>3. Style with classes</li>
       </ul>
+      <h1>Getting started</h1>
+      <h3>Installation</h3>
+
+      1. Node package 2. Source from CDN 3. Local file from project
+
       <h3>Node module</h3>
+      <h6>Install the package via npm</h6>
       <ul>
-        <li>
-          <p> npm i styleit-api --save </p>
-        </li>
+        <li><code>npm i styleit-api --save</code></li>
         <li>
           <p>Include the module in your application</p>
+          <pre><code>import StyelIt from 'styleit-api';</code></pre>
         </li>
-      </ul>
+      </ul><br><br><br> ##Initialization
+      <p>In order to inizialize StyleIt, you need to pass the Element Object or
+        Element Id to the StyleIt constracture. Note that StyleIt will be
+        available only on this element and its child nodes.</p>
       <div>
-        <br />
-        <br />
-      </div>
+        <pre><code>import StyleIt from 'styleit-api';
+<br><br><span style="margin-top: 20px;">const styleIt = new  StyleIt(*Element Object or Element Id*);</span></code></pre>
+        <br><br></div>
 
-
-      <table style="width:100%">
-        <tr>
-          <th>Mode</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-        <tr>
-          <td>Toggle</td>
-          <td>String</td>
-          <td>
-            Style elements with on/off functionality => like
-            bold,underline,italic
-          </td>
-        </tr>
-        <tr>
-          <td>Extend</td>
-          <td>String</td>
-          <td>
-            Only extends the currect style => font-size, color, backgorund
-          </td>
-        </tr>
+      ##StyleIt provides two working modes
+      <pre><code>import StyleIt from 'styleit-api';
+cont modes = StyleIt.Modes</code></pre>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <th>Mode</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>Toggle</td>
+            <td>String</td>
+            <td>Style elements with on/off functionality like
+              bold,underline,italic</td>
+          </tr>
+          <tr>
+            <td>Extend</td>
+            <td>String</td>
+            <td>Only extends the currect style font-size, color, backgorund</td>
+          </tr>
+        </tbody>
       </table>
+      <div>Note that the Extend mod will not cancel the style when selecting the
+        same rule twice.</div><br>
+      ##How to use
     </div>
   </div>
   <style>
@@ -84,10 +92,10 @@
           const config = {
             onInspect: (styles) => {
               inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
-            },  
-             //TODO:Rules
+            },
+            //TODO:Rules
             rules: {
-              filter:[{el:"DIV",replaceWith:"P"}]
+              filter: [{ el: "DIV", replaceWith: "P" }]
             }
           }
           const styleIt = new styleit('editor', config);
@@ -95,16 +103,17 @@
           const btns = [
             { text: "toggle class", onclick: () => styleIt.ToggleClass("test") },
             {
-              text: "B:Block", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+              text: "B:Block => will not work", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
                 target: "block",
-                selection: false
               })
             },
             { text: "B", onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle) },
 
-            { text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle,{
-              selection:false
-            }) },
+            {
+              text: "U", onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
+                selection: true
+              })
+            },
             { text: "50px", onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend) },
             { text: "30px", onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend) },
             {
@@ -117,9 +126,9 @@
             { text: "yellow", onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend) },
             { text: "blue", onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend) },
             { text: "green", onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend) },
-            { text: "left", onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend, { target: 'block', selection: false }) },
-            { text: "center", onclick: () => styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend, { target: 'block', selection: false }) },
-            { text: "right", onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend, { target: 'block', selection: false }) },
+            { text: "left", onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend, { target: 'block' }) },
+            { text: "center", onclick: () => styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend, { target: 'block' }) },
+            { text: "right", onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend, { target: 'block' }) },
           ]
           btns.forEach(btn => {
             const _btn = root.addElement('button');
