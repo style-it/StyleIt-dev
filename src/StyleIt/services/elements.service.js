@@ -74,9 +74,7 @@ export function elementToJson(node, level) {
     
     if (typeof (level) !== "number") level = 0;
     const nodeType = node.nodeName;
-    if(nodeType === "UL"){
-        debugger
-    }
+
     console.log(nodeType)
     let isShouldRenderAttrs = true;
     let json = {};
