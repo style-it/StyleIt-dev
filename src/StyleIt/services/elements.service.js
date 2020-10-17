@@ -1,5 +1,4 @@
 import { getStyle, JsonObjectToStyleString } from "./style.service";
-import { TYPES } from '../constants/elementTypes';
 import Levels from '../constants/Levels.json';
 
 export function getSelectedElement() {
@@ -33,10 +32,10 @@ export function JsonToElement(jsonObject, parentElement) {
         let element;
         let isShouldRenderAttrs;
         switch (nodeType) {
-            case TYPES["#text"]:
+            case "#text":
                 element = document.createTextNode(jsElement.textContent);
                 break;
-            case TYPES.A:
+            case "A":
                 element = document.createElement(nodeType);
                 element.href = jsElement.href;
                 element.target = jsElement.target;
@@ -81,14 +80,14 @@ export function elementToJson(node, level) {
     }
 
     switch (nodeType) {
-        case TYPES["#text"]:
+        case "#text":
             json.tag = nodeType;
             json.textContent = node.textContent.replace(/\u200B/g, '');
             isShouldRenderAttrs = false;
             //question: replace \n ?
             if (!json.textContent.trim()) isValid = false;
             break;
-        case TYPES.A:
+        case "A":
             json.tag = nodeType;
             json.href = node.href;
             json.target = node.target;
