@@ -65,7 +65,7 @@ export default class Core {
         if (elements.length === 0) {
             return;
         }
-        if (!options) options = {}
+        if (!options) options = {};
         if (typeof (options.selection) !== "boolean") options.selection = true;
         const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elements[0].closest(`[class='${className}']`);
         if (!isToggleOn) {
@@ -176,7 +176,8 @@ export default class Core {
             let innerSpan = createInnerWrapperElement(elementToSplit);
             elementToSplit.style[key] = null;
             innerSpan.style[key] = value;
-            return this.onToggle(element, key, value, false);
+            options.onOff = false;
+            return this.onToggle(element, key, value, options);
         }
         if (elementToSplit && elementToSplit !== element) {
             if (typeof (options.onOff) === 'undefined')
@@ -283,7 +284,7 @@ export default class Core {
                 createInlineStyle(blockElement);
                 // Array.from(blockElement.querySelectorAll("span")).forEach(el=>el.style[key] = value);
             } else {
-                console.warn("no block founded to style..");
+                this.createBlockElAndStyleIt(key, value, element);
             }
 
         } else {
@@ -292,12 +293,15 @@ export default class Core {
                 blockElement.style[key] = value;
                 Array.from(blockElement.querySelectorAll(`[style*='${key}']`)).forEach(el => el.style[key] = null);
             }else{
-                const pargh = document.createElement("p");
-                pargh.style[key] = value;
-                element.wrap(pargh);
-
+                this.createBlockElAndStyleIt(key, value, element);
             }
         }
+    }
+
+    createBlockElAndStyleIt(key, value, element) {
+        const pargh = document.createElement("p");
+        pargh.style[key] = value;
+        element.wrap(pargh);
     }
 
     isValid(key, value) {
