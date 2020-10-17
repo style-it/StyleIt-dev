@@ -116,21 +116,11 @@ export default class Core {
         }
 
         //==============review===============//
-        if (options.target === "block") {
-            const dataResult = wrapRangeWithBlockElement(this.connectedElement);
-            this.ELEMENTS = dataResult.blocks;
-            if (!options.selection) {
-                const lastNode = dataResult.nodes[dataResult.nodes.length - 1];
-                if (lastNode)
-                    this.caretHolder = this.createCaretPlacement(lastNode);
-            }
-        } else {
-            this.ELEMENTS = wrapRangeWithElement();
-            if (!options.selection) {
-                const lastNode = this.ELEMENTS[this.ELEMENTS.length - 1];
-                if (lastNode)
-                    this.caretHolder = this.createCaretPlacement(lastNode);
-            }
+        this.ELEMENTS = wrapRangeWithElement();
+        if (!options.selection) {
+            const lastNode = this.ELEMENTS[this.ELEMENTS.length - 1];
+            if (lastNode)
+                this.caretHolder = this.createCaretPlacement(lastNode);
         }
 
         //This is how i make the text selection, i dont know if this is good way, but it works..
@@ -176,11 +166,10 @@ export default class Core {
             this.events[event](payload);
     }
     onToggle(element, key, value, options) {
-        if(options.target === "block"){
-            console.error("Target:block will works on extend mode only");
-            return null;
-        }
-        // detect if there is any parent with style to split.
+        if (options.target === "block") {
+            this.createBlockStyle(options, element, key, value);
+        }else{
+                // detect if there is any parent with style to split.
         //TODO: use the catch from options to detect more than one style or tag element.
         let elementToSplit = element.closest(`[style*='${value}']`);
         if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
@@ -191,7 +180,7 @@ export default class Core {
         }
         if (elementToSplit && elementToSplit !== element) {
             if (typeof (options.onOff) === 'undefined')
-            options.onOff = false;
+                options.onOff = false;
             //unbold
             const splitElements = splitHTML(element, elementToSplit);
             // if there is no split elements, its error!
@@ -212,14 +201,15 @@ export default class Core {
         }
 
         return options.onOff;
+        }
+    
     }
     onExtend(element, key, value, options) {
-        debugger
-        const elementToSplit = element.closest(`[style*='${key}']`);
-        if (elementToSplit) {
-            if (window.getComputedStyle(elementToSplit).display === "block" && options.target === "block") {
-
-            }
+        if (options.target === "block") {
+            this.createBlockStyle(options, element, key, value);
+        } else {
+            const elementToSplit = element.closest(`[style*='${key}']`);
+            if (elementToSplit) {
                 const splitBlocks = splitHTML(element, elementToSplit);
                 if (splitBlocks) {
                     setStyle(splitBlocks.center, key, value);
@@ -242,20 +232,74 @@ export default class Core {
                         console.error('splitHTML return null');
                     }
                 }
-            
-        }else if (window.getComputedStyle(element).display !== "block" && options.target === "block") {
-            const blockElement = GetClosestBlockElement(element);
-            if (blockElement && blockElement.ischildOf(this.connectedElement)) {
-                setStyle(parentElement, key, value);
+
+            } else if (window.getComputedStyle(element).display !== "block" && options.target === "block") {
+                const blockElement = GetClosestBlockElement(element);
+                if (blockElement && blockElement.ischildOf(this.connectedElement)) {
+                    setStyle(parentElement, key, value);
+                } else {
+                    const wrapper = document.createElement("div");
+                    parentElement.wrap(wrapper);
+                    setStyle(wrapper, key, value);
+                }
             } else {
-                const wrapper = document.createElement("div");
-                parentElement.wrap(wrapper);
-                setStyle(wrapper, key, value);
+                setStyle(element, key, value);
             }
+        }
+
+    }
+    createBlockStyle(options, element, key, value) {
+        const findBlock = (element) => {
+            const computed = window.getComputedStyle(element);
+            if (computed && computed.display === "block") {
+                return element;
+            } else if (element.parentNode && element.parentNode !== this.connectedElement) {
+                return findBlock(element.parentNode);
+            }
+        };
+        if (options.as === "inline") {
+            let blockElement = findBlock(element);
+            if (blockElement) {
+                const wrapTextNodeWithAppendStyle = (node) => {
+                    const span = document.createElement("span");
+                    span.style[key] = value;
+                    node.wrap(span);
+                };
+                const createInlineStyle = (parentNode) => {
+                    parentNode.style[key] = null;
+                    Array.from(parentNode.childNodes).forEach(node => {
+                        if (node.nodeType === 3) {
+                            wrapTextNodeWithAppendStyle(node);
+                        } else if (node.nodeType === 1 && node.nodeName !== "BR") {
+                            const computed = window.getComputedStyle(node);
+                            if (computed.display !== "inline") {
+                                createInlineStyle(node);
+                            } else {
+                                node.style[key] = value;
+                            }
+                        }
+                    });
+                };
+                createInlineStyle(blockElement);
+                // Array.from(blockElement.querySelectorAll("span")).forEach(el=>el.style[key] = value);
+            } else {
+                console.warn("no block founded to style..");
+            }
+
         } else {
-            setStyle(element, key, value);
+            let blockElement = findBlock(element);
+            if (blockElement) {
+                blockElement.style[key] = value;
+                Array.from(blockElement.querySelectorAll(`[style*='${key}']`)).forEach(el => el.style[key] = null);
+            }else{
+                const pargh = document.createElement("p");
+                pargh.style[key] = value;
+                element.wrap(pargh);
+
+            }
         }
     }
+
     isValid(key, value) {
         if (!this.connectedElement) {
             console.error('please use connectWith method')
