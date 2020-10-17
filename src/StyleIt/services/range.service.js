@@ -294,9 +294,13 @@ export function GetClosestBlockElement(element) {
     nodes = nodes.map(wrapNode);
     return nodes
   }
-  export function setSelectionBetweenTwoNodes(firstFlag, lastFlag) {
-    document.getSelection().setBaseAndExtent(firstFlag, 0, lastFlag, lastFlag.childNodes.length);
-    [firstFlag, lastFlag].forEach(e => e.unwrap());
+  export function setSelectionBetweenTwoNodes(firstFlag, lastFlag,options = {}) {
+     const _options = {remove:true};
+     Object.assign(_options,options);
+        document.getSelection().setBaseAndExtent(firstFlag, 0, lastFlag, lastFlag.childNodes.length);
+        if(_options.remove){
+          [firstFlag, lastFlag].forEach(e => e.unwrap());
+        }
   }
   export function setSelectionFlags(firstElement, LastElement) {
     const selection = window.getSelection();
