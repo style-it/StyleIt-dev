@@ -16,6 +16,11 @@
   }
   #root{
     margin-top: 140px;
+  
+  }
+  #editor{
+    min-height: 100px;
+    background:rgb(240, 238, 238);
   }
 </style>
 
@@ -122,9 +127,10 @@ cont modes = StyleIt.Modes</code></pre>
               onclick: () => styleIt.ToggleClass("test")
             },
             {
-              text: "B:Block => will not work",
+              text: "B:Block",
               onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
                 target: "block",
+                as:"inline"
               })
             },
             {
@@ -150,7 +156,7 @@ cont modes = StyleIt.Modes</code></pre>
               text: "30px:Block",
               onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend, {
                 target: "block",
-                selection: false
+                as:"inline"
               })
             },
             {
