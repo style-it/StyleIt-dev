@@ -41,9 +41,6 @@ export function JsonToElement(jsonObject, parentElement) {
                 element.href = jsElement.href;
                 element.target = jsElement.target;
                 break;
-            case TYPES.BR:
-                element = document.createElement(nodeType);
-                break;
             default:
                 element = document.createElement(nodeType);
                 isShouldRenderAttrs = true;
@@ -74,8 +71,6 @@ export function elementToJson(node, level) {
     
     if (typeof (level) !== "number") level = 0;
     const nodeType = node.nodeName;
-
-    console.log(nodeType)
     let isShouldRenderAttrs = true;
     let json = {};
     let isValid = true;
@@ -97,23 +92,6 @@ export function elementToJson(node, level) {
             json.tag = nodeType;
             json.href = node.href;
             json.target = node.target;
-            break;
-        // case TYPES.SPAN:
-        // case TYPES.DIV:
-        // case TYPES.P:
-        // case TYPES.CODE:
-        // case TYPES.PRE:
-        // case TYPES.H1:
-        // case TYPES.H2:
-        // case TYPES.H3:
-        // case TYPES.H4:
-        // case TYPES.H5:
-        // case TYPES.H6:
-        //     json.tag = nodeType;
-        //     break;
-        case TYPES.BR:
-            json.tag = nodeType;
-            isShouldRenderAttrs = false;
             break;
         default:
             json.tag = nodeType;
