@@ -1,6 +1,8 @@
 import DomUtilis from "./utilis/DomUtilis";
 import CopyPaste from "./services/copyPaste/copyPaste.service";
 import Inpsector from "./services/Inspector/Inspector.service";
+import KeyPress from "./services/keyPress/KeyPress";
+
 import { elementToJson, JsonToElement } from "./services/elements.service";
 
 //TODO:review
@@ -33,7 +35,8 @@ export default class Connector {
     usePlugins(element, options) {
         return {
             copyPaste: new CopyPaste(element),
-            inspector: new Inpsector(element, options.onInspect)
+            inspector: new Inpsector(element, options.onInspect),
+            keyPress: new KeyPress(element, options.onKeyPress)
         }
     }
     RenderInnerHTML(element) {
@@ -46,19 +49,18 @@ export default class Connector {
             })
         }
         const jsonContent = elementToJson(element);
-        
+
         const renderedElement = JsonToElement(jsonContent);
-        
+
         emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
     }
-    Destroy(){
-      for (const key in this.plugins) {
-          if (this.plugins.hasOwnProperty(key)) {
-              const plugin = this.plugins[key];
-              debugger
-              plugin.Destroy();   
-          }
-      }  
+    Destroy() {
+        for (const key in this.plugins) {
+            if (this.plugins.hasOwnProperty(key)) {
+                const plugin = this.plugins[key];
+                plugin.Destroy();
+            }
+        }
     }
 }
 
