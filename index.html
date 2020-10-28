@@ -14,13 +14,15 @@
     transform: translate(-50%, 0);
     background: #fff;
   }
-  #root{
+
+  #root {
     margin-top: 140px;
-  
+
   }
-  #editor{
+
+  #editor {
     min-height: 100px;
-    background:rgb(240, 238, 238);
+    background: rgb(240, 238, 238);
   }
 </style>
 
@@ -30,7 +32,7 @@
 
     </div>
     <div contenteditable="true" id="editor" spellcheck="false">
-      <h1>TextEditor-API concepts</h1>
+      <b>TextEditor-API concepts</b>
       <p>StyleIt.js is a simple text editor API built for Developers. <br> It
         outputs clean data in JSON instead of heavy HTML-markup for efficent data
         saving. <br> More important StyleIt.js knows how to use ANY Css rule.</p>
@@ -101,7 +103,6 @@ cont modes = StyleIt.Modes</code></pre>
   </div>
   <script>
     (function () {
-
       const init = () => {
         window.addEventListener('DOMContentLoaded', (event) => {
           const root = document.querySelector('#textEditor');
@@ -109,6 +110,14 @@ cont modes = StyleIt.Modes</code></pre>
           document.body.appendChild(root);
           //================================================================
           const config = {
+            onKeyPress: [
+              ["b", () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+                unWrap: ["b"]
+              })],
+              ["u", () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
+                unWrap: ["u"]
+              })]
+            ],
             onInspect: (styles) => {
               inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
             },
@@ -123,76 +132,80 @@ cont modes = StyleIt.Modes</code></pre>
           const styleIt = new styleit('editor', config);
           //================================================================
           const btns = [{
-              text: "toggle class",
-              onclick: () => styleIt.ToggleClass("test")
-            },
-            {
-              text: "B:Block",
-              onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
-                target: "block",
-                as:"inline"
-              })
-            },
-            {
-              text: "B",
-              onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle)
-            },
+            text: "toggle class",
+            onclick: () => styleIt.ToggleClass("test")
+          },
+          {
+            text: "B:Block",
+            onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+              target: "block",
+              as: "inline"
+            })
+          },
+          {
+            text: "B",
+            onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+              unWrap: ["b"]
+            })
+          },
 
-            {
-              text: "U",
-              onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
-                selection: true
-              })
-            },
-            {
-              text: "50px",
-              onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend)
-            },
-            {
-              text: "30px",
-              onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend)
-            },
-            {
-              text: "30px:Block",
-              onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend, {
-                target: "block",
-                as:"inline"
-              })
-            },
-            {
-              text: "Red",
-              onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend)
-            },
-            {
-              text: "yellow",
-              onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend)
-            },
-            {
-              text: "blue",
-              onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend)
-            },
-            {
-              text: "green",
-              onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend)
-            },
-            {
-              text: "left",
-              onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend, {
+          {
+            text: "U",
+            onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
+              selection: true
+            })
+          },
+          {
+            text: "50px",
+            onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend)
+          },
+          {
+            text: "30px",
+            onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend)
+          },
+          {
+            text: "30px:Block",
+            onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend, {
+              target: "block",
+              as: "inline"
+            })
+          },
+          {
+            text: "Red",
+            onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend)
+          },
+          {
+            text: "yellow",
+            onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend)
+          },
+          {
+            text: "blue",
+            onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend)
+          },
+          {
+            text: "green",
+            onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend)
+          },
+          {
+            text: "left",
+            onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend, {
+              target: 'block'
+            })
+          },
+          {
+            text: "center",
+            onclick: () => {
+              styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend, {
                 target: 'block'
               })
-            },
-            {
-              text: "center",
-              onclick: () => styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend, {
-                target: 'block'
-              })
-            },
-            {
-              text: "right",
-              onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend, {
-                target: 'block'
-              })
-            },
+            }
+          },
+          {
+            text: "right",
+            onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend, {
+              target: 'block'
+            })
+          },
           ]
           btns.forEach(btn => {
             const _btn = root.addElement('button');
