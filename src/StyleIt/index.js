@@ -114,7 +114,7 @@ export default class Core {
         if (!this.isValid(key, value)) {
             return;
         }
-
+      
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
         if (!options.selection) {
@@ -123,6 +123,16 @@ export default class Core {
                 this.caretHolder = this.createCaretPlacement(lastNode);
         }
 
+        if (options.unWrap && Array.isArray(options.unWrap)) {
+            options.unWrap.forEach(selector=>{
+                this.ELEMENTS.forEach(txtNode=>{
+                    const closestElementToUnWrap = txtNode.closest(selector);
+                    if(closestElementToUnWrap){
+                        closestElementToUnWrap.unwrap();
+                    }
+                })
+            })
+        }
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
         //======================================================================//
@@ -168,42 +178,42 @@ export default class Core {
     onToggle(element, key, value, options) {
         if (options.target === "block") {
             this.createBlockStyle(options, element, key, value);
-        }else{
-                // detect if there is any parent with style to split.
-        //TODO: use the catch from options to detect more than one style or tag element.
-        let elementToSplit = element.closest(`[style*='${value}']`);
-        if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
-            let innerSpan = createInnerWrapperElement(elementToSplit);
-            elementToSplit.style[key] = null;
-            innerSpan.style[key] = value;
-            options.onOff = false;
-            return this.onToggle(element, key, value, options);
-        }
-        if (elementToSplit && elementToSplit !== element) {
-            if (typeof (options.onOff) === 'undefined')
+        } else {
+            // detect if there is any parent with style to split.
+            //TODO: use the catch from options to detect more than one style or tag element.
+            let elementToSplit = element.closest(`[style*='${value}']`);
+            if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
+                let innerSpan = createInnerWrapperElement(elementToSplit);
+                elementToSplit.style[key] = null;
+                innerSpan.style[key] = value;
                 options.onOff = false;
-            //unbold
-            const splitElements = splitHTML(element, elementToSplit);
-            // if there is no split elements, its error!
-            if (splitElements) {
-                toggleStyle(splitElements.center, key, value, options.onOff);
-            } else {
-                console.error('splitHTML return null');
+                return this.onToggle(element, key, value, options);
             }
-        }
-        else {
-            if (typeof (options.onOff) === 'undefined' && elementToSplit) {
-                options.onOff = false;
-            } else if (typeof (options.onOff) === 'undefined') {
-                options.onOff = true;
+            if (elementToSplit && elementToSplit !== element) {
+                if (typeof (options.onOff) === 'undefined')
+                    options.onOff = false;
+                //unbold
+                const splitElements = splitHTML(element, elementToSplit);
+                // if there is no split elements, its error!
+                if (splitElements) {
+                    toggleStyle(splitElements.center, key, value, options.onOff);
+                } else {
+                    console.error('splitHTML return null');
+                }
             }
-            toggleStyle(element, key, value, options.onOff);
-            normalizeElement(element);
+            else {
+                if (typeof (options.onOff) === 'undefined' && elementToSplit) {
+                    options.onOff = false;
+                } else if (typeof (options.onOff) === 'undefined') {
+                    options.onOff = true;
+                }
+                toggleStyle(element, key, value, options.onOff);
+                normalizeElement(element);
+            }
+
+            return options.onOff;
         }
 
-        return options.onOff;
-        }
-    
     }
     onExtend(element, key, value, options) {
         if (options.target === "block") {
@@ -292,7 +302,7 @@ export default class Core {
             if (blockElement) {
                 blockElement.style[key] = value;
                 Array.from(blockElement.querySelectorAll(`[style*='${key}']`)).forEach(el => el.style[key] = null);
-            }else{
+            } else {
                 this.createBlockElAndStyleIt(key, value, element);
             }
         }
