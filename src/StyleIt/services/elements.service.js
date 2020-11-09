@@ -1,6 +1,16 @@
 import { getStyle, JsonObjectToStyleString } from "./style.service";
 import Levels from '../constants/Levels.json';
 
+export  function walkTheDOM(node, func) {
+    if(!node) return null;
+    func(node);
+    node = node.firstChild;
+    while (node) {
+      walkTheDOM(node, func);
+      node = node.nextSibling;
+    }
+  }
+  
 export function getSelectedElement() {
     var node = document.getSelection();
     if (node !== null) {
