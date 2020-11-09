@@ -29,3 +29,10 @@ export function getInheirtAttributes(fromElement, toElement) {
       }
       return attributes;
   }
+  export function removeAllAttrs(element){
+      if(element && !element.attributes){
+          console.error("element not have attributes..");
+          return null;
+      }
+    Array.from(element.attributes).forEach(attr=>element.removeAttribute(attr.nodeName))
+  }
