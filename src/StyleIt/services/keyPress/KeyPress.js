@@ -16,9 +16,9 @@ export default class KeyPress {
 
 
         this.keypress = (e) => {
-            if (e.ctrlKey && e.key !== "Control") {
+            if (e.ctrlKey) {
                 this.keys.forEach(key => {
-                    if (Array.isArray(key) && key.length === 2 && key[0] === e.key) {
+                    if (Array.isArray(key) && key.length === 2 && key[0] === e.keyCode && typeof(key[1]) === "function") {
                         e.preventDefault();
                         key[1]();
                     }
