@@ -111,11 +111,15 @@ cont modes = StyleIt.Modes</code></pre>
           //================================================================
           const config = {
             onKeyPress: [
-              ["b", () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+              [66, () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
                 unWrap: ["b"]
               })],
-              ["u", () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
+              [85, () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
                 unWrap: ["u"]
+              }),
+              ],
+              [73, () => styleIt.ExecCmd("font-style", "italic", styleIt.Modes.Toggle, {
+                unWrap: ["i"]
               })]
             ],
             onInspect: (styles) => {
