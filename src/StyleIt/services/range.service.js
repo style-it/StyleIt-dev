@@ -54,10 +54,10 @@ export function GetClosestBlockElement(element) {
     }
     return elements;
   }
-  export function wrapRangeWithElement() {
+  export function wrapRangeWithElement(wrapTag) {
     const ranges = getRanges();
     return ranges.map(r => {
-      return wrapRangeText(undefined, r);
+      return wrapRangeText(wrapTag, r);
     }).flat();
   }
   export function getRanges() {
