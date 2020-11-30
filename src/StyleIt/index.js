@@ -4,7 +4,6 @@ import {
     setSelectionBetweenTwoNodes,
     getTextNodes,
     createInnerWrapperElement,
-    wrapRangeWithBlockElement,
     setCaretAt,
     GetClosestBlockElement
 } from "./services/range.service";
@@ -47,15 +46,153 @@ export default class Core {
         this.Connector.Destroy();
         const self = this;
         for (const key in self) {
-            const instance = this[key];
-            instance = null;
+            this[key] = null;
+            delete this[key];
         }
-        this.connectedElement = null;
+    }
+    //TODO: review.
+    //TODO: Create normalize..
+    //question: if text was selected, should we unwrap the selectiion only ? 
+    UnLink() {
+        if (!this.isValid()) {
+            return;
+        }
+        const selection = window.getSelection();
+
+        if (selection && !selection.toString()) {
+            let elementToUnwrap;
+            const baseNode = selection.baseNode;
+            if (baseNode && baseNode.nodeType === 3 && baseNode.parentElement) {
+                elementToUnwrap = baseNode.parentElement;
+            }
+            if (baseNode && baseNode.nodeType === 1) {
+                elementToUnwrap = elementToUnwrap.closest("a");
+            }
+            if (elementToUnwrap) {
+                elementToUnwrap.unwrap();
+            }
+            return null;
+        }
+        const linkElements = wrapRangeWithElement();
+        Array.from(linkElements).forEach(r => {
+            const closestATag = r.closest("a");
+            if (closestATag) {
+                var a = splitHTML(r, closestATag, {
+                    tag: "a"
+                })
+                if (a) {
+                    a.center.unwrap();
+                }
+            }
+            Array.from(r.querySelectorAll("a")).forEach(a => {
+                a.unwrap();
+            });
+            r.unwrap();
+        });
+        const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
+        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+    }
+    //TODO: review
+    //TODO: merge a tags..
+    //TODO: remove a childs
+    //TODO: move function to Link.service.js
+    Link(options = {}) {
+        if (!options || (options && !options.href) ||  !this.isValid()) {
+            return;
+        }
+        const targets = {
+            _blank: "_blank",
+            _self: "_self",
+            _parent: "_parent",
+            _top: "_top"
+        }
+        const resetURL = (src) => {
+            src = src.replace(/https:/g, '');
+            src = src.replace(/http:/g, '');
+            src = src.replace(/mailto:/g, '');
+            src = src.replace(/tel:/g, '');
+            src = src.replace(/\//g, '');
+            return src;
+        }
+        if (window.getSelection && !window.getSelection().toString()) {
+            console.warn("no text selected..");
+            return null;
+        }
+        const unwrapAtags = (linkElements) => {
+            linkElements.forEach(link => {
+                Array.from(link.querySelectorAll("a")).forEach(aTag => aTag.unwrap());
+                const closestATag = link.parentElement ? link.parentElement.closest("a") : null;
+                if (closestATag) {
+                    var a = splitHTML(link, closestATag, {
+                        tag: "a"
+                    });
+                    if (a) {
+                        a.center.unwrap();
+                    }
+                    // closestATag.unwrap();
+                }
+            });
+        }
+        const setTargetToTag = (linkElements, renderedLink, _target) => {
+            linkElements.forEach(aTag => {
+                aTag.href = renderedLink;
+                if (_target) {
+                    aTag.setAttribute("target", _target);
+                }
+            });
+        }
+        const setProtocol = (_protocol, newURL) => {
+            _protocol = _protocol.replace(/:/g, "");
+            _protocol = _protocol.replace(/\/\//g, "");
+            _protocol += ":";
+            if (_protocol.includes("http")) {
+                _protocol += "//";
+            } else {
+            }
+            newURL.push(_protocol);
+            return _protocol;
+        }
+        const createTempLinkElement = (href) => {
+            const Atag = document.createElement("a");
+            Atag.href = href;
+            return Atag;
+        }
+
+
+        const { href = "", protocol = "", target = "" } = options;
+
+        const linkElements = wrapRangeWithElement("a");
+        let newURL = [];
+        const Atag = createTempLinkElement(href);
+        let _href = resetURL(href.trim());
+
+        let _protocol = protocol.trim() || Atag.protocol;
+        let _target = null;
+        const testTarget = targets[target.trim().toLowerCase()];
+        if (testTarget) {
+            _target = testTarget;
+        }
+        if (_protocol.trim()) {
+            _protocol = setProtocol(_protocol, newURL);
+        }
+        if (_href) {
+            newURL.push(_href);
+        }
+        const renderedLink = newURL.join("");
+        unwrapAtags(linkElements);
+        setTargetToTag(linkElements, renderedLink, _target);
+        const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
+        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        
+        normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
     ToggleClass(className, options) {
         //here
+        if (!this.isValid()) {
+            return;
+        }
         if (typeof (className) !== "string") {
             console.warn("className must be a string..");
             return null;
@@ -105,16 +242,16 @@ export default class Core {
     *  @param {Object} [options] - options 
     */
     execCmd(key, value, mode, options) {
-
+        if (!this.isValid() || !this.isVAlidKeyValue(key, value)) {
+            return;
+        }
         this.connectedElement.normalize();
         this.ELEMENTS = [];
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
         if (typeof (options.selection) !== "boolean") options.selection = true;
-        if (!this.isValid(key, value)) {
-            return;
-        }
-      
+   
+
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
         if (!options.selection) {
@@ -124,10 +261,10 @@ export default class Core {
         }
 
         if (options.unWrap && Array.isArray(options.unWrap)) {
-            options.unWrap.forEach(selector=>{
-                this.ELEMENTS.forEach(txtNode=>{
+            options.unWrap.forEach(selector => {
+                this.ELEMENTS.forEach(txtNode => {
                     const closestElementToUnWrap = txtNode.closest(selector);
-                    if(closestElementToUnWrap){
+                    if (closestElementToUnWrap) {
                         closestElementToUnWrap.unwrap();
                     }
                 })
@@ -313,16 +450,15 @@ export default class Core {
         pargh.style[key] = value;
         element.wrap(pargh);
     }
-
-    isValid(key, value) {
+    isVAlidKeyValue(key,value){
+        return !!(typeof key === "string" && typeof value === "string"); 
+    }
+    isValid() {
         if (!this.connectedElement) {
-            console.error('please use connectWith method')
+            console.error('please create new instance..')
             return false;
         };
         if (this.connectedElement.contentEditable !== "true") {
-            return false;
-        }
-        if (typeof key !== "string" && typeof value !== "string") {
             return false;
         }
         var selectedElement = getSelectedElement();
