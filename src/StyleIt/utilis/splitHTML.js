@@ -4,8 +4,8 @@ import { getInheirtAttributes } from "../services/attr.service";
 import { getInheirtClassNames } from "../services/className.service";
 
 
-export function splitHTML(fromElement, toElement) {
-
+export function splitHTML(fromElement, toElement,options = {}) {
+    const {tag = "span"} = options;
     if (!fromElement.ischildOf(toElement)) {
         console.error('fromElement must be child of toElement')
         return null;
@@ -18,7 +18,7 @@ export function splitHTML(fromElement, toElement) {
         const styles = getInheirtCss(fromElement, toElement);
         const attrs = getInheirtAttributes(fromElement, toElement);
         const className = getInheirtClassNames(fromElement, toElement);
-        const template = document.createElement('span');
+        const template = document.createElement(tag);
         template.className = className.join(" ");
         for (const style in styles) {
             const value = styles[style];
