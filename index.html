@@ -33,6 +33,8 @@
     </div>
     <div contenteditable="true" id="editor" spellcheck="false">
       <b>TextEditor-API concepts</b>
+      <b></b>
+      <u></u>
       <p>StyleIt.js is a simple text editor API built for Developers. <br> It
         outputs clean data in JSON instead of heavy HTML-markup for efficent data
         saving. <br> More important StyleIt.js knows how to use ANY Css rule.</p>
@@ -216,6 +218,35 @@ cont modes = StyleIt.Modes</code></pre>
             _btn.onclick = btn.onclick;
             _btn.innerHTML = btn.text;
           });
+          const https = root.addElement("button");
+          https.innerHTML = "https://helloworld.com"
+          https.onclick = () =>{
+            styleIt.Link({
+              href:"https://helloworld.com",
+              target:"_parent"
+            })
+          }
+          const mailto = root.addElement("button");
+          mailto.innerHTML = "mailto:adilev3344@gmail.com"
+          mailto.onclick = () =>{
+            styleIt.Link({
+              href:"adilev3344@gmail.com",
+              protocol:"mailto:"
+            })
+          }
+          const tel = root.addElement("button");
+          tel.innerHTML = "tel:0505891010"
+          tel.onclick = () =>{
+            styleIt.Link({
+              href:"0505891010",
+              protocol:"tel"
+            })
+          }
+          const unLinker = root.addElement("button");
+          unLinker.innerHTML = "unLink"
+          unLinker.onclick = () =>{
+            styleIt.UnLink();
+          }
           const slider = root.addElement('input');
           slider.type = "range";
           slider.step = "1";
