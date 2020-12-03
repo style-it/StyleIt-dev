@@ -14,10 +14,12 @@ export default class StyleIt {
       this.Save = styleIt.Save;
       this.Load = styleIt.Load;
       this.Destroy = styleIt.Destroy;
+      this.On = styleIt.On;
       this.Modes = Modes;
       //========================================//
       this.ToggleClass = this.ToggleClass.bind(styleIt);
       this.ExecCmd = this.ExecCmd.bind(styleIt);
+      this.On = this.On.bind(this);
       this.Link = this.Link.bind(styleIt);
       this.UnLink = this.UnLink.bind(styleIt);
       this.Save = this.Save.bind(styleIt);
