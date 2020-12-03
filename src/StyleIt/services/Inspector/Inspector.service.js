@@ -1,6 +1,8 @@
 
 import { collectStyleFromSelectedElement } from '../style.service';
-
+import { EVENTS } from '../events/events';
+import { getSelectedElement } from '../elements.service';
+import { resetURL } from '../link.service';
 
 //TODO: review
 //question: how can we expose the collectedStyle ? 
@@ -20,6 +22,24 @@ export default class Inpsector {
             const collectedStyle = collectStyleFromSelectedElement(this.target);
             if (typeof (this.onInspect) === "function")
                 this.onInspect(collectedStyle);
+            if (typeof (EVENTS["inspect"]) === "function") {
+                EVENTS["inspect"](collectedStyle);
+            }
+            const selectedElement = getSelectedElement();
+            
+            if(selectedElement ){
+                const aTag = selectedElement.closest("a");
+                if(aTag){
+                    if(typeof(EVENTS["inspectLink"]) === "function"){
+                        EVENTS["inspectLink"]({
+                            protocol:aTag.protocol,
+                            href:resetURL(aTag.href),
+                            target:aTag.getAttribute("target") || ""
+                        });
+                    }
+                }
+            }
+
         }
         this.onKeyDown = (e) => {
             //TODO: review
