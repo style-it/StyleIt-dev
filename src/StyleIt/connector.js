@@ -25,35 +25,37 @@ export default class Connector {
             console.error('[-] =>connectWith should be element id or dom element..');
             return null;
         }
-        this.RenderInnerHTML(element);
+       const RenderInnerHTML = (element) => {
+            const emptyElement = (node) => {
+                return new Promise((resolve) => {
+                    while (node.firstElementChild) {
+                        node.firstElementChild.remove();
+                    }
+                    resolve();
+                })
+            }
+            const jsonContent = elementToJson(element);
+    
+            const renderedElement = JsonToElement(jsonContent);
+    
+            emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
+        }
+        const usePlugins = (element, options) => {
+            return {
+                copyPaste: new CopyPaste(element),
+                inspector: new Inpsector(element, options.onInspect),
+                keyPress: new KeyPress(element, options.onKeyPress)
+            }
+        }
+        RenderInnerHTML(element);
         // element.contentEditable = 'true';
-        this.plugins = this.usePlugins(element, options);
+        this.plugins = usePlugins(element, options);
         return element;
     }
     //TODO: destory events..
     //question: how to use the events ? 
-    usePlugins(element, options) {
-        return {
-            copyPaste: new CopyPaste(element),
-            inspector: new Inpsector(element, options.onInspect),
-            keyPress: new KeyPress(element, options.onKeyPress)
-        }
-    }
-    RenderInnerHTML(element) {
-        const emptyElement = (node) => {
-            return new Promise((resolve) => {
-                while (node.firstElementChild) {
-                    node.firstElementChild.remove();
-                }
-                resolve();
-            })
-        }
-        const jsonContent = elementToJson(element);
+    
 
-        const renderedElement = JsonToElement(jsonContent);
-
-        emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
-    }
     Destroy() {
         for (const key in this.plugins) {
             if (this.plugins.hasOwnProperty(key)) {
