@@ -136,6 +136,15 @@ cont modes = StyleIt.Modes</code></pre>
             }
           }
           const styleIt = new styleit('editor', config);
+         styleIt.On("inspect",(collectedStyled)=>{
+          console.log(collectedStyled);
+         });
+         styleIt.On("paste",(html)=>{
+          console.log("paste",html);
+         });
+         styleIt.On("inspectLink",(link)=>{
+          console.log("inspectLink",link);
+         });
           //================================================================
           const btns = [{
             text: "toggle class",
