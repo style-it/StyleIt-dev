@@ -14,7 +14,8 @@ import { normalizeElement, removeZeroSpace } from "./services/textEditor.service
 import Connector from './connector';
 import './components/custom/textSelected';
 import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
-
+import {EVENTS} from './services/events/events';
+import { createTempLinkElement, resetURL,TARGETS } from "./services/link.service";
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
@@ -24,7 +25,16 @@ export default class Core {
         this.__config = {
             onInspect: undefined,
         };
-
+        
+        this.On = (key,callback)=>{
+            if(typeof(key) !== "string"){
+                console.error("key must be a string..");
+            }
+            if(typeof(callback) !== "function"){
+                console.error("callback must be a function..");
+            }
+            EVENTS[key]  = callback;
+        };
         this.Connector = new Connector();
         this.modeHandlers = {
             [Modes.Toggle]: (v, key, value, options) => this.onToggle(v, key, value, options),
@@ -100,20 +110,7 @@ export default class Core {
         if (!options || (options && !options.href) ||  !this.isValid()) {
             return;
         }
-        const targets = {
-            _blank: "_blank",
-            _self: "_self",
-            _parent: "_parent",
-            _top: "_top"
-        }
-        const resetURL = (src) => {
-            src = src.replace(/https:/g, '');
-            src = src.replace(/http:/g, '');
-            src = src.replace(/mailto:/g, '');
-            src = src.replace(/tel:/g, '');
-            src = src.replace(/\//g, '');
-            return src;
-        }
+     
         if (window.getSelection && !window.getSelection().toString()) {
             console.warn("no text selected..");
             return null;
@@ -152,12 +149,7 @@ export default class Core {
             newURL.push(_protocol);
             return _protocol;
         }
-        const createTempLinkElement = (href) => {
-            const Atag = document.createElement("a");
-            Atag.href = href;
-            return Atag;
-        }
-
+    
 
         const { href = "", protocol = "", target = "" } = options;
 
@@ -168,7 +160,7 @@ export default class Core {
 
         let _protocol = protocol.trim() || Atag.protocol;
         let _target = null;
-        const testTarget = targets[target.trim().toLowerCase()];
+        const testTarget = TARGETS[target.trim().toLowerCase()];
         if (testTarget) {
             _target = testTarget;
         }
@@ -298,7 +290,11 @@ export default class Core {
                 this.caretHolder = null;
             }
         }
-        this.dispatchEvent('styleChanged', collectStyleFromSelectedElement(this.connectedElement));
+        const collectedStyles =  collectStyleFromSelectedElement(this.connectedElement);
+        if(typeof (EVENTS["inspect"]) === "function"){
+            EVENTS["inspect"](collectedStyles);
+        }
+        this.dispatchEvent('styleChanged', collectedStyles);
     }
     createCaretPlacement(atNode) {
         if (!atNode) return null;
