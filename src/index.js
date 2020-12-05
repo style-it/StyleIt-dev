@@ -1,5 +1,5 @@
 import Core from './StyleIt/index';
-import  Modes  from './StyleIt/constants/Modes.json';
+import  MODES  from './StyleIt/constants/Modes.json';
 
 export default class StyleIt {
   //expose only the relevant methods..
@@ -7,24 +7,24 @@ export default class StyleIt {
     //TODO: validate target & config..
     const styleIt = new Core(target, config);
     if (styleIt) {  
-      this.ExecCmd = styleIt.execCmd;
-      this.ToggleClass = styleIt.ToggleClass;
-      this.Link = styleIt.Link;
-      this.UnLink = styleIt.UnLink;
-      this.Save = styleIt.Save;
-      this.Load = styleIt.Load;
-      this.Destroy = styleIt.Destroy;
-      this.On = styleIt.On;
-      this.Modes = Modes;
+      this.execCmd = styleIt.execCmd;
+      this.toggleClass = styleIt.toggleClass;
+      this.link = styleIt.link;
+      this.unLink = styleIt.unLink;
+      this.save = styleIt.save;
+      this.load = styleIt.load;
+      this.destroy = styleIt.destroy;
+      this.on = styleIt.on;
+      this.MODES = MODES;
       //========================================//
-      this.ToggleClass = this.ToggleClass.bind(styleIt);
-      this.ExecCmd = this.ExecCmd.bind(styleIt);
-      this.On = this.On.bind(this);
-      this.Link = this.Link.bind(styleIt);
-      this.UnLink = this.UnLink.bind(styleIt);
-      this.Save = this.Save.bind(styleIt);
-      this.Load = this.Load.bind(styleIt);
-      this.Destroy = this.Destroy.bind(styleIt);
+      this.toggleClass = this.toggleClass.bind(styleIt);
+      this.execCmd = this.execCmd.bind(styleIt);
+      this.on = this.on.bind(this);
+      this.link = this.link.bind(styleIt);
+      this.unLink = this.unLink.bind(styleIt);
+      this.save = this.save.bind(styleIt);
+      this.load = this.load.bind(styleIt);
+      this.destroy = this.destroy.bind(styleIt);
     }
   }
 }

@@ -65,9 +65,9 @@
 <br><br><span style="margin-top: 20px;">const styleIt = new  StyleIt(*Element Object or Element Id*);</span></code></pre>
         <br><br></div>
 
-      ##StyleIt provides two working modes
+      ##StyleIt provides two working MODES
       <pre><code>import StyleIt from 'styleit-api';
-cont modes = StyleIt.Modes</code></pre>
+cont MODES = StyleIt.MODES</code></pre>
       <table style="width: 100%;">
         <tbody>
           <tr>
@@ -113,14 +113,14 @@ cont modes = StyleIt.Modes</code></pre>
           //================================================================
           const config = {
             onKeyPress: [
-              [66, () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+              [66, () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
                 unWrap: ["b"]
               })],
-              [85, () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
+              [85, () => styleIt.execCmd("text-decoration", "underline", styleIt.MODES.Toggle, {
                 unWrap: ["u"]
               }),
               ],
-              [73, () => styleIt.ExecCmd("font-style", "italic", styleIt.Modes.Toggle, {
+              [73, () => styleIt.execCmd("font-style", "italic", styleIt.MODES.Toggle, {
                 unWrap: ["i"]
               })]
             ],
@@ -136,13 +136,13 @@ cont modes = StyleIt.Modes</code></pre>
             }
           }
           const styleIt = new styleit('editor', config);
-         styleIt.On("inspect",(collectedStyled)=>{
+         styleIt.on("inspect",(collectedStyled)=>{
           console.log(collectedStyled);
          });
-         styleIt.On("paste",(html)=>{
+         styleIt.on("paste",(html)=>{
           console.log("paste",html);
          });
-         styleIt.On("inspectLink",(link)=>{
+         styleIt.on("inspectLink",(link)=>{
           console.log("inspectLink",link);
          });
           //================================================================
@@ -152,72 +152,72 @@ cont modes = StyleIt.Modes</code></pre>
           },
           {
             text: "B:Block",
-            onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+            onclick: () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
               target: "block",
               as: "inline"
             })
           },
           {
             text: "B",
-            onclick: () => styleIt.ExecCmd("font-weight", "bold", styleIt.Modes.Toggle, {
+            onclick: () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
               unWrap: ["b"]
             })
           },
 
           {
             text: "U",
-            onclick: () => styleIt.ExecCmd("text-decoration", "underline", styleIt.Modes.Toggle, {
+            onclick: () => styleIt.execCmd("text-decoration", "underline", styleIt.MODES.Toggle, {
               selection: true
             })
           },
           {
             text: "50px",
-            onclick: () => styleIt.ExecCmd("font-size", "50px", styleIt.Modes.Extend)
+            onclick: () => styleIt.execCmd("font-size", "50px", styleIt.MODES.Extend)
           },
           {
             text: "30px",
-            onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend)
+            onclick: () => styleIt.execCmd("font-size", "30px", styleIt.MODES.Extend)
           },
           {
             text: "30px:Block",
-            onclick: () => styleIt.ExecCmd("font-size", "30px", styleIt.Modes.Extend, {
+            onclick: () => styleIt.execCmd("font-size", "30px", styleIt.MODES.Extend, {
               target: "block",
               as: "inline"
             })
           },
           {
             text: "Red",
-            onclick: () => styleIt.ExecCmd("color", "red", styleIt.Modes.Extend)
+            onclick: () => styleIt.execCmd("color", "red", styleIt.MODES.Extend)
           },
           {
             text: "yellow",
-            onclick: () => styleIt.ExecCmd("color", "yellow", styleIt.Modes.Extend)
+            onclick: () => styleIt.execCmd("color", "yellow", styleIt.MODES.Extend)
           },
           {
             text: "blue",
-            onclick: () => styleIt.ExecCmd("color", "blue", styleIt.Modes.Extend)
+            onclick: () => styleIt.execCmd("color", "blue", styleIt.MODES.Extend)
           },
           {
             text: "green",
-            onclick: () => styleIt.ExecCmd("color", "green", styleIt.Modes.Extend)
+            onclick: () => styleIt.execCmd("color", "green", styleIt.MODES.Extend)
           },
           {
             text: "left",
-            onclick: () => styleIt.ExecCmd("text-align", "left", styleIt.Modes.Extend, {
+            onclick: () => styleIt.execCmd("text-align", "left", styleIt.MODES.Extend, {
               target: 'block'
             })
           },
           {
             text: "center",
             onclick: () => {
-              styleIt.ExecCmd("text-align", "center", styleIt.Modes.Extend, {
+              styleIt.execCmd("text-align", "center", styleIt.MODES.Extend, {
                 target: 'block'
               })
             }
           },
           {
             text: "right",
-            onclick: () => styleIt.ExecCmd("text-align", "right", styleIt.Modes.Extend, {
+            onclick: () => styleIt.execCmd("text-align", "right", styleIt.MODES.Extend, {
               target: 'block'
             })
           },
@@ -262,7 +262,7 @@ cont modes = StyleIt.Modes</code></pre>
           slider.value = 0;
           slider.oninput = (e) => {
             console.log(e.target.value)
-            styleIt.ExecCmd("font-size", `${e.target.value}px`, styleIt.Modes.Extend)
+            styleIt.execCmd("font-size", `${e.target.value}px`, styleIt.MODES.Extend)
           }
           root.addElement('div');
           const key = root.addElement('input');
@@ -271,7 +271,7 @@ cont modes = StyleIt.Modes</code></pre>
           const ok = root.addElement('button');
           ok.innerHTML = "go"
           ok.onclick = () => {
-            styleIt.ExecCmd(key.value, value.value, styleIt.Modes.Extend);
+            styleIt.execCmd(key.value, value.value, styleIt.MODES.Extend);
           }
 
           const inspect = root.addElement('div');
@@ -279,7 +279,7 @@ cont modes = StyleIt.Modes</code></pre>
           save.innerHTML = "Save"
           let savedData;
           save.onclick = () => {
-            savedData = styleIt.Save();
+            savedData = styleIt.save();
             inspect.innerHTML = JSON.stringify(savedData);
           }
 
@@ -287,7 +287,7 @@ cont modes = StyleIt.Modes</code></pre>
           load.innerHTML = "Load"
           load.onclick = () => {
             if (savedData)
-              styleIt.Load(savedData);
+              styleIt.load(savedData);
           }
           const destroy = root.addElement('button');
           destroy.innerHTML = "Destroy";

@@ -26,7 +26,7 @@ export default class Core {
             onInspect: undefined,
         };
         
-        this.On = (key,callback)=>{
+        this.on = (key,callback)=>{
             if(typeof(key) !== "string"){
                 console.error("key must be a string..");
             }
@@ -46,13 +46,13 @@ export default class Core {
         }
         this.connectedElement = this.Connector.Connect(target, this.config);
     }
-    Save() {
+    save() {
         return elementToJson(this.connectedElement);
     }
-    Load(json) {
+    load(json) {
         return JsonToElement(json, this.connectedElement);
     }
-    Destroy() {
+    destroy() {
         this.Connector.Destroy();
         const self = this;
         for (const key in self) {
@@ -63,7 +63,7 @@ export default class Core {
     //TODO: review.
     //TODO: Create normalize..
     //question: if text was selected, should we unwrap the selectiion only ? 
-    UnLink() {
+    unLink() {
         if (!this.isValid()) {
             return;
         }
@@ -106,7 +106,7 @@ export default class Core {
     //TODO: merge a tags..
     //TODO: remove a childs
     //TODO: move function to Link.service.js
-    Link(options = {}) {
+    link(options = {}) {
         if (!options || (options && !options.href) ||  !this.isValid()) {
             return;
         }
@@ -180,7 +180,7 @@ export default class Core {
     }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
-    ToggleClass(className, options) {
+    toggleClass(className, options) {
         //here
         if (!this.isValid()) {
             return;
