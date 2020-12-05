@@ -34,7 +34,8 @@ export default class Inpsector {
                         EVENTS["inspectLink"]({
                             protocol:aTag.protocol,
                             href:resetURL(aTag.href),
-                            target:aTag.getAttribute("target") || ""
+                            target:aTag.getAttribute("target") || "",
+                            element:aTag
                         });
                     }
                 }
