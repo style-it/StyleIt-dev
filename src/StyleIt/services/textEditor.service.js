@@ -52,10 +52,9 @@ export function normalizeElement(el) {
         element.normalize();
         normalizeClassName(element);
         normalizeStyle(element);
-        const tags = ["STRIKE", "EM", "I", "B", "STRONG", "U", "A","SPAN"];
-        
+        // const tags = ["STRIKE", "EM", "I", "B", "STRONG", "U", "A","SPAN"];
         //TODO: normalizr attributes (no:style,className)
-        if (element && tags.includes(element.nodeName) && (!element.textContent.trim())) {
+        if (element && element.nodeName === "SPAN" && (!element.textContent.trim() || element.attributes.length === 0)) {
             const unwrapped = element.unwrap();
             unwrapped.normalize();
             //TODO: check the return;
