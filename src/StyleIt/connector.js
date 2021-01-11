@@ -44,7 +44,7 @@ export default class Connector {
             return {
                 copyPaste: new CopyPaste(element),
                 inspector: new Inpsector(element, options.onInspect),
-                keyPress: new KeyPress(element, options.onKeyPress)
+                // keyPress: new KeyPress(element, options.onKeyPress)
             }
         }
         RenderInnerHTML(element);

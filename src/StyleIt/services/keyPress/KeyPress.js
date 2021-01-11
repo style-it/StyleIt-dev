@@ -1,6 +1,7 @@
 
 
 export default class KeyPress {
+
     constructor(target, keys) {
 
         if (!target) {
@@ -16,6 +17,13 @@ export default class KeyPress {
 
 
         this.keypress = (e) => {
+            const ctrl = "^";
+            const alt = "!";
+            const shift  = "+";
+
+            /*
+            ["^+66",() => {}];
+            */
             if (e.ctrlKey) {
                 this.keys.forEach(key => {
                     if (Array.isArray(key) && key.length === 2 && key[0] === e.keyCode && typeof(key[1]) === "function") {
