@@ -42,7 +42,7 @@ export default class Connector {
         }
         const usePlugins = (element, options) => {
             return {
-                copyPaste: new CopyPaste(element),
+                copyPaste: new CopyPaste(element,options),
                 inspector: new Inpsector(element, options.onInspect),
                 // keyPress: new KeyPress(element, options.onKeyPress)
             }
