@@ -1,59 +1,39 @@
 
-// const validStyles = {
-//   "textDecoration": true,
-//   "fontSize": true,
-//   "fontStyle": true,
-//   // "lineHeight": true,
-//   "color": true,
-//   "backgroundColor": true,
-//   "fontWeight": true,
-//   "textShadow": true,
-//   "fontFamily": true
-
-// }
-
-
 export default class CopyPaste {
 
   constructor(target, options) {
     this.target = target;
     this.stylesToPaste = typeof options.stylesToPaste === "object" ? options.stylesToPaste : null;
-    this.onPaste = this.onPaste.bind(this);
+    this.onCopy = typeof options.onCopy === "function" ? options.onCopy : null;
+    this.onPaste = typeof options.onPaste === "function" ? options.onPaste : null;
+    this.paste = this.paste.bind(this);
+    this.copy = this.copy.bind(this);
     this.start();
   }
-  onCopy (){
-    const selection = window.getSelection().toString();
-          let splits = selection.split("\n");
-          let count = 0;
-          let startIndex = 0;
-          splits.forEach((t,index)=>{
-            if(t === ""){
-              if(!startIndex) startIndex = index;
-              count++;
-            }else{
-              if(count > 1 && startIndex){
-                let sum = Math.floor(count/2);
-                splits.splice(startIndex,sum);
-              }
-              count=0;
-              startIndex = 0;
-            }
-          })
-          let rendered ="";    
-          splits.forEach((t,index)=>{
-            if(t.trim()){
-              t = t;
-            }else{
-              t = "\n"
-            }
-  
-              rendered+=t;
-          })
-          navigator.clipboard.writeText(rendered).then(function() {
-          
-        });
+  copy(event) {
+    let html = "";
+    if (typeof window.getSelection) {
+      var sel = window.getSelection();
+      if (sel.rangeCount) {
+        const container = document.createElement("div");
+        for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+          container.appendChild(sel.getRangeAt(i).cloneContents());
+        }
+        html = container.innerHTML;
+      }
+    } else if (typeof document.selection) {
+      if (document.selection.type === "Text") {
+        html = document.selection.createRange().htmlText;
+      }
+    }
+    // navigator.clipboard.writeText(html);
+
+    event.clipboardData.setData('text/html', html);
+
+
   }
-  onPaste(event) {
+  paste(event) {
+    // document.execCommand("DefaultParagraphSeparator", false, "h2");
     if (this.stylesToPaste) {
       this.pasteWithStyles(event);
     } else {
@@ -64,19 +44,25 @@ export default class CopyPaste {
   pastePlainText(event) {
     const data = event.clipboardData || window.clipboardData;
     event.preventDefault();
-    const content = data.getData('text/plain').trim();
+    let content = data.getData('text/plain').trim();
+    if (this.onPaste) {
+      content = this.onPaste(content)
+    }
     document.execCommand('inserttext', false, content);
   }
   pasteWithStyles(event) {
     event.preventDefault();
-    let textContentContainer;
-    let HtmlContainer;
+    let textContentContainer = document.createElement("div");
+    textContentContainer.style.display = "none";
+    let HtmlContainer = document.createElement("div");
+    HtmlContainer.style.display = "none";
     try {
       const data = event.clipboardData || window.clipboardData;
-      textContentContainer = document.createElement("div");
       textContentContainer.innerText = data.getData('text/plain').trim();;
-      HtmlContainer = document.createElement("div");
       HtmlContainer.innerHTML = data.getData('text/html').trim();
+      if (!HtmlContainer.innerHTML) {
+        HtmlContainer.innerHTML = data.getData('text/plain').trim();;
+      }
       document.body.appendChild(textContentContainer);
       document.body.appendChild(HtmlContainer);
 
@@ -138,7 +124,11 @@ export default class CopyPaste {
         const replaced = textContentContainer.innerHTML.replace(el.textContent, el.outerHTML);;
         textContentContainer.innerHTML = replaced;
       });
-      document.execCommand('inserthtml', false, textContentContainer.innerHTML);
+      let content = textContentContainer.innerHTML;
+      if (this.onPaste) {
+        this.onPaste(event)
+      }
+      document.execCommand('inserthtml', false, content);
     }
     catch (error) {
       console.error(error);
@@ -150,12 +140,12 @@ export default class CopyPaste {
   }
 
   start() {
-    this.target.addEventListener("paste", this.onPaste);
-    this.target.addEventListener("copy", this.onCopy);
+    this.target.addEventListener("paste", this.paste);
+    this.target.addEventListener("copy", this.copy);
   }
   destroy() {
-    this.target.removeEventListener("paste", this.onPaste);
-    this.target.removeEventListener("copy", this.onCopy);
+    this.target.removeEventListener("paste", this.paste);
+    this.target.removeEventListener("copy", this.copy);
 
   }
 }
