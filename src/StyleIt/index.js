@@ -315,7 +315,7 @@ export default class Core {
             // detect if there is any parent with style to split.
             //TODO: use the catch from options to detect more than one style or tag element.
             let elementToSplit = element.closest(`[style*='${value}']`);
-            if (elementToSplit && window.getComputedStyle(elementToSplit).display === "block") {
+            if (elementToSplit && window.getComputedStyle(elementToSplit).display !== "inline") {
                 let innerSpan = createInnerWrapperElement(elementToSplit);
                 elementToSplit.style[key] = null;
                 innerSpan.style[key] = value;
@@ -395,7 +395,7 @@ export default class Core {
     createBlockStyle(options, element, key, value) {
         const findBlock = (element) => {
             const computed = window.getComputedStyle(element);
-            if (computed && computed.display === "block") {
+            if (computed && computed.display !== "inline") {
                 return element;
             } else if (element.parentNode && element.parentNode !== this.connectedElement) {
                 return findBlock(element.parentNode);
