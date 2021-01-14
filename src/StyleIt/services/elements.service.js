@@ -13,8 +13,8 @@ export  function walkTheDOM(node, func) {
   
 export function getSelectedElement() {
     var node = document.getSelection();
-    if (node !== null) {
-        var ancNode = node.extentNode;
+    if (node) {
+        var ancNode = node.focusNode;
         if (ancNode !== null) {
             while (ancNode.nodeType === 3) {
                 ancNode = ancNode.parentNode;
