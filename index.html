@@ -32,76 +32,25 @@
 
     </div>
     <div contenteditable="true" id="editor" spellcheck="false">
-      <b>TextEditor-API concepts</b>
-      <b></b>
-      <u></u>
-      <p>StyleIt.js is a simple text editor API built for Developers. <br> It
-        outputs clean data in JSON instead of heavy HTML-markup for efficent data
-        saving. <br> More important StyleIt.js knows how to use ANY Css rule.</p>
-      <ul>
-        <li>1. Clean data output</li>
-        <li>2. Use of any CSS rules</li>
-        <li>3. Style with classes</li>
-      </ul>
-      <h1>Getting started</h1>
-      <h3>Installation</h3>
-
-      1. Node package 2. Source from CDN 3. Local file from project
-
-      <h3>Node module</h3>
-      <h6>Install the package via npm</h6>
-      <ul>
-        <li><code>npm i styleit-api --save</code></li>
-        <li>
-          <p>Include the module in your application</p>
-          <pre><code>import StyelIt from 'styleit-api';</code></pre>
-        </li>
-      </ul><br><br><br> ##Initialization
-      <p>In order to inizialize StyleIt, you need to pass the Element Object or
-        Element Id to the StyleIt constracture. Note that StyleIt will be
-        available only on this element and its child nodes.</p>
+      <h1>
+        Heading 1
+      </h1>
+      <p>
+        StyleIt.js is a simple text editor API built for Developers.
+      </p>
       <div>
-        <pre><code>import StyleIt from 'styleit-api';
-<br><br><span style="margin-top: 20px;">const styleIt = new  StyleIt(*Element Object or Element Id*);</span></code></pre>
-        <br><br></div>
-
-      ##StyleIt provides two working MODES
-      <pre><code>import StyleIt from 'styleit-api';
-cont MODES = StyleIt.MODES</code></pre>
-      <table style="width: 100%;">
-        <tbody>
-          <tr>
-            <th>Mode</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-          <tr>
-            <td>Toggle</td>
-            <td>String</td>
-            <td>Style elements with on/off functionality like
-              bold,underline,italic</td>
-          </tr>
-          <tr>
-            <td>Extend</td>
-            <td>String</td>
-            <td>Only extends the currect style font-size, color, backgorund</td>
-          </tr>
-        </tbody>
-      </table>
-      <div>Note that the Extend mod will not cancel the style when selecting the
-        same rule twice.</div><br>
-      ##How to use
+        text in div
+      </div>
     </div>
-  </div>
-  <style>
-    .test {
-      letter-spacing: 0.2em;
-      -webkit-text-fill-color: transparent;
-      -webkit-text-stroke-width: 1px;
-      -webkit-text-stroke-color: #b50064;
-      text-shadow: 3px 2px 20px #0a0a0a, 1px 3px 6px #ff0c0c;
-    }
-  </style>
+    <style>
+      .test {
+        letter-spacing: 0.2em;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: #b50064;
+        text-shadow: 3px 2px 20px #0a0a0a, 1px 3px 6px #ff0c0c;
+      }
+    </style>
   </div>
   <script>
     (function () {
@@ -112,6 +61,16 @@ cont MODES = StyleIt.MODES</code></pre>
           document.body.appendChild(root);
           //================================================================
           const config = {
+            stylesToPaste: {
+              "textDecoration": true,
+              "fontSize": true,
+              "fontStyle": true,
+              "color": true,
+              "backgroundColor": true,
+              "fontWeight": true,
+              "textShadow": true,
+              "fontFamily": true
+            },
             onKeyPress: [
               [66, () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
                 unWrap: ["b"]
@@ -136,19 +95,19 @@ cont MODES = StyleIt.MODES</code></pre>
             }
           }
           const styleIt = new styleit('editor', config);
-         styleIt.on("inspect",(collectedStyled)=>{
-          console.log(collectedStyled);
-         });
-         styleIt.on("paste",(html)=>{
-          console.log("paste",html);
-         });
-         styleIt.on("inspectLink",(link)=>{
-          console.log("inspectLink",link);
-         });
+          styleIt.on("inspect", (collectedStyled) => {
+            console.log(collectedStyled);
+          });
+          styleIt.on("paste", (html) => {
+            console.log("paste", html);
+          });
+          styleIt.on("inspectLink", (link) => {
+            console.log("inspectLink", link);
+          });
           //================================================================
           const btns = [{
             text: "toggle class",
-            onclick: () => styleIt.ToggleClass("test")
+            onclick: () => styleIt.toggleClass("test")
           },
           {
             text: "B:Block",
@@ -166,9 +125,7 @@ cont MODES = StyleIt.MODES</code></pre>
 
           {
             text: "U",
-            onclick: () => styleIt.execCmd("text-decoration", "underline", styleIt.MODES.Toggle, {
-              selection: true
-            })
+            onclick: () => styleIt.execCmd("text-decoration", "underline", styleIt.MODES.Toggle)
           },
           {
             text: "50px",
@@ -229,32 +186,32 @@ cont MODES = StyleIt.MODES</code></pre>
           });
           const https = root.addElement("button");
           https.innerHTML = "https://helloworld.com"
-          https.onclick = () =>{
-            styleIt.Link({
-              href:"https://helloworld.com",
-              target:"_parent"
+          https.onclick = () => {
+            styleIt.link({
+              href: "https://helloworld.com",
+              target: "_parent"
             })
           }
           const mailto = root.addElement("button");
           mailto.innerHTML = "mailto:adilev3344@gmail.com"
-          mailto.onclick = () =>{
-            styleIt.Link({
-              href:"adilev3344@gmail.com",
-              protocol:"mailto:"
+          mailto.onclick = () => {
+            styleIt.link({
+              href: "adilev3344@gmail.com",
+              protocol: "mailto:"
             })
           }
           const tel = root.addElement("button");
           tel.innerHTML = "tel:0505891010"
-          tel.onclick = () =>{
-            styleIt.Link({
-              href:"0505891010",
-              protocol:"tel"
+          tel.onclick = () => {
+            styleIt.link({
+              href: "0505891010",
+              protocol: "tel"
             })
           }
           const unLinker = root.addElement("button");
           unLinker.innerHTML = "unLink"
-          unLinker.onclick = () =>{
-            styleIt.UnLink();
+          unLinker.onclick = () => {
+            styleIt.unLink();
           }
           const slider = root.addElement('input');
           slider.type = "range";
