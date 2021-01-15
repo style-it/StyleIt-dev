@@ -34,6 +34,11 @@ export default class Connector {
                     resolve();
                 })
             }
+            if(element && element.firstChild && element.firstChild.nodeType !== 1){
+                const p = document.createElement("p");
+                element.firstChild.wrap(p);
+                element = p;
+            }
             const jsonContent = elementToJson(element);
     
             const renderedElement = JsonToElement(jsonContent);
