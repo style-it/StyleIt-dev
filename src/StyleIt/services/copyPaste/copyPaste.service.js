@@ -128,6 +128,7 @@ export default class CopyPaste {
       if (this.onPaste) {
         this.onPaste(event)
       }
+      document.execCommand("inserthtml",false,`<br/>`);
       document.execCommand('inserthtml', false, content);
     }
     catch (error) {
