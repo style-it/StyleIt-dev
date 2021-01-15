@@ -34,11 +34,16 @@ export default class Connector {
                     resolve();
                 })
             }
-            if(element && element.firstChild && element.firstChild.nodeType !== 1){
-                const p = document.createElement("p");
-                element.firstChild.wrap(p);
-                element = p;
-            }
+            Array.from(element.childNodes).forEach(c=>{
+                if(!c.textContent.trim()){
+                    c.parentNode.removeChild(c);
+                }
+                if(c.nodeType ===3 && c.parentElement === element){
+                    const p = document.createElement("p");
+                    c.wrap(p);
+                }
+            })
+            
             const jsonContent = elementToJson(element);
     
             const renderedElement = JsonToElement(jsonContent);
