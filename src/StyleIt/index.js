@@ -454,7 +454,7 @@ export default class Core {
             console.error('please create new instance..')
             return false;
         };
-        if (this.connectedElement.contentEditable !== "true") {
+        if (this.connectedElement.contentEditable === "false") {
             return false;
         }
         var selectedElement = getSelectedElement();
