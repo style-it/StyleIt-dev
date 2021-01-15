@@ -1,4 +1,4 @@
-import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret } from "../range.service";
+import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
 
 
 export default class KeyPress {
@@ -12,7 +12,14 @@ export default class KeyPress {
 
 
         this.keypress = (e) => {
-            if (e.keyCode === 13) {
+            if(e.keyCode === 8){
+                const target = e.target;
+                if(!target.textContent){
+                    document.execCommand("inserthtml",false,`<br/>`);
+                    return false;
+                }
+            }
+            else if (e.keyCode === 13) {
                 e.preventDefault();
                 if(e.shiftKey){
                     pasteHtmlAtCaret("<br/>")
