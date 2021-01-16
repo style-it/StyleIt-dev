@@ -3,7 +3,7 @@ import CopyPaste from "./services/copyPaste/copyPaste.service";
 import Inpsector from "./services/Inspector/Inspector.service";
 import KeyPress from "./services/keyPress/KeyPress";
 
-import { elementToJson, JsonToElement } from "./services/elements.service";
+import { elementToJson, JsonToElement, wrapNakedTextNodes } from "./services/elements.service";
 
 //TODO:review
 export default class Connector {
@@ -25,7 +25,7 @@ export default class Connector {
             console.error('[-] =>connectWith should be element id or dom element..');
             return null;
         }
-       const RenderInnerHTML = (element) => {
+        const RenderInnerHTML = (element) => {
             const emptyElement = (node) => {
                 return new Promise((resolve) => {
                     while (node.firstElementChild) {
@@ -34,27 +34,19 @@ export default class Connector {
                     resolve();
                 })
             }
-            Array.from(element.childNodes).forEach(c=>{
-                if(!c.textContent.trim()){
-                    c.parentNode.removeChild(c);
-                }
-                if(c.nodeType ===3 && c.parentElement === element){
-                    const p = document.createElement("p");
-                    c.wrap(p);
-                }
-            })
-            
+            wrapNakedTextNodes(element);
+
             const jsonContent = elementToJson(element);
-    
+
             const renderedElement = JsonToElement(jsonContent);
-    
+
             emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
         }
         const usePlugins = (element, options) => {
             return {
-                copyPaste: new CopyPaste(element,options),
+                copyPaste: new CopyPaste(element, options),
                 inspector: new Inpsector(element, options.onInspect),
-                 keyPress: new KeyPress(element, options)
+                keyPress: new KeyPress(element, options)
             }
         }
         RenderInnerHTML(element);
@@ -64,7 +56,7 @@ export default class Connector {
     }
     //TODO: destory events..
     //question: how to use the events ? 
-    
+
 
     Destroy() {
         for (const key in this.plugins) {
