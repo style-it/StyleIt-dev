@@ -1,3 +1,4 @@
+import { wrapNakedTextNodes } from "../elements.service";
 
 export default class CopyPaste {
 
@@ -125,11 +126,23 @@ export default class CopyPaste {
         textContentContainer.innerHTML = replaced;
       });
       let content = textContentContainer.innerHTML;
+      const p = document.createElement("p");
+      p.classList.add("p-copy-paste-content");
+      p.innerHTML = content;
       if (this.onPaste) {
         this.onPaste(event)
       }
-      document.execCommand("inserthtml",false,`<br/>`);
-      document.execCommand('inserthtml', false, content);
+      document.execCommand('inserthtml', false, p.outerHTML);
+      wrapNakedTextNodes(this.target);
+      const copyPasteContentHolder = this.target.querySelector(".p-copy-paste-content");
+      if(copyPasteContentHolder){
+        const closestP = copyPasteContentHolder.closest("p");
+        if(closestP && closestP.classList.contains("p-copy-paste-content")){
+          closestP.classList.remove("p-copy-paste-content")
+        }else{
+          closestP.unwrap();
+        }
+      }
     }
     catch (error) {
       console.error(error);
