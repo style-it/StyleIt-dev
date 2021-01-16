@@ -1,6 +1,17 @@
 import { getStyle, JsonObjectToStyleString } from "./style.service";
 import Levels from '../constants/Levels.json';
 
+export function wrapNakedTextNodes(target){
+    Array.from(target.childNodes).forEach(c=>{
+        if(!c.textContent.trim() && c.nodeName !=="BR"){
+            c.parentNode.removeChild(c);
+        }
+        if(((c.nodeType ===3 && c.parentElement === target) || c.nodeName ==="BR") && !c.parentElement.closest("p")){
+            const p = document.createElement("p");
+            c.wrap(p);
+        }
+    })
+}
 export  function walkTheDOM(node, func) {
     if(!node) return null;
     func(node);
