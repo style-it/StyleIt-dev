@@ -50,6 +50,9 @@
         -webkit-text-stroke-color: #b50064;
         text-shadow: 3px 2px 20px #0a0a0a, 1px 3px 6px #ff0c0c;
       }
+      p{
+        background-color: red;
+      }
     </style>
   </div>
   <script>
@@ -71,18 +74,9 @@
               "textShadow": true,
               "fontFamily": true
             },
-            onKeyPress: [
-              [66, () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
-                unWrap: ["b"]
-              })],
-              [85, () => styleIt.execCmd("text-decoration", "underline", styleIt.MODES.Toggle, {
-                unWrap: ["u"]
-              }),
-              ],
-              [73, () => styleIt.execCmd("font-style", "italic", styleIt.MODES.Toggle, {
-                unWrap: ["i"]
-              })]
-            ],
+            onKeyPress: ()=>{
+            
+            },
             onInspect: (styles) => {
               inspect.innerHTML = `<code>${JSON.stringify(styles)}</code>`
             },
@@ -96,7 +90,7 @@
           }
           const styleIt = new styleit('editor', config);
           styleIt.on("inspect", (collectedStyled) => {
-            console.log(collectedStyled);
+            // console.log(collectedStyled);
           });
           styleIt.on("paste", (html) => {
             console.log("paste", html);
