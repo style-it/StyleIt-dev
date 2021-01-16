@@ -1,3 +1,4 @@
+import { wrapNakedTextNodes } from "../elements.service";
 import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
 
 
@@ -14,10 +15,18 @@ export default class KeyPress {
         this.keypress = (e) => {
             if(e.keyCode === 8){
                 const target = e.target;
-                if(!target.textContent){
-                    document.execCommand("inserthtml",false,`<br/>`);
-                    return false;
-                }
+                if (target.textContent.replace(/\s/g, "").replace(/[\u200B-\u200D\uFEFF]/g, '') === "") {
+                    e.preventDefault();
+                    return;
+                  }
+
+                // if(!target.textContent){
+                //     e.preventDefault();
+                //     pasteHtmlAtCaret(" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+                //     debugger
+                //     wrapNakedTextNodes(this.target);
+                //     return false;
+                // }
             }
             else if (e.keyCode === 13) {
                 e.preventDefault();
@@ -26,27 +35,27 @@ export default class KeyPress {
                     // document.execCommand('inserthtml', false, );
                     return false;
                 }
-                document.execCommand('inserttext', false, "\n");
-                return false;
-                // const range = document.createRange();
-                // const selection = window.getSelection();
-                // e.preventDefault();
-                // var blockElement = GetClosestBlockElement(selection.anchorNode);
-                // range.setStart(selection.focusNode, selection.baseOffset);
-                // range.setEnd(blockElement,blockElement.childNodes.length);
-                // selection.removeAllRanges();
-                // selection.addRange(range);
-                // const docFragment = range.extractContents();
-                // Array.from(docFragment.children).forEach(child => {
-                //     if (child.nodeType === 1 && !child.textContent.trim()) {
-                //         child.unwrap();
-                //     }
-                // });
+                // document.execCommand('inserttext', false, "\n");
+                // return false;
+                const range = document.createRange();
+                const selection = window.getSelection();
+                e.preventDefault();
+                var blockElement = GetClosestBlockElement(selection.anchorNode);
+                range.setStart(selection.focusNode, selection.focusOffset);
+                range.setEnd(blockElement,blockElement.childNodes.length);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                const docFragment = range.extractContents();
+                Array.from(docFragment.children).forEach(child => {
+                    if (child.nodeType === 1 && !child.textContent.trim()) {
+                        child.unwrap();
+                    }
+                });
               
-                // const el = document.createElement(blockElement.nodeName);
-                // el.appendChild(docFragment);
-                // insertAfter(el, blockElement);
-                // selection.removeAllRanges();
+                const el = document.createElement(blockElement.nodeName);
+                el.appendChild(docFragment);
+                insertAfter(el, blockElement);
+                selection.removeAllRanges();
 
             }
 
