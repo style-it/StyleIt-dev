@@ -3,10 +3,11 @@ import Levels from '../constants/Levels.json';
 
 export function wrapNakedTextNodes(target){
     Array.from(target.childNodes).forEach(c=>{
-        if(!c.textContent.trim() && c.nodeName !=="BR"){
+ 
+        if(c.nodeType ===1 && !c.textContent.trim() && c.children.length===0 && c.nodeName !=="BR"){
             c.parentNode.removeChild(c);
         }
-        if(((c.nodeType ===3 && c.parentElement === target) || c.nodeName ==="BR") && !c.parentElement.closest("p")){
+        if(((c.nodeType ===3 && c.parentElement === target)) && !c.parentElement.closest("p")){
             const p = document.createElement("p");
             c.wrap(p);
         }
