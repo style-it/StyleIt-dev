@@ -128,16 +128,29 @@ export function getCaretCharacterOffsetWithin(element) {
   }
   return caretOffset;
 }
-export function setCaretAt(element, charIndex) {
+export function setCaretAt(element, charIndex = 0) {
+
   var node = element;
   node.focus();
   var textNode = Array.from(node.childNodes).filter(child => child.nodeType === Node.TEXT_NODE);
+  if (textNode.length === 0) {
+    textNode = element;
+    while (textNode && textNode.firstChild && textNode.nodeType !== 3) {
+      textNode = textNode.firstChild;
+    }
+    if(textNode){
+      textNode = [textNode];
+    }
+  }
+
   var range = document.createRange();
   range.setStart(textNode[0], charIndex);
   range.setEnd(textNode[0], charIndex);
+  range.collapse(true)
   var sel = window.getSelection();
   sel.removeAllRanges();
   sel.addRange(range);
+
 }
 export function pasteHtmlAtCaret(html) {
   const selectedElement = getSelectedElement();
@@ -150,7 +163,7 @@ export function pasteHtmlAtCaret(html) {
   } else {
     isValid = false;
   }
-  if(!isValid){
+  if (!isValid) {
     return null;
   }
   var sel, range;
