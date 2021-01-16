@@ -1,24 +1,26 @@
 import { wrapNakedTextNodes } from "../elements.service";
 import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
 
-
 export default class KeyPress {
 
-    constructor(target, options) {
+    constructor(target, options = {}) {
         if (!target) {
             console.error('[-] keyPress => target is null');
             return null;
+        }
+        if (typeof options.onKeyPress === "function") {
+            this.onKeyPress = options.onKeyPress;
         }
         this.target = target;
 
 
         this.keypress = (e) => {
-            if(e.keyCode === 8){
+            if (e.keyCode === 8) {
                 const target = e.target;
                 if (target.textContent.replace(/\s/g, "").replace(/[\u200B-\u200D\uFEFF]/g, '') === "") {
                     e.preventDefault();
-                    return;
-                  }
+                    return false;
+                }
 
                 // if(!target.textContent){
                 //     e.preventDefault();
@@ -29,52 +31,67 @@ export default class KeyPress {
                 // }
             }
             else if (e.keyCode === 13) {
-                e.preventDefault();
-                if(e.shiftKey){
-                    pasteHtmlAtCaret("<br/>")
-                    // document.execCommand('inserthtml', false, );
+                if (e.shiftKey) {
+                    pasteHtmlAtCaret("<br/>");
+                    e.preventDefault();
                     return false;
                 }
-                // document.execCommand('inserttext', false, "\n");
-                // return false;
+
                 const range = document.createRange();
                 const selection = window.getSelection();
-                e.preventDefault();
                 var blockElement = GetClosestBlockElement(selection.anchorNode);
-                range.setStart(selection.focusNode, selection.focusOffset);
-                range.setEnd(blockElement,blockElement.childNodes.length);
+
+                if (blockElement === this.target) {
+                    return false
+                }
+                const range2extract = selection.getRangeAt(0);
+                range2extract.extractContents();
+                range.setStart(selection.anchorNode, selection.anchorOffset);
+                range.setEnd(blockElement, blockElement.childNodes.length);
                 selection.removeAllRanges();
                 selection.addRange(range);
+                if (selection.isCollapsed) {
+                    if (blockElement && !this.target.textContent.trim()) {
+                        if (blockElement !== this.target) {
+                            Array.from(this.target.children).forEach(c => {
+                                if (c !== blockElement && !c.textContent.trim()) {
+                                    c.unwrap();
+                                }
+                            })
+                            blockElement.innerHTML = blockElement.innerHTML + "&#8203;";
+                            setCaretAt(blockElement);
+                            e.preventDefault();
+                        }
+                    }
+                    return false;
+                } else {
+                    e.preventDefault();
+                }
+
                 const docFragment = range.extractContents();
                 Array.from(docFragment.children).forEach(child => {
                     if (child.nodeType === 1 && !child.textContent.trim()) {
                         child.unwrap();
                     }
                 });
-              
-                const el = document.createElement(blockElement.nodeName);
+
+                const el = document.createElement(blockElement.nodeName || "p");
                 el.appendChild(docFragment);
+                if (!el.textContent.trim()) {
+                    el.innerHTML = "&#8203;";
+                }
                 insertAfter(el, blockElement);
+                const br = document.createElement("br");
+                blockElement.appendChild(br);
+
+
                 selection.removeAllRanges();
-
+                wrapNakedTextNodes(this.target, { expect: blockElement });
+                setCaretAt(el, 0);
             }
-
-            // const ctrl = "^";
-            // const alt = "!";
-            // const shift  = "+";
-
-            // /*
-            // ["^+66",() => {}];
-            // */
-            // if (e.ctrlKey) {
-            //     this.keys.forEach(key => {
-            //         if (Array.isArray(key) && key.length === 2 && key[0] === e.keyCode && typeof(key[1]) === "function") {
-            //             e.preventDefault();
-            //             key[1]();
-            //         }
-            //     })
-            // }
-
+            else if (typeof this.onKeyPress === "function") {
+                this.onKeyPress(e);
+            }
         }
 
 
