@@ -7,7 +7,7 @@ export function wrapNakedTextNodes(target){
         if(c.nodeType ===1 && !c.textContent.trim() && c.children.length===0 && c.nodeName !=="BR"){
             c.parentNode.removeChild(c);
         }
-        if(((c.nodeType ===3 && c.parentElement === target)) && !c.parentElement.closest("p")){
+        if(((c.nodeType ===3 && c.parentElement === target)) && !c.parentElement.closest("p") && c.textContent.trim()){
             const p = document.createElement("p");
             c.wrap(p);
         }
