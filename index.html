@@ -33,7 +33,7 @@
     </div>
     <div contenteditable="true" id="editor" spellcheck="false">
       <h1>
-        Heading 1
+        Heading 1 <span style="color:red;">Heading 1</span>
       </h1>
       <p>
         StyleIt.js is a simple text editor API built for Developers.
@@ -50,9 +50,7 @@
         -webkit-text-stroke-color: #b50064;
         text-shadow: 3px 2px 20px #0a0a0a, 1px 3px 6px #ff0c0c;
       }
-      p{
-        background-color: red;
-      }
+    
     </style>
   </div>
   <script>
@@ -72,8 +70,9 @@
               "backgroundColor": true,
               "fontWeight": true,
               "textShadow": true,
-              "fontFamily": true
+              "fontFamily": "Arial"
             },
+         
             onKeyPress: ()=>{
             
             },
