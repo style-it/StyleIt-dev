@@ -1,11 +1,17 @@
 import { getStyle, JsonObjectToStyleString } from "./style.service";
 import Levels from '../constants/Levels.json';
+import { void_elements } from "../constants/void_elms";
 
 export function wrapNakedTextNodes(target){
+    // target is the main contenteditable element
+    // so 
     Array.from(target.childNodes).forEach(c=>{
  
-        if(c.nodeType ===1 && !c.textContent.trim() && c.children.length===0 && c.nodeName !=="BR"){
+        if(c.nodeType ===1 && !c.textContent.trim() && c.children.length===0 && !void_elements[c.nodeName]){
             c.parentNode.removeChild(c);
+        }
+        if(c.nodeType === 3 && c.parentElement){
+            c.parentElement.normalize();
         }
         if(((c.nodeType ===3 && c.parentElement === target)) && !c.parentElement.closest("p") && c.textContent.trim()){
             const p = document.createElement("p");
@@ -22,7 +28,18 @@ export  function walkTheDOM(node, func) {
       node = node.nextSibling;
     }
   }
-  
+  export  function walkOnElement(node, func) {
+    if(!node) return null;
+    const continueWith = func(node);
+    if(continueWith){
+        node = continueWith;
+    }
+    node = node.firstElementChild;
+    while (node) {
+        walkOnElement(node, func);
+      node = node.nextElementSibling;
+    }
+  } 
 export function getSelectedElement() {
     var node = document.getSelection();
     if (node) {
