@@ -16,6 +16,8 @@ import './components/custom/textSelected';
 import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
 import {EVENTS} from './services/events/events';
 import { createTempLinkElement, resetURL,TARGETS } from "./services/link.service";
+import { void_elements } from "./constants/void_elms";
+
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
@@ -414,7 +416,7 @@ export default class Core {
                     Array.from(parentNode.childNodes).forEach(node => {
                         if (node.nodeType === 3) {
                             wrapTextNodeWithAppendStyle(node);
-                        } else if (node.nodeType === 1 && node.nodeName !== "BR") {
+                        } else if (node.nodeType === 1 && !void_elements[node.nodeName]) {
                             const computed = window.getComputedStyle(node);
                             if (computed.display !== "inline") {
                                 createInlineStyle(node);
