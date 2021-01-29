@@ -3,7 +3,7 @@ import { normalizeStyle } from "./style.service";
 import { mergeNodeContect, mergeTwoNodes } from "../utilis/merger";
 
 /**
- * @param {Element} DomElement - element to normalize
+ * @param {Element} el - element to normalize
  */
 export function normalizeElement(el) {
     const recurse = (element) => {
@@ -17,8 +17,9 @@ export function normalizeElement(el) {
                 let wrapper = element;
                 while (wrapper !== null) {
                     const nextElement = wrapper.nextSibling;
-                    if (!nextElement)
+                    if (!nextElement){
                         break;
+                    }
                     wrapper = mergeTwoNodes(wrapper, nextElement);
                     merged = merged || wrapper !== null;
                 }
@@ -30,7 +31,7 @@ export function normalizeElement(el) {
             let merged = false;
             Array.from(element.children).forEach((child) => {
                 let wrapper = child;
-                while (wrapper !== null) {
+                while (wrapper && wrapper.nodeType === 1) {
                     wrapper = mergeNodeContect(wrapper);
                     merged = merged || wrapper !== null;
                 }
@@ -40,10 +41,13 @@ export function normalizeElement(el) {
         let mergedStyles = false;
         let mergedContent = false;
         do {
-            _normalize(element);
-            mergedStyles = mergeNodesStyles(element);
-            mergedContent = mergeNodesContent(element);
-        } while (mergedContent);
+            element = _normalize(element);
+            if(element){
+                mergedStyles = mergeNodesStyles(element);
+                mergedContent = mergeNodesContent(element);
+            }
+           
+        } while (mergedContent && element);
     }
     el.normalize();
     recurse(el);
@@ -52,14 +56,15 @@ export function normalizeElement(el) {
         element.normalize();
         normalizeClassName(element);
         normalizeStyle(element);
-        // const tags = ["STRIKE", "EM", "I", "B", "STRONG", "U", "A","SPAN"];
+        // 
+            //  const tags = ["STRIKE", "EM", "I", "B", "STRONG", "U", "A"];
+
         //TODO: normalizr attributes (no:style,className)
         if (element && element.nodeName === "SPAN" && (!element.textContent.trim() || element.attributes.length === 0)) {
             const unwrapped = element.unwrap();
-            unwrapped.normalize();
-            //TODO: check the return;
-            return unwrapped.parentElement;
+            return null;
         }
+        return element;
     }
 }
 
