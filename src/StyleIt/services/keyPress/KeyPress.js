@@ -1,6 +1,6 @@
 import { wrapNakedTextNodes } from "../elements.service";
 import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
-
+import {void_elements} from '../../constants/void_elms';
 export default class KeyPress {
 
     constructor(target, options = {}) {
@@ -70,7 +70,7 @@ export default class KeyPress {
 
                 const docFragment = range.extractContents();
                 Array.from(docFragment.children).forEach(child => {
-                    if (child.nodeType === 1 && !child.textContent.trim()) {
+                    if (child.nodeType === 1 && !child.textContent.trim() && !void_elements[child.nodeName]) {
                         child.unwrap();
                     }
                 });
