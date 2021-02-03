@@ -81,6 +81,10 @@ export default class KeyPress {
                     el.innerHTML = "&#8203;";
                 }
                 insertAfter(el, blockElement);
+                Array.from(el.previousSibling.attributes).forEach(attr=>{
+                    el.setAttribute(attr.name,attr.value);
+                })
+               
                 const br = document.createElement("br");
                 blockElement.appendChild(br);
 
