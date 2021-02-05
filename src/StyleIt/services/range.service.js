@@ -1,3 +1,4 @@
+import { block_elments } from "../constants/block_elms";
 import { getSelectedElement } from "./elements.service";
 
 export function createInnerWrapperElement(element, options) {
@@ -14,8 +15,8 @@ export function GetClosestBlockElement(element) {
   if (element.nodeType !== 1) {
     element = element.parentElement;
   }
-  if (window.getComputedStyle(element).display !== "inline") return element;
-  let parentElement = element.parentElement;
+  if (block_elments[element.nodeName]) return element;
+  let parentElement = element;
   while (parentElement && window.getComputedStyle(parentElement).display === "inline") {
     if (parentElement.parentElement) {
       parentElement = parentElement.parentElement;
@@ -23,7 +24,10 @@ export function GetClosestBlockElement(element) {
       break;
     }
   }
-  return parentElement;
+  if(parentElement  && block_elments[parentElement.nodeName]){
+    return parentElement;
+  }
+  return false;
 }
 //TODO:review
 export function wrapRangeWithBlockElement(limitElement) {
