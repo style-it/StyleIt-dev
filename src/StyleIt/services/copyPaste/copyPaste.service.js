@@ -73,36 +73,40 @@ export default class CopyPaste {
     }
   }
   paste(event) {
-    this.pasteWithStyles(event);
+    const isShifted = event.shiftKey;
+    if(isShifted){
+      this.pastePlainText(event);
+    }else{
+      this.pasteWithStyles(event);
+    }
+
   };
   
   pastePlainText(event) {
     const data = event.clipboardData || window.clipboardData;
     event.preventDefault();
-    let content = data.getData('text/plain').trim();
-    content = content.replace(/\n/g, "<br/>")
-    if(!content.trim()){
+    let copied = data.getData('text/plain').trim();
+    copied = copied.replace(/\n/g, "<br/>")
+    if(!copied.trim()){
       return;
     }
-    const id = "this-is-temp-container-for-plain-text";
+    const p = document.createElement("p");
+    p.innerHTML = copied;
 
     // document.execCommand('inserttext', false, content);
-    pasteHtmlAtCaret(`<p id="${id}">${content}</p>`);
-    const copiedElement = this.target.querySelector(`#${id}`);
-    if (copiedElement) {
-      setCaretAt(copiedElement);
+    pasteHtmlAtCaret(p);
+      setCaretAt(p);
 
-      if (copiedElement.parentElement === this.target) {
-        copiedElement.removeAttribute("id");
-      } else {
-        copiedElement.parentNode.removeChild(copiedElement);
-      }
+      if (p.parentElement !== this.target) {
+        p.unwrap();
+
+      } 
       Array.from(this.target.children).forEach(child => {
         if (!child.textContent.trim()) {
           this.target.removeChild(child);
         }
       })
-    }
+    
 
     if (this.onPaste) {
       this.onPaste(event,"plainText");
@@ -114,29 +118,29 @@ export default class CopyPaste {
     const copied = data.getData('styleit/html').trim();
     //on copied on the editor localy
     if (copied) {
-      const id = "this-is-temp-id-for-paste-content-into-the-dom";
-      pasteHtmlAtCaret(`<div id="${id}">${copied}</div>`);
-      const copiedElement = this.target.querySelector(`#${id}`);
-      let parentBlock = GetClosestBlockElement(copiedElement);
-      if (parentBlock && copiedElement.children.length === 1) {
-        if (block_elments[copiedElement.children[0].nodeName]) {
-          copiedElement.children[0].unwrap();
+      const p = document.createElement("p");
+      p.innerHTML = copied;
+      pasteHtmlAtCaret(p);
+      let parentBlock = GetClosestBlockElement(p);
+      if (parentBlock && p.children.length === 1) {
+        if (block_elments[p.children[0].nodeName]) {
+          p.children[0].unwrap();
         }
-        setCaretAt(copiedElement);
+        setCaretAt(p);
         normalizePasedElement(parentBlock);
 
-      } else if (parentBlock && copiedElement.children.length > 1) {
-        const firstChild = copiedElement.firstChild;
-        copiedElement.parentElement.insertBefore(firstChild, copiedElement);
+      } else if (parentBlock && p.children.length > 1) {
+        const firstChild = p.firstChild;
+        p.parentElement.insertBefore(firstChild, p);
         const sameNode = firstChild.closest(firstChild.nodeName);
         if (sameNode) {
           firstChild.unwrap();
         }
-        parentBlock.insertAfter(copiedElement);
+        parentBlock.insertAfter(p);
       }
-      normalizePasedElement(copiedElement);
-      setCaretAt(copiedElement);
-      copiedElement.unwrap();
+      normalizePasedElement(p);
+      setCaretAt(p);
+      p.unwrap();
 
       wrapNakedTextNodes(this.target);
       if (this.onPaste) {
