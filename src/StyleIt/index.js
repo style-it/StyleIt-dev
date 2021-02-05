@@ -17,6 +17,7 @@ import { elementToJson, JsonToElement, getSelectedElement } from "./services/ele
 import {EVENTS} from './services/events/events';
 import { createTempLinkElement, resetURL,TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
+import { block_elments } from "./constants/block_elms";
 
 export default class Core {
 
@@ -317,7 +318,8 @@ export default class Core {
             // detect if there is any parent with style to split.
             //TODO: use the catch from options to detect more than one style or tag element.
             let elementToSplit = element.closest(`[style*='${value}']`);
-            if (elementToSplit && window.getComputedStyle(elementToSplit).display !== "inline") {
+            //TODO: tests
+            if (elementToSplit && block_elments[elementToSplit.nodeName]) {
                 let innerSpan = createInnerWrapperElement(elementToSplit);
                 elementToSplit.style[key] = null;
                 innerSpan.style[key] = value;
@@ -395,34 +397,26 @@ export default class Core {
 
     }
     createBlockStyle(options, element, key, value) {
-        const findBlock = (element) => {
-            const computed = window.getComputedStyle(element);
-            if (computed && computed.display !== "inline") {
-                return element;
-            } else if (element.parentNode && element.parentNode !== this.connectedElement) {
-                return findBlock(element.parentNode);
-            }
-        };
+      
         if (options.as === "inline") {
-            let blockElement = findBlock(element);
+            let blockElement = GetClosestBlockElement(element);
             if (blockElement) {
                 const wrapTextNodeWithAppendStyle = (node) => {
                     const span = document.createElement("span");
                     span.style[key] = value;
                     node.wrap(span);
-                };
+                };  
                 const createInlineStyle = (parentNode) => {
+                    //TODO: tests
                     parentNode.style[key] = null;
                     Array.from(parentNode.childNodes).forEach(node => {
                         if (node.nodeType === 3) {
                             wrapTextNodeWithAppendStyle(node);
                         } else if (node.nodeType === 1 && !void_elements[node.nodeName]) {
-                            const computed = window.getComputedStyle(node);
-                            if (computed.display !== "inline") {
                                 createInlineStyle(node);
-                            } else {
-                                node.style[key] = value;
-                            }
+                        }
+                        else {
+                            node.style[key] = value;
                         }
                     });
                 };
@@ -433,7 +427,7 @@ export default class Core {
             }
 
         } else {
-            let blockElement = findBlock(element);
+            let blockElement = GetClosestBlockElement(element);
             if (blockElement) {
                 blockElement.style[key] = value;
                 Array.from(blockElement.querySelectorAll(`[style*='${key}']`)).forEach(el => el.style[key] = null);
