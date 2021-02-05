@@ -185,16 +185,18 @@ export function pasteHtmlAtCaret(html) {
       if (typeof (html) === "string") {
         el = document.createElement("div");
         el.innerHTML = html;
+        var frag = document.createDocumentFragment(), node, lastNode;
+        while ((node = el.firstChild)) {
+          lastNode = frag.appendChild(node);
+        }
+        range.insertNode(frag);
       }
       else if (typeof (html) === "object") {
-        el = html;
+        range.insertNode(html);
+
       }
 
-      var frag = document.createDocumentFragment(), node, lastNode;
-      while ((node = el.firstChild)) {
-        lastNode = frag.appendChild(node);
-      }
-      range.insertNode(frag);
+    
 
       // Preserve the selection
       if (lastNode) {
