@@ -5,7 +5,8 @@ import { getSelectedElement } from "./elements.service";
 export function getInheirtCss(fromElement, toElement) {
     var intailStyle = {};
     var currectElement = fromElement;
-    while (currectElement && currectElement.ischildOf(toElement.parentElement)) {
+
+    while (currectElement && currectElement.ischildOf(toElement)) {
         let map = getStyle(currectElement);
         for (const style in map) {
             if (map.hasOwnProperty(style)) {
