@@ -6,7 +6,7 @@ export function getInheirtCss(fromElement, toElement) {
     var intailStyle = {};
     var currectElement = fromElement;
 
-    while (currectElement && currectElement.ischildOf(toElement)) {
+    while (currectElement && currectElement.ischildOf(toElement.parentElement)) {
         let map = getStyle(currectElement);
         for (const style in map) {
             if (map.hasOwnProperty(style)) {
