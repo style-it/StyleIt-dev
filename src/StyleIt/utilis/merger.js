@@ -14,25 +14,25 @@ import Config from '../_app.config.json';
 export const mergeNodeContect = node => {
 
     if (!DomUtilis.isElement(node)) {
-        console.error('one of the props is not dom element.., please insert two element to merge..');
+        // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
     }
     if (node.nodeName !== "SPAN" || node.nodeType !== Node.ELEMENT_NODE) {
-        console.error('[mergeNodeContect] node is not a span');
+        // console.error('[mergeNodeContect] node is not a span');
         return null;
     }
 
     const firstChild = node.firstElementChild;
     if (!firstChild) {
-        console.error('[mergeNodeContect] first child not found');
+        // console.error('[mergeNodeContect] first child not found');
         return null;
     }
     if (firstChild.nodeName !== "SPAN" || firstChild.nodeType !== Node.ELEMENT_NODE) {
-        console.error('[mergeNodeContect] firstChild is not a span');
+        // console.error('[mergeNodeContect] firstChild is not a span');
         return null;
     }
     if (node.textContent !== firstChild.textContent) {
-        console.error('[mergeNodeContect] text content is different');
+        // console.error('[mergeNodeContect] text content is different');
         return null;
     }
     const _elementProps = {
@@ -60,11 +60,11 @@ export const mergeNodeContect = node => {
 export function mergeTwoNodes(elementOne, elementTwo) {
     console.log('[mergeTwoNodes] START');
     if (!DomUtilis.isElement(elementOne) || !DomUtilis.isElement(elementTwo)) {
-        console.error('one of the props is not dom element.., please insert two element to merge..');
+        // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
     }
     if (elementOne.nodeName !== "SPAN" || elementTwo.nodeName !== "SPAN") {
-        console.error('one of the props is not dom element.., please insert two element to merge..');
+        // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
     }
     const _elementsData = [{
@@ -99,8 +99,6 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         return commmonStyles;
     };
     const commoncLasses = getCommonClasses(_elementsData[0].classes, _elementsData[1].classes);
-    console.log('commonClassses',commoncLasses,elementOne,elementTwo,_elementsData)
-
     const commonStyles = getCommonStyles(_elementsData[0].style, _elementsData[1].style);
     const buildWrappingElement = (commonStyles, commoncLasses) => {
         const wrapper = document.createElement('span');
