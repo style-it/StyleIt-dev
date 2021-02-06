@@ -1,6 +1,6 @@
 
 class TextSelection extends HTMLElement {
-    constructor(props) {
+    constructor() {
       super();
     }
     connectedCallback(){
@@ -11,4 +11,6 @@ class TextSelection extends HTMLElement {
       }
     }
   }
-  customElements.define('text-selection', TextSelection); 
+  if(!customElements.get('text-selection')){
+    customElements.define('text-selection', TextSelection); 
+  }
