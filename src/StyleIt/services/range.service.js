@@ -179,7 +179,7 @@ export function pasteHtmlAtCaret(html) {
       range.deleteContents();
 
       // Range.createContextualFragment() would be useful here but is
-      // only relatively recently standardized and is not supported in
+      // only relatively rece ntly standardized and is not supported in
       // some browsers (IE9, for one)
       let el;
       if (typeof (html) === "string") {
@@ -281,6 +281,20 @@ export function createWrapperFunction(wrapperEl, range) {
     currentRange.surroundContents(currentWrapper)
     return currentWrapper
   }
+}
+export const querySelectorUnderSelection = (querySelector) => {
+  var selection = window.getSelection();
+  var range = selection.getRangeAt(0);
+  const elements = range.commonAncestorContainer.querySelectorAll(querySelector);
+  const allSelected = [];
+  for (var i = 0, el; el = elements[i]; i++) {
+    // The second parameter says to include the element 
+    // even if it's not fully selected
+    if (selection.containsNode(el, true)) {
+        allSelected.push(el);
+    }
+}
+return allSelected;
 }
 export function getAllNodes() {
   var nodes, range;
