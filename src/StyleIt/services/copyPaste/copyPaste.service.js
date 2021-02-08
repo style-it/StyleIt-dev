@@ -1,17 +1,25 @@
 import { block_elments } from "../../constants/block_elms";
 import { void_elements } from "../../constants/void_elms";
-import { walkOnElement, wrapNakedTextNodes } from "../elements.service";
-import { pasteHtmlAtCaret, setCaretAt,GetClosestBlockElement } from "../range.service";
+import { splitHTML } from "../../utilis/splitHTML";
+import { walkOnElement, walkTheDOM, wrapNakedTextNodes } from "../elements.service";
+import { pasteHtmlAtCaret, setCaretAt, GetClosestBlockElement } from "../range.service";
 import { getInheirtCss, setStyles } from "../style.service";
 
 
 const normalizePasedElement = (target) => {
-
-  walkOnElement(target, (node) => {
+  walkTheDOM(target, (node) => {
+     console.log(node)
+    if (!node.textContent.trim()) {
+      node.unwrap();
+    }
     if (node !== target && node.parentElement && block_elments[node.nodeName]) {
-      const blockParent = node.parentElement.closest(node.nodeName);
+      const blockParent = node.parentElement.closest("h1,h2,h3,h4,h5,h6,p");
       if (blockParent && blockParent !== target) {
-        node.unwrap();
+        const parts = splitHTML(node, blockParent, { tag: blockParent.nodeName });
+        if (parts) {
+          debugger
+          parts.center.unwrap();
+        }
         return blockParent;
       }
     }
@@ -67,27 +75,27 @@ export default class CopyPaste {
     event.preventDefault();
     event.clipboardData.setData('styleit/html', html.innerHTML);
     event.clipboardData.setData('text/plain', html.textContent);
-    if(this.onCopy){
+    if (this.onCopy) {
       this.onCopy(event);
 
     }
   }
   paste(event) {
     const isShifted = event.shiftKey;
-    if(isShifted){
+    if (isShifted) {
       this.pastePlainText(event);
-    }else{
+    } else {
       this.pasteWithStyles(event);
     }
 
   };
-  
+
   pastePlainText(event) {
     const data = event.clipboardData || window.clipboardData;
     event.preventDefault();
     let copied = data.getData('text/plain').trim();
     copied = copied.replace(/\n/g, "<br/>")
-    if(!copied.trim()){
+    if (!copied.trim()) {
       return;
     }
     const p = document.createElement("p");
@@ -95,21 +103,21 @@ export default class CopyPaste {
 
     // document.execCommand('inserttext', false, content);
     pasteHtmlAtCaret(p);
-      setCaretAt(p);
+    setCaretAt(p);
 
-      if (p.parentElement !== this.target) {
-        p.unwrap();
+    if (p.parentElement !== this.target) {
+      p.unwrap();
 
-      } 
-      Array.from(this.target.children).forEach(child => {
-        if (!child.textContent.trim()) {
-          this.target.removeChild(child);
-        }
-      })
-    
+    }
+    Array.from(this.target.children).forEach(child => {
+      if (!child.textContent.trim()) {
+        this.target.removeChild(child);
+      }
+    })
+
 
     if (this.onPaste) {
-      this.onPaste(event,"plainText");
+      this.onPaste(event, "plainText");
     }
   }
   pasteWithStyles(event) {
@@ -118,36 +126,33 @@ export default class CopyPaste {
     const copied = data.getData('styleit/html').trim();
     //on copied on the editor localy
     if (copied) {
-      const p = document.createElement("p");
-      p.innerHTML = copied;
-      pasteHtmlAtCaret(p);
-      let parentBlock = GetClosestBlockElement(p);
-      if (parentBlock && p.children.length === 1) {
-        if (block_elments[p.children[0].nodeName]) {
-          p.children[0].unwrap();
+      const pastedContainer = document.createElement("div");
+      pastedContainer.innerHTML = copied;
+      pasteHtmlAtCaret(pastedContainer);
+      Array.from(this.target.children).forEach(child=>{
+        if(!child.textContent.trim()){
+          child.parentElement.removeChild(child);
         }
-        setCaretAt(p);
-        normalizePasedElement(parentBlock);
-
-      } else if (parentBlock && p.children.length > 1) {
-        const firstChild = p.firstChild;
-        p.parentElement.insertBefore(firstChild, p);
-        const sameNode = firstChild.parentElement.closest("h1,h2,h3,h4,h5,h6,p");
-        if (sameNode) {
-          firstChild.unwrap();
+      });
+      Array.from(pastedContainer.children).forEach(child=>{
+        if(!child.textContent.trim()){
+          child.unwrap();
         }
-        parentBlock.insertAfter(p);
+      });
+      if (pastedContainer.children.length > 0 && block_elments[pastedContainer.firstChild.nodeName] &&  pastedContainer.previousSibling) {
+        pastedContainer.children[0].unwrap();
       }
-      normalizePasedElement(p);
-      setCaretAt(p);
-      p.unwrap();
+      setCaretAt(pastedContainer);
+      pastedContainer.unwrap();
 
+      normalizePasedElement(this.target);
+      // 
       wrapNakedTextNodes(this.target);
       if (this.onPaste) {
-        this.onPaste(event,"formattedText");
+        this.onPaste(event, "formattedText");
       }
     } else {
-        this.pastePlainText(event);
+      this.pastePlainText(event);
     }
   }
 
