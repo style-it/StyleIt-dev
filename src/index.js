@@ -1,6 +1,13 @@
 import Core from './StyleIt/index';
 import  MODES  from './StyleIt/constants/Modes.json';
 
+/**
+ * Create a new instance of StyleIt
+ *
+ * @param {HTMLElement} target
+  * @param {object} config
+ * @public
+ */
 export default class StyleIt {
   //expose only the relevant methods..
   constructor(target, config) {
@@ -19,7 +26,7 @@ export default class StyleIt {
       //========================================//
       this.toggleClass = this.toggleClass.bind(styleIt);
       this.execCmd = this.execCmd.bind(styleIt);
-      this.on = this.on.bind(this);
+      this.on = this.on.bind(styleIt);
       this.link = this.link.bind(styleIt);
       this.unLink = this.unLink.bind(styleIt);
       this.save = this.save.bind(styleIt);
