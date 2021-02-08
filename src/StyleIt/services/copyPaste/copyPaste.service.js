@@ -132,7 +132,7 @@ export default class CopyPaste {
       } else if (parentBlock && p.children.length > 1) {
         const firstChild = p.firstChild;
         p.parentElement.insertBefore(firstChild, p);
-        const sameNode = firstChild.closest(firstChild.nodeName);
+        const sameNode = firstChild.parentElement.closest(firstChild.nodeName);
         if (sameNode  && sameNode !== firstChild) {
           firstChild.unwrap();
         }
