@@ -4,36 +4,14 @@ import { splitHTML } from "../../utilis/splitHTML";
 import { walkOnElement, walkTheDOM, wrapNakedTextNodes } from "../elements.service";
 import { pasteHtmlAtCaret, setCaretAt, GetClosestBlockElement } from "../range.service";
 import { getInheirtCss, setStyles } from "../style.service";
+import { normalizeElement } from "../textEditor.service";
 
-
-const normalizePasedElement = (target) => {
-  walkTheDOM(target, (node) => {
-     console.log(node)
-    if (!node.textContent.trim()) {
-      node.unwrap();
-    }
-    if (node !== target && node.parentElement && block_elments[node.nodeName]) {
-      const blockParent = node.parentElement.closest("h1,h2,h3,h4,h5,h6,p");
-      if (blockParent && blockParent !== target) {
-        const parts = splitHTML(node, blockParent, { tag: blockParent.nodeName });
-        if (parts) {
-          debugger
-          parts.center.unwrap();
-        }
-        return blockParent;
-      }
-    }
-  })
-
-}
 
 export default class CopyPaste {
 
   constructor(target, options) {
     this.target = target;
     this.stylesToPaste = typeof options.stylesToPaste === "object" ? options.stylesToPaste : null;
-    this.onCopy = typeof options.onCopy === "function" ? options.onCopy : null;
-    this.onPaste = typeof options.onPaste === "function" ? options.onPaste : null;
     this.paste = this.paste.bind(this);
     this.copy = this.copy.bind(this);
     this.start();
@@ -55,7 +33,7 @@ export default class CopyPaste {
               const collectedCSS = getInheirtCss(parentCopiedNode, this.target);
               const span = document.createElement("span");
               span.textContent = copiedNode.textContent;
-              span.style = collectedCSS;
+              debugger
               setStyles(span, collectedCSS);
               n.wrap(span);
 
@@ -75,10 +53,6 @@ export default class CopyPaste {
     event.preventDefault();
     event.clipboardData.setData('styleit/html', html.innerHTML);
     event.clipboardData.setData('text/plain', html.textContent);
-    if (this.onCopy) {
-      this.onCopy(event);
-
-    }
   }
   paste(event) {
     const isShifted = event.shiftKey;
@@ -114,11 +88,6 @@ export default class CopyPaste {
         this.target.removeChild(child);
       }
     })
-
-
-    if (this.onPaste) {
-      this.onPaste(event, "plainText");
-    }
   }
   pasteWithStyles(event) {
     event.preventDefault();
@@ -127,6 +96,7 @@ export default class CopyPaste {
     //on copied on the editor localy
     if (copied) {
       const pastedContainer = document.createElement("div");
+      debugger
       pastedContainer.innerHTML = copied;
       pasteHtmlAtCaret(pastedContainer);
       Array.from(this.target.children).forEach(child=>{
@@ -135,22 +105,30 @@ export default class CopyPaste {
         }
       });
       Array.from(pastedContainer.children).forEach(child=>{
+        const sameNode = child.parentElement.closest("h1,h2,h3,h4,h5,h6,p");
+        if(child.nodeType === 1 && child.nodeName !== "SPAN" && sameNode){
+          child.unwrap();
+        }
         if(!child.textContent.trim()){
           child.unwrap();
         }
       });
-      if (pastedContainer.children.length > 0 && block_elments[pastedContainer.firstChild.nodeName] &&  pastedContainer.previousSibling) {
-        pastedContainer.children[0].unwrap();
+      debugger
+      const block = pastedContainer.closest("h1,h2,h3,h4,h5,h6,p");
+      if(block){
+        const parts = splitHTML(pastedContainer,block,{tag:block.nodeName});
+        if(parts) {
+          parts.left.appendChild(parts.center);
+          parts.center.appendChild(parts.right);
+          parts.right.unwrap();
+          parts.center.unwrap();
+        }
       }
+      normalizeElement(this.target);
       setCaretAt(pastedContainer);
       pastedContainer.unwrap();
 
-      normalizePasedElement(this.target);
-      // 
-      wrapNakedTextNodes(this.target);
-      if (this.onPaste) {
-        this.onPaste(event, "formattedText");
-      }
+    
     } else {
       this.pastePlainText(event);
     }
