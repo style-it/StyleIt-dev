@@ -4,6 +4,12 @@ StyleIt
 StyleIt.js is a simple text editor API built for Developers.
 It can give your App superpowers to do things that you never thought possible.
 
+## DEMO ##
+
+[Link](https://codesandbox.io/s/styleit-8irnj?file=/index.html)
+
+# API Overview #  
+
 ### Install ###
 
 ```js
@@ -15,8 +21,6 @@ npm i styleit-api --save
 ```js
 import StyleIt from 'styleit-api';
 ```
-
-## API Overview ##
 
 ### StyleIt provides two working modes ###
 
