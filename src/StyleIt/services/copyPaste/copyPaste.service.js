@@ -107,11 +107,8 @@ export default class CopyPaste {
       Array.from(pastedContainer.children).forEach(child=>{
         const sameNode = child.parentElement.closest("h1,h2,h3,h4,h5,h6,p");
         if(child.nodeType === 1 && child.nodeName !== "SPAN" && sameNode){
-          const computed = window.getComputedStyle(child);
-          const span = document.createElement("span");
-          span.style.fontSize = computed.fontSize;
-          child.wrap(span);
           child.unwrap();
+
         }
         if(!child.textContent.trim()){
           child.unwrap();
