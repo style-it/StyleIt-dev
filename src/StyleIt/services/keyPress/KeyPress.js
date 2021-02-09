@@ -44,8 +44,6 @@ export default class KeyPress {
                 if (blockElement === this.target) {
                     return false
                 }
-                const range2extract = selection.getRangeAt(0);
-                range2extract.extractContents();
                 range.setStart(selection.anchorNode, selection.anchorOffset);
                 range.setEnd(blockElement, blockElement.childNodes.length);
                 selection.removeAllRanges();
