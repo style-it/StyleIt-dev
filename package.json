@@ -1,6 +1,6 @@
 {
   "name": "styleit-api",
-  "version": "1.0.40",
+  "version": "1.0.41",
   "description": "StyleIt is a simple text editor API built for Developers. ",
   "main": "prod/lib/styleit-api.js",
   "files": [
