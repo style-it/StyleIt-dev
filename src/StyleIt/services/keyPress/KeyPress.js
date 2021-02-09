@@ -41,7 +41,7 @@ export default class KeyPress {
                 const selection = window.getSelection();
                 var blockElement = GetClosestBlockElement(selection.anchorNode);
 
-                if (blockElement === this.target) {
+                if (blockElement === this.target || !blockElement) {
                     return false
                 }
                 range.setStart(selection.anchorNode, selection.anchorOffset);
