@@ -58,7 +58,6 @@ export const mergeNodeContect = node => {
     return firstChild;
 };
 export function mergeTwoNodes(elementOne, elementTwo) {
-    console.log('[mergeTwoNodes] START');
     if (!DomUtilis.isElement(elementOne) || !DomUtilis.isElement(elementTwo)) {
         // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
@@ -119,7 +118,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
     }
     const wrapper = buildWrappingElement(commonStyles, commoncLasses);
     if (!wrapper) {
-        console.error('wrapper is null')
+        // console.error('wrapper is null')
         return null;
     }
 

@@ -61,7 +61,6 @@ export function normalizeElement(el) {
 
         //TODO: normalizr attributes (no:style,className)
         if (element && element.nodeName === "SPAN" && (!element.textContent.trim() || element.attributes.length === 0)) {
-            const unwrapped = element.unwrap();
             return null;
         }
         return element;
@@ -81,4 +80,7 @@ export function removeZeroSpace(textNodes) {
             el.textContent = el.textContent.replace(/\u200B/g, '');
         }
     })
+}
+export function getCleanText(text) {
+    return text.replace(/\s/g, "").replace(/[\u200B-\u200D\uFEFF]/g, '') 
 }

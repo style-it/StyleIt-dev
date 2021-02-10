@@ -1,6 +1,7 @@
 import { wrapNakedTextNodes } from "../elements.service";
 import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
 import {void_elements} from '../../constants/void_elms';
+import { getCleanText } from "../textEditor.service";
 export default class KeyPress {
 
     constructor(target, options = {}) {
@@ -17,24 +18,16 @@ export default class KeyPress {
         this.keypress = (e) => {
             if (e.keyCode === 8) {
                 const target = e.target;
-                if (target.textContent.replace(/\s/g, "").replace(/[\u200B-\u200D\uFEFF]/g, '') === "") {
+                if (getCleanText(target.textContent) === "") {
                     e.preventDefault();
-                    return false;
+                    return;
                 }
-
-                // if(!target.textContent){
-                //     e.preventDefault();
-                //     pasteHtmlAtCaret(" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
-                //     debugger
-                //     wrapNakedTextNodes(this.target);
-                //     return false;
-                // }
             }
             else if (e.keyCode === 13) {
                 if (e.shiftKey) {
-                    pasteHtmlAtCaret("<br/>");
+                    pasteHtmlAtCaret("<br></br>");
                     e.preventDefault();
-                    return false;
+                    return;
                 }
 
                 const range = document.createRange();
