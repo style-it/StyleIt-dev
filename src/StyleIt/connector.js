@@ -20,6 +20,7 @@ export default class Connector {
             }
         } else if (DomUtilis.isElement(element)) {
             // valid..
+            document.execCommand('defaultParagraphSeparator', false, 'p');
         } else {
             //TODO: use the validator
             console.error('[-] =>connectWith should be element id or dom element..');
