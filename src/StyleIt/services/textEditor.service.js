@@ -61,6 +61,7 @@ export function normalizeElement(el) {
 
         //TODO: normalizr attributes (no:style,className)
         if (element && element.nodeName === "SPAN" && (!element.textContent.trim() || element.attributes.length === 0)) {
+            element.unwrap();
             return null;
         }
         return element;
