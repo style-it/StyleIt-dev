@@ -25,7 +25,7 @@ export default class KeyPress {
             }
             else if (e.keyCode === 13) {
                 if (e.shiftKey) {
-                    pasteHtmlAtCaret("<br></br>");
+                    pasteHtmlAtCaret("</br>&#8203;");
                     e.preventDefault();
                     return;
                 }
