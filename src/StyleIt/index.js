@@ -5,7 +5,8 @@ import {
     getTextNodes,
     createInnerWrapperElement,
     setCaretAt,
-    GetClosestBlockElement
+    GetClosestBlockElement,
+    querySelectorUnderSelection,
 } from "./services/range.service";
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
@@ -17,7 +18,7 @@ import { elementToJson, JsonToElement, getSelectedElement, wrapNakedTextNodes } 
 import { EVENTS } from './services/events/events';
 import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
-import { block_elments } from "./constants/block_elms";
+import { block_elments, block_elments_queryString } from "./constants/block_elms";
 
 export default class Core {
 
@@ -181,6 +182,29 @@ export default class Core {
 
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
     }
+    formatBlock(tagName, options) {
+        if(!block_elments[tagName.toUpperCase()]){
+            throw Error(`valid tags: ${block_elments_queryString}`);
+        }
+        const elements = querySelectorUnderSelection(block_elments_queryString);
+        if (elements.length > 0) {
+            const ranges = wrapRangeWithElement();
+            const { firstFlag, lastFlag } = setSelectionFlags(ranges[0], ranges[ranges.length - 1]); //Set Flag at last
+
+            elements.forEach(block => {
+                const tag = document.createElement(tagName);
+                Array.from(block.attributes).forEach(attr => {
+                    tag.setAttribute(attr.name, attr.value);
+                });
+                block.wrap(tag);
+                block.unwrap();
+                Array.from(ranges).forEach(range=>range.unwrap());
+                setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+            });
+        }
+
+
+    }
     //TODO: review
     //question : we want to handle and toggle any attribute ? 
     toggleClass(className, options) {
@@ -198,7 +222,6 @@ export default class Core {
             return;
         }
         if (!options) options = {};
-        if (typeof (options.selection) !== "boolean") options.selection = true;
         const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elements[0].closest(`[class='${className}']`);
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
@@ -217,7 +240,7 @@ export default class Core {
                 }
             })
         }
-        const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(elements[0], elements[elements.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
+        const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
@@ -244,16 +267,11 @@ export default class Core {
         this.ELEMENTS = [];
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
-        if (typeof (options.selection) !== "boolean") options.selection = true;
 
 
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
-        if (!options.selection) {
-            const lastNode = this.ELEMENTS[this.ELEMENTS.length - 1];
-            if (lastNode)
-                this.caretHolder = this.createCaretPlacement(lastNode);
-        }
+
 
         if (options.unWrap && Array.isArray(options.unWrap)) {
             options.unWrap.forEach(selector => {
@@ -266,7 +284,7 @@ export default class Core {
             })
         }
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        const { firstFlag, lastFlag } = options.selection ? setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]) : { firstFlag: null, lastFlag: null }; //Set Flag at last
+        const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
         removeZeroSpace(getTextNodes(this.connectedElement));
 
@@ -422,7 +440,7 @@ export default class Core {
                 };
                 createInlineStyle(blockElement);
                 // Array.from(blockElement.querySelectorAll("span")).forEach(el=>el.style[key] = value);
-            } 
+            }
 
         } else {
             let isSuccess = findBlockAndStyleIt(element, key, value);

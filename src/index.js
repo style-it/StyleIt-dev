@@ -18,6 +18,7 @@ export default class StyleIt {
       this.toggleClass = styleIt.toggleClass;
       this.link = styleIt.link;
       this.unLink = styleIt.unLink;
+      this.formatBlock = styleIt.formatBlock;
       this.save = styleIt.save;
       this.load = styleIt.load;
       this.destroy = styleIt.destroy;
@@ -26,6 +27,7 @@ export default class StyleIt {
       //========================================//
       this.toggleClass = this.toggleClass.bind(styleIt);
       this.execCmd = this.execCmd.bind(styleIt);
+      this.formatBlock = this.formatBlock.bind(styleIt);
       this.on = this.on.bind(styleIt);
       this.link = this.link.bind(styleIt);
       this.unLink = this.unLink.bind(styleIt);
