@@ -198,9 +198,9 @@ export default class Core {
                 });
                 block.wrap(tag);
                 block.unwrap();
-                Array.from(ranges).forEach(range=>range.unwrap());
-                setSelectionBetweenTwoNodes(firstFlag, lastFlag);
             });
+            Array.from(ranges).forEach(range=>range.unwrap());
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
         }
 
 
