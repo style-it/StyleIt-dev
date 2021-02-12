@@ -1,4 +1,4 @@
-import { block_elments } from "../../constants/block_elms";
+import { block_elments, block_elments_queryString } from "../../constants/block_elms";
 import { void_elements } from "../../constants/void_elms";
 import { splitHTML } from "../../utilis/splitHTML";
 import { pasteHtmlAtCaret, setCaretAt } from "../range.service";
@@ -102,7 +102,8 @@ export default class CopyPaste {
         }
       });
       Array.from(pastedContainer.children).forEach(child => {
-        const sameNode = child.parentElement.closest("h1,h2,h3,h4,h5,h6,p");
+        
+        const sameNode = child.parentElement.closest(block_elments_queryString);
         if (sameNode && block_elments[child.nodeName] && getCleanText(sameNode.textContent) === getCleanText(pastedContainer.textContent)) {
           sameNode.parentElement.insertBefore(child, sameNode);
         }
@@ -116,7 +117,7 @@ export default class CopyPaste {
           child.unwrap();
         }
       });
-      const block = pastedContainer.closest("h1,h2,h3,h4,h5,h6,p");
+      const block = pastedContainer.closest(block_elments_queryString);
       if (block) {
         const parts = splitHTML(pastedContainer, block, { tag: block.nodeName });
         if (parts) {
