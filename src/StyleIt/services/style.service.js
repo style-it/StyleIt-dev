@@ -1,6 +1,7 @@
 import { normalizeClassName } from "./className.service";
 import { UseRules } from "../rules/rules";
 import { getSelectedElement } from "./elements.service";
+import { GetClosestBlockElement } from "./range.service";
 
 export function getInheirtCss(fromElement, toElement) {
     var intailStyle = {};
@@ -55,8 +56,8 @@ export function setStyles(element, jsonStyle) {
 //TODO: fix name
 export function setStyle(element, key, value) {
     element.style[key] = value;
-    if(key === "color"){
-        UseRules({element:element,key:'color',value:value});
+    if (key === "color") {
+        UseRules({ element: element, key: 'color', value: value });
     }
     Array.from(element.querySelectorAll(`[style*='${key}']`)).forEach(el => {
         el.style[key] = null;
@@ -66,13 +67,13 @@ export function setStyle(element, key, value) {
     //TODO:review
     // UseRules({element:element,key:key,value:value});
 }
-export const collectStyleFromSelectedElement = (connectecElement) =>{   
-    const selectedElement = getSelectedElement();                
-    return getInheirtCss(selectedElement,connectecElement);
+export const collectStyleFromSelectedElement = (connectecElement) => {
+    const selectedElement = getSelectedElement();
+    return getInheirtCss(selectedElement, connectecElement);
 }
 
 export function normalizeStyle(element) {
-    if(!element) return null;
+    if (!element) return null;
     //TODO:review
     const style = element.getAttribute('style');
     if (!style) {
@@ -116,4 +117,13 @@ export function getStyle(el) {
 
     }
     return styles;
+}
+export function findBlockAndStyleIt(element, key, value) {
+    let blockElement = GetClosestBlockElement(element);
+    if (blockElement) {
+        blockElement.style[key] = value;
+        Array.from(blockElement.querySelectorAll(`[style*='${key}']`)).forEach(el => el.style[key] = null);
+        return true;
+    }
+    return false;
 }
