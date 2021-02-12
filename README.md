@@ -78,6 +78,35 @@ styleIt.on("inspect",(collectedStyles) => {
 })
 ```
 
+## Format Block ##
+
+Adds an HTML block-level element around the line containing the current selection.
+
+### Tags ### 
+
+| Tag Name    |
+| ----------- |
+| H1|
+| H2|
+| H3|
+| H4|
+| H5|
+| H6|
+| P |
+| PRE |
+| ADDRESS |
+
+### How to use ###
+
+```js
+import StyleIt from 'styleit-api';
+const styleIt = new StyleIt("editor-id");
+
+const toggleClass = (tagName)=> styleIt.formatBlock(tagName);
+
+```
+
+
 ## Css Class API ##
 
 The Css Class API lets you create a Css class with your pre-made rules. You can pass this class to a StyleIt object and use it as a markup just like underline or bold.
