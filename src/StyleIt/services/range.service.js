@@ -1,4 +1,4 @@
-import { block_elments } from "../constants/block_elms";
+import { block_elments_queryString } from "../constants/block_elms";
 import { getSelectedElement } from "./elements.service";
 
 export function createInnerWrapperElement(element, options) {
@@ -15,7 +15,7 @@ export function GetClosestBlockElement(element) {
   if (element.nodeType !== 1) {
     element = element.parentElement;
   }if(element){
-    const block = element.closest("p,h1,h2,h3,h4,h5,h6");
+    const block = element.closest(block_elments_queryString);
     return block;
   }
  
@@ -224,7 +224,7 @@ export function removeElement(el) {
   }
 }
 export function replaceNode(replacementNode, node) {
-  if (typeof node.parentNode !== "undefined") {
+  if (node.parentNode) {
     removeElement(replacementNode);
     node.parentNode.insertBefore(replacementNode, node);
     removeElement(node);
@@ -276,14 +276,33 @@ export function createWrapperFunction(wrapperEl, range) {
 export const querySelectorUnderSelection = (querySelector) => {
   var selection = window.getSelection();
   var range = selection.getRangeAt(0);
-  const elements = range.commonAncestorContainer.querySelectorAll(querySelector);
   const allSelected = [];
+
+  let commonAncestorContainer = range.commonAncestorContainer;
+  
+  if(commonAncestorContainer.nodeType === 3){
+    commonAncestorContainer = commonAncestorContainer.parentElement;
+  }
+  if(!commonAncestorContainer){
+    return allSelected;
+  }
+    const elements = commonAncestorContainer.querySelectorAll(querySelector);
   for (var i = 0, el; el = elements[i]; i++) {
     // The second parameter says to include the element 
     // even if it's not fully selected
     if (selection.containsNode(el, true)) {
         allSelected.push(el);
     }
+}
+if(allSelected.length === 0) {
+  const selected = getSelectedElement();
+  if(selected){
+    const closestElement = selected.closest(querySelector);
+    if(closestElement){
+
+      allSelected.push(closestElement);
+    }
+  }
 }
 return allSelected;
 }
