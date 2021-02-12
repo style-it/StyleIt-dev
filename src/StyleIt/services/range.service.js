@@ -14,20 +14,11 @@ export function GetClosestBlockElement(element) {
   }
   if (element.nodeType !== 1) {
     element = element.parentElement;
+  }if(element){
+    const block = element.closest("p,h1,h2,h3,h4,h5,h6");
+    return block;
   }
-  if (block_elments[element.nodeName]) return element;
-  let parentElement = element;
-  while (parentElement && window.getComputedStyle(parentElement).display === "inline") {
-    if (parentElement.parentElement) {
-      parentElement = parentElement.parentElement;
-    } else {
-      break;
-    }
-  }
-  if(parentElement  && block_elments[parentElement.nodeName]){
-    return parentElement;
-  }
-  return false;
+ 
 }
 //TODO:review
 export function wrapRangeWithBlockElement(limitElement) {
