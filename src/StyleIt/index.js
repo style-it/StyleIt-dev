@@ -440,7 +440,10 @@ export default class Core {
     createBlockElAndStyleIt(key, value, element) {
         const pargh = document.createElement("p");
         pargh.style[key] = value;
-        element.wrap(pargh);
+        this.connectedElement.childNodes(child=>{
+            pargh.appendChild(child);
+        });
+        this.connectedElement.appendChild(pargh);
     }
     isVAlidKeyValue(key,value){
         return !!(typeof key === "string" && typeof value === "string"); 
