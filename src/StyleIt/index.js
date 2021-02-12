@@ -9,13 +9,13 @@ import {
 } from "./services/range.service";
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
-import { setStyle, toggleStyle, collectStyleFromSelectedElement } from "./services/style.service";
+import { setStyle, toggleStyle, collectStyleFromSelectedElement, findBlockAndStyleIt } from "./services/style.service";
 import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
 import Connector from './connector';
 import './components/custom/textSelected';
-import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
-import {EVENTS} from './services/events/events';
-import { createTempLinkElement, resetURL,TARGETS } from "./services/link.service";
+import { elementToJson, JsonToElement, getSelectedElement, wrapNakedTextNodes } from "./services/elements.service";
+import { EVENTS } from './services/events/events';
+import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
 import { block_elments } from "./constants/block_elms";
 
@@ -28,15 +28,15 @@ export default class Core {
         this.__config = {
             onInspect: undefined,
         };
-        
-        this.on = (key,callback)=>{
-            if(typeof(key) !== "string"){
+
+        this.on = (key, callback) => {
+            if (typeof (key) !== "string") {
                 console.error("key must be a string..");
             }
-            if(typeof(callback) !== "function"){
+            if (typeof (callback) !== "function") {
                 console.error("callback must be a function..");
             }
-            EVENTS[key]  = callback;
+            EVENTS[key] = callback;
         };
         this.Connector = new Connector();
         this.modeHandlers = {
@@ -110,10 +110,10 @@ export default class Core {
     //TODO: remove a childs
     //TODO: move function to Link.service.js
     link(options = {}) {
-        if (!options || (options && !options.href) ||  !this.isValid()) {
+        if (!options || (options && !options.href) || !this.isValid()) {
             return;
         }
-     
+
         if (window.getSelection && !window.getSelection().toString()) {
             console.warn("no text selected..");
             return null;
@@ -152,7 +152,7 @@ export default class Core {
             newURL.push(_protocol);
             return _protocol;
         }
-    
+
 
         const { href = "", protocol = "", target = "" } = options;
 
@@ -178,7 +178,7 @@ export default class Core {
         setTargetToTag(linkElements, renderedLink, _target);
         const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
         setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-        
+
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
     }
     //TODO: review
@@ -245,7 +245,7 @@ export default class Core {
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
         if (typeof (options.selection) !== "boolean") options.selection = true;
-   
+
 
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
@@ -293,8 +293,8 @@ export default class Core {
                 this.caretHolder = null;
             }
         }
-        const collectedStyles =  collectStyleFromSelectedElement(this.connectedElement);
-        if(typeof (EVENTS["inspect"]) === "function"){
+        const collectedStyles = collectStyleFromSelectedElement(this.connectedElement);
+        if (typeof (EVENTS["inspect"]) === "function") {
             EVENTS["inspect"](collectedStyles);
         }
         this.dispatchEvent('styleChanged', collectedStyles);
@@ -397,7 +397,7 @@ export default class Core {
 
     }
     createBlockStyle(options, element, key, value) {
-      
+
         if (options.as === "inline") {
             let blockElement = GetClosestBlockElement(element);
             if (blockElement) {
@@ -405,7 +405,7 @@ export default class Core {
                     const span = document.createElement("span");
                     span.style[key] = value;
                     node.wrap(span);
-                };  
+                };
                 const createInlineStyle = (parentNode) => {
                     //TODO: tests
                     parentNode.style[key] = null;
@@ -413,7 +413,7 @@ export default class Core {
                         if (node.nodeType === 3) {
                             wrapTextNodeWithAppendStyle(node);
                         } else if (node.nodeType === 1 && !void_elements[node.nodeName]) {
-                                createInlineStyle(node);
+                            createInlineStyle(node);
                         }
                         else {
                             node.style[key] = value;
@@ -422,31 +422,18 @@ export default class Core {
                 };
                 createInlineStyle(blockElement);
                 // Array.from(blockElement.querySelectorAll("span")).forEach(el=>el.style[key] = value);
-            } else {
-                this.createBlockElAndStyleIt(key, value, element);
-            }
+            } 
 
         } else {
-            let blockElement = GetClosestBlockElement(element);
-            if (blockElement) {
-                blockElement.style[key] = value;
-                Array.from(blockElement.querySelectorAll(`[style*='${key}']`)).forEach(el => el.style[key] = null);
-            } else {
-                this.createBlockElAndStyleIt(key, value, element);
+            let isSuccess = findBlockAndStyleIt(element, key, value);
+            if (!isSuccess) {
+                console.log("text nodes and inline elements must be inside block element like p,h1,h2,h3,h4,h5,h6");
             }
         }
     }
 
-    createBlockElAndStyleIt(key, value, element) {
-        const pargh = document.createElement("p");
-        pargh.style[key] = value;
-        this.connectedElement.childNodes(child=>{
-            pargh.appendChild(child);
-        });
-        this.connectedElement.appendChild(pargh);
-    }
-    isVAlidKeyValue(key,value){
-        return !!(typeof key === "string" && typeof value === "string"); 
+    isVAlidKeyValue(key, value) {
+        return !!(typeof key === "string" && typeof value === "string");
     }
     isValid() {
         if (!this.connectedElement) {
