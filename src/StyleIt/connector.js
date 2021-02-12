@@ -4,6 +4,7 @@ import Inpsector from "./services/Inspector/Inspector.service";
 import KeyPress from "./services/keyPress/KeyPress";
 
 import { elementToJson, JsonToElement, wrapNakedTextNodes } from "./services/elements.service";
+import Observer from "./services/observer/observer";
 
 //TODO:review
 export default class Connector {
@@ -47,7 +48,8 @@ export default class Connector {
             return {
                 copyPaste: new CopyPaste(element, options),
                 inspector: new Inpsector(element, options.onInspect),
-                keyPress: new KeyPress(element, options)
+                keyPress: new KeyPress(element, options),
+                observer: new Observer(element)
             }
         }
         RenderInnerHTML(element);
