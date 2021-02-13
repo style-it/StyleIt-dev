@@ -14,8 +14,16 @@ export function wrapNakedTextNodes(target) {
         if (((c.nodeType === 3 && c.parentElement === target) || c.nodeType === 1 && window.getComputedStyle(c).display === "inline") && !c.parentElement.closest("p") && c.textContent.trim()) {
             const p = document.createElement("p");
             c.wrap(p);
+            if(c.nodeName === "FONT"){
+                const span = document.createElement("span");
+                span.style.color = c.getAttribute("color");
+                c.wrap(span);
+                c.unwrap();
+            }
             while(p.nextSibling && (p.nextSibling.nodeType === 3 || window.getComputedStyle(p.nextSibling).display === "inline") ){
                 p.appendChild(p.nextSibling);
+                console.log(p.nextSibling)
+
             }
             // while(p.previousSibling && (p.previousSibling.nodeType === 3 || window.getComputedStyle(p.previousSibling).display === "inline") ){
             //     p.prepend(p.previousSibling);
