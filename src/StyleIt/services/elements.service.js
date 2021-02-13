@@ -11,7 +11,7 @@ export function wrapNakedTextNodes(target) {
         if (c.nodeType === 1 && !c.textContent.trim() && c.children.length === 0 && !void_elements[c.nodeName]) {
             c.parentNode.removeChild(c);
         }
-        if (((c.nodeType === 3 && c.parentElement === target)) && !c.parentElement.closest("p") && c.textContent.trim()) {
+        if (((c.nodeType === 3 && c.parentElement === target) || c.nodeType === 1 && window.getComputedStyle(c).display === "inline") && !c.parentElement.closest("p") && c.textContent.trim()) {
             const p = document.createElement("p");
             c.wrap(p);
             while(p.nextSibling && (p.nextSibling.nodeType === 3 || window.getComputedStyle(p.nextSibling).display === "inline") ){
