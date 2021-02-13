@@ -16,6 +16,7 @@ export default class KeyPress {
 
 
         this.keypress = (e) => {
+            wrapNakedTextNodes(this.target);
             if (e.keyCode === 8) {
                 const target = e.target;
                 if (getCleanText(target.textContent) === "") {
