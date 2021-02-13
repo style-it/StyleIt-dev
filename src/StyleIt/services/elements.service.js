@@ -5,8 +5,7 @@ import { setCaretAt } from "./range.service";
 
 export function wrapNakedTextNodes(target) {
     target.normalize();
-    // target is the main contenteditable element
-    // so 
+
     Array.from(target.childNodes).forEach(c => {
 
         if (c.nodeType === 1 && !c.textContent.trim() && c.children.length === 0 && !void_elements[c.nodeName]) {
@@ -15,10 +14,35 @@ export function wrapNakedTextNodes(target) {
         if (((c.nodeType === 3 && c.parentElement === target)) && !c.parentElement.closest("p") && c.textContent.trim()) {
             const p = document.createElement("p");
             c.wrap(p);
+            while(p.nextSibling && (p.nextSibling.nodeType === 3 || window.getComputedStyle(p.nextSibling).display === "inline") ){
+                p.appendChild(p.nextSibling);
+            }
+            // while(p.previousSibling && (p.previousSibling.nodeType === 3 || window.getComputedStyle(p.previousSibling).display === "inline") ){
+            //     p.prepend(p.previousSibling);
+            // }
+            p.normalize();
             setCaretAt(p, 1);
         }
     })
 }
+
+// export function wrapNakedTextNodes(target) {
+//     target.normalize();
+//     // target is the main contenteditable element
+//     // so 
+//     Array.from(target.childNodes).forEach(c => {
+
+//         if (c.nodeType === 1 && !c.textContent.trim() && c.children.length === 0 && !void_elements[c.nodeName]) {
+//             c.parentNode.removeChild(c);
+//         }
+//         if (((c.nodeType === 3 && c.parentElement === target)) && !c.parentElement.closest("p") && c.textContent.trim()) {
+//             const p = document.createElement("p");
+//             c.wrap(p);
+//             p.normalize();
+//             setCaretAt(p, 1);   
+//         }
+//     })
+// }
 export function walkTheDOM(node, func) {
     if (!node) return null;
     func(node);
