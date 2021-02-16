@@ -3,8 +3,6 @@ import CopyPaste from "./services/copyPaste/copyPaste.service";
 import Inpsector from "./services/Inspector/Inspector.service";
 import KeyPress from "./services/keyPress/KeyPress";
 
-import { elementToJson, JsonToElement, wrapNakedTextNodes } from "./services/elements.service";
-
 //TODO:review
 export default class Connector {
     constructor() {
