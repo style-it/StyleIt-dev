@@ -14,7 +14,7 @@ import { setStyle, toggleStyle, collectStyleFromSelectedElement, findBlockAndSty
 import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
 import Connector from './connector';
 import './components/custom/textSelected';
-import { elementToJson, JsonToElement, getSelectedElement, wrapNakedTextNodes } from "./services/elements.service";
+import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
 import { EVENTS } from './services/events/events';
 import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
@@ -50,8 +50,8 @@ export default class Core {
         }
         this.connectedElement = this.Connector.Connect(target, this.config);
     }
-    save() {
-        return elementToJson(this.connectedElement);
+    save(element) {
+        return elementToJson(element || this.connectedElement);
     }
     load(json) {
         return JsonToElement(json, this.connectedElement);
@@ -179,7 +179,6 @@ export default class Core {
         setTargetToTag(linkElements, renderedLink, _target);
         const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
         setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
     }
     formatBlock(tagName, options) {
@@ -242,6 +241,7 @@ export default class Core {
         }
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
+
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
         } else {
@@ -264,6 +264,7 @@ export default class Core {
             return;
         }
         this.connectedElement.normalize();
+
         this.ELEMENTS = [];
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
@@ -412,7 +413,6 @@ export default class Core {
                 setStyle(element, key, value);
             }
         }
-
     }
     createBlockStyle(options, element, key, value) {
 
@@ -458,11 +458,8 @@ export default class Core {
             console.error('please create new instance..')
             return false;
         };
-        if (this.connectedElement.contentEditable === "false") {
-            return false;
-        }
-        var selectedElement = getSelectedElement();
-        if (selectedElement && (selectedElement.ischildOf(this.connectedElement) || selectedElement === this.connectedElement)) {
+        const selectedElement = getSelectedElement();
+        if (selectedElement && (selectedElement.ischildOf(this.connectedElement) && selectedElement.isContentEditable)) {
             return true;
         }
         ;
