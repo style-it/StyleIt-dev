@@ -459,7 +459,7 @@ export default class Core {
             return false;
         };
         const selectedElement = getSelectedElement();
-        if (selectedElement && (selectedElement.ischildOf(this.connectedElement) && selectedElement.isContentEditable)) {
+        if (selectedElement && ((selectedElement.ischildOf(this.connectedElement) || selectedElement === this.connectedElement) && selectedElement.isContentEditable)) {
             return true;
         }
         ;
