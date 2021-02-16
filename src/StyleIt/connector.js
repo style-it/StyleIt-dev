@@ -18,31 +18,17 @@ export default class Connector {
                 console.error('[-] =>connectWith should be element id or dom element..');
                 return null;
             }
-        } else if (DomUtilis.isElement(element)) {
+        } 
+         if (DomUtilis.isElement(element)) {
             // valid..
             document.execCommand('defaultParagraphSeparator', false, 'p');
+            document.execCommand("styleWithCSS", true, null);
         } else {
             //TODO: use the validator
             console.error('[-] =>connectWith should be element id or dom element..');
             return null;
         }
-        const RenderInnerHTML = (element) => {
-            const emptyElement = (node) => {
-                return new Promise((resolve) => {
-                    while (node.firstElementChild) {
-                        node.firstElementChild.remove();
-                    }
-                    resolve();
-                })
-            }
-            wrapNakedTextNodes(element);
-
-            const jsonContent = elementToJson(element);
-
-            const renderedElement = JsonToElement(jsonContent);
-
-            emptyElement(element).then(() => element.innerHTML = renderedElement.innerHTML);
-        }
+      
         const usePlugins = (element, options) => {
             return {
                 copyPaste: new CopyPaste(element, options),
@@ -50,11 +36,20 @@ export default class Connector {
                 keyPress: new KeyPress(element, options),
             }
         }
-        RenderInnerHTML(element);
-        // element.contentEditable = 'true';
+        this.createDefaultStyle();
         this.plugins = usePlugins(element, options);
         return element;
     }
+    createDefaultStyle() {
+        const style = document.createElement("style");
+        style.innerHTML = `
+            [contenteditable]{
+                min-height:10px;
+            }
+            `;
+        document.head.appendChild(style);
+    }
+
     //TODO: destory events..
     //question: how to use the events ? 
 
