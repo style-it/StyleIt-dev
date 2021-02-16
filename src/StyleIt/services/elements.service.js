@@ -1,32 +1,28 @@
 import { getStyle, JsonObjectToStyleString } from "./style.service";
-import Levels from '../constants/Levels.json';
 import { void_elements } from "../constants/void_elms";
-import { setCaretAt } from "./range.service";
+import { block_elments_queryString } from "../constants/block_elms";
+import { inline_elements } from "../constants/inline_elems";
+import { removeElement } from "./range.service";
 
 export function wrapNakedTextNodes(target) {
+
     target.normalize();
 
     Array.from(target.childNodes).forEach(c => {
 
         if (c.nodeType === 1 && !c.textContent.trim() && c.children.length === 0 && !void_elements[c.nodeName]) {
-            c.parentNode.removeChild(c);
+            removeElement(c);
+            return;
         }
-        if (c.parentElement === target && (c.nodeType === 3 || c.nodeType === 1 && window.getComputedStyle(c) .display === "inline" ) && !c.parentElement.closest("p") && c.textContent.trim()) {
+        if (c.parentElement === target  && c.textContent.trim() && ((c.nodeType === 1 && inline_elements[c.nodeName]  &&  !c.parentElement.closest(block_elments_queryString)) || c.nodeType === 3)) {
             const p = document.createElement("p");
             c.wrap(p);
             
-            while(p.nextSibling && (p.nextSibling.nodeType === 3 || window.getComputedStyle(p.nextSibling).display === "inline") ){
+            while(p.nextSibling && (p.nextSibling.nodeType === 3 || inline_elements[p.nextSibling.nodeName]) ){
                 p.appendChild(p.nextSibling);
-            }
-            if(c.nodeName === "FONT"){
-                const span = document.createElement("span");
-                span.style.color = c.getAttribute("color");
-                c.wrap(span);
-                c.unwrap();
-            }
+            }     
 
             p.normalize();
-            setCaretAt(p, 1);
         }
     })
 }
@@ -76,6 +72,14 @@ export function JsonToElement(jsonObject, parentElement) {
             const collectedStyle = JsonObjectToStyleString(jsElement.style);
             element.style = collectedStyle;
         }
+        if(jsElement.attrs){
+            for (const attr in jsElement.attrs) {
+                if (Object.hasOwnProperty.call(jsElement.attrs, attr)) {
+                    const value = jsElement.attrs[attr];
+                    element.setAttribute(attr,value);
+                }
+            }
+        }
         //TODO: other attrs...
     }
     const createHtmlElement = (jsElement) => {
@@ -101,7 +105,7 @@ export function JsonToElement(jsonObject, parentElement) {
         }
         return element;
     }
-    if (!parentElement && jsonObject.type === Levels['0']) {
+    if (!parentElement) {
         parentElement = createHtmlElement(jsonObject);
     }
     if (Array.isArray(jsonObject.children)) {
@@ -117,18 +121,13 @@ export function JsonToElement(jsonObject, parentElement) {
     }
     return parentElement;
 }
-export function elementToJson(node, level) {
+export function elementToJson(node) {
 
-    if (typeof (level) !== "number") level = 0;
     const nodeType = node.nodeName;
     let isShouldRenderAttrs = true;
     let json = {};
     let isValid = true;
 
-    if (Levels[level]) {
-        json.type = Levels[level];
-        level++;
-    }
 
     switch (nodeType) {
         case "#text":
@@ -150,16 +149,30 @@ export function elementToJson(node, level) {
     }
     if (!isValid) return null;
     if (isShouldRenderAttrs) {
+        json.attrs = {};
         //TODO: get attrs 
-        const style = getStyle(node);
-        if (Object.keys(style).length > 0) {
-            json.style = style;
-        }
-        if (node.classList && node.classList.length > 0)
-            json.classList = [...node.classList];
+        Array.from(node.attributes).forEach(attr=>{
+            switch (attr.name) {
+                case "style":
+                    const style = getStyle(node);
+                    if (Object.keys(style).length > 0) {
+                        json.style = style;
+                    }
+                    break;
+                    case "class":
+                        if (node.classList && node.classList.length > 0)
+                        json.classList = [...node.classList];
+                        break;
+                default:
+                    json.attrs[attr.name] = attr.value;
+                    break;
+            }
+        })
+      
+ 
 
         if (node.childNodes && node.childNodes.length > 0)
-            json.children = [...node.childNodes].map((cn) => elementToJson(cn, level)).filter(v => v);
+            json.children = [...node.childNodes].map((cn) => elementToJson(cn)).filter(v => v);
     }
 
     return json;
