@@ -2,6 +2,7 @@ import DomUtilis from "./utilis/DomUtilis";
 import CopyPaste from "./services/copyPaste/copyPaste.service";
 import Inpsector from "./services/Inspector/Inspector.service";
 import KeyPress from "./services/keyPress/KeyPress";
+import { wrapNakedTextNodes } from "./services/elements.service";
 
 //TODO:review
 export default class Connector {
@@ -34,6 +35,9 @@ export default class Connector {
                 keyPress: new KeyPress(element, options),
             }
         }
+        Array.from(element.querySelectorAll("[contenteditable]")).forEach(editable=>{    
+            wrapNakedTextNodes(editable);
+        });
         this.createDefaultStyle();
         this.plugins = usePlugins(element, options);
         return element;
