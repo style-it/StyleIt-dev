@@ -49,17 +49,11 @@ export function normalizeElement(el) {
            
         } while (mergedContent && element);
     }
-    el.normalize();
-    recurse(el);
-
+        recurse(el);
     function _normalize(element) {
         element.normalize();
         normalizeClassName(element);
         normalizeStyle(element);
-        // 
-            //  const tags = ["STRIKE", "EM", "I", "B", "STRONG", "U", "A"];
-
-        //TODO: normalizr attributes (no:style,className)
         if (element && element.nodeName === "SPAN" && (!element.textContent.trim() || element.attributes.length === 0)) {
             element.unwrap();
             return null;
