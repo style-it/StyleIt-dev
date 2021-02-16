@@ -1,7 +1,8 @@
-import { wrapNakedTextNodes } from "../elements.service";
+import {  wrapNakedTextNodes } from "../elements.service";
 import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
 import {void_elements} from '../../constants/void_elms';
 import { getCleanText } from "../textEditor.service";
+import { block_elments_queryString } from "../../constants/block_elms";
 export default class KeyPress {
 
     constructor(target, options = {}) {
@@ -13,10 +14,15 @@ export default class KeyPress {
             this.onKeyPress = options.onKeyPress;
         }
         this.target = target;
-
+    
 
         this.keypress = (e) => {
-            wrapNakedTextNodes(this.target);
+            const sel = window.getSelection();
+            if(sel.focusNode.nodeType === 3 && !sel.focusNode.parentElement.closest(block_elments_queryString)){
+                const p = document.createElement("P");
+                sel.focusNode.wrap(p);
+                setCaretAt(p,1)
+            }
             if (e.keyCode === 8) {
                 const target = e.target;
                 if (getCleanText(target.textContent) === "") {
