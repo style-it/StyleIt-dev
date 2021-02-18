@@ -113,6 +113,8 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         if (wrapper.attributes.length === 0) {
             wrapper.unwrap();
             return null;
+        }else{
+            wrapper.normalize();
         }
         return wrapper;
     }
