@@ -287,7 +287,7 @@ export default class Core {
         });
         const normalizedParents = [];
         this.ELEMENTS.forEach(el=>{
-            if(normalizedParents.findIndex(n=>n === el.parentElement) < 0){
+            if(el.parentElement &&  normalizedParents.findIndex(n=>n === el.parentElement) < 0){
                 normalizeElement(el.parentElement);// merge siblings and parents with child as possible.. 
                 normalizedParents.push(el.parentElement);
             }
@@ -324,7 +324,7 @@ export default class Core {
         if (this.events[event])
             this.events[event](payload);
     }
-    onToggle(element, key, value, options) {
+    onToggle(element, key, value, options = {}) {
         if (options.target === "block") {
             this.createBlockStyle(options, element, key, value);
         } else {
@@ -365,7 +365,7 @@ export default class Core {
         }
 
     }
-    onExtend(element, key, value, options) {
+    onExtend(element, key, value, options = {}) {
         if (options.target === "block") {
             this.createBlockStyle(options, element, key, value);
         } else {
