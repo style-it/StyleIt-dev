@@ -272,18 +272,6 @@ export default class Core {
 
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
-
-
-        if (options.unWrap && Array.isArray(options.unWrap)) {
-            options.unWrap.forEach(selector => {
-                this.ELEMENTS.forEach(txtNode => {
-                    const closestElementToUnWrap = txtNode.closest(selector);
-                    if (closestElementToUnWrap) {
-                        closestElementToUnWrap.unwrap();
-                    }
-                })
-            })
-        }
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
@@ -297,7 +285,13 @@ export default class Core {
             if (mode === Modes.Toggle && typeof (ToggleMode) === 'undefined')
                 ToggleMode = result;
         });
-        normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
+        const normalizedParents = [];
+        this.ELEMENTS.forEach(el=>{
+            if(normalizedParents.findIndex(n=>n === el.parentElement) < 0){
+                normalizeElement(el.parentElement);// merge siblings and parents with child as possible.. 
+                normalizedParents.push(el.parentElement);
+            }
+        })
         //use the first and last flags to make the text selection and unwrap them..
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
