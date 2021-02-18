@@ -1,5 +1,6 @@
 import { block_elments_queryString } from "../constants/block_elms";
 import { getSelectedElement } from "./elements.service";
+import { getCleanText } from "./textEditor.service";
 
 export function createInnerWrapperElement(element, options) {
   if (typeof (options) !== "object") options = {};
@@ -14,11 +15,11 @@ export function GetClosestBlockElement(element) {
   }
   if (element.nodeType !== 1) {
     element = element.parentElement;
-  }if(element){
+  } if (element) {
     const block = element.closest(block_elments_queryString);
     return block;
   }
- 
+
 }
 //TODO:review
 export function wrapRangeWithBlockElement(limitElement) {
@@ -58,19 +59,12 @@ export function wrapRangeWithBlockElement(limitElement) {
 }
 export function wrapRangeWithElement(wrapTag) {
   const ranges = getRanges();
-  return ranges.map(r => {
-    return wrapRangeText(wrapTag, r);
-  }).flat();
+    return wrapRangeText(wrapTag, ranges);
+
 }
 export function getRanges() {
-  let ranges = [];
-
   const sel = window.getSelection();
-
-  for (let i = 0; i < sel.rangeCount; i++) {
-    ranges[i] = sel.getRangeAt(i);
-  }
-  return ranges;
+  return sel.getRangeAt(0);;
 }
 // return all text nodes that are contained within `el`
 export function getTextNodes(el) {
@@ -82,6 +76,7 @@ export function getTextNodes(el) {
     node = walker.nextNode();
 
   while (node) {
+    if(getCleanText(node.textContent))
     textNodes.push(node);
     node = walker.nextNode();
   }
@@ -133,7 +128,7 @@ export function setCaretAt(element, charIndex = 0) {
     while (textNode && textNode.firstChild && textNode.nodeType !== 3) {
       textNode = textNode.firstChild;
     }
-    if(textNode){
+    if (textNode) {
       textNode = [textNode];
     }
   }
@@ -187,7 +182,7 @@ export function pasteHtmlAtCaret(html) {
 
       }
 
-    
+
 
       // Preserve the selection
       if (lastNode) {
@@ -269,8 +264,15 @@ export function createWrapperFunction(wrapperEl, range) {
       endNode = currentWrapper;
       endOffset = 1
     }
-    currentRange.surroundContents(currentWrapper)
-    return currentWrapper
+    currentRange.surroundContents(currentWrapper);
+    let parentEl = currentWrapper;
+    while(parentEl.textContent  === parentEl.parentElement.textContent && parentEl.nodeName === parentEl.parentNode.nodeName){
+      parentEl = parentEl.parentNode;
+    }
+    if(parentEl !== currentWrapper){
+      currentWrapper.unwrap();
+    }
+    return parentEl
   }
 }
 export const querySelectorUnderSelection = (querySelector) => {
@@ -279,32 +281,32 @@ export const querySelectorUnderSelection = (querySelector) => {
   const allSelected = [];
 
   let commonAncestorContainer = range.commonAncestorContainer;
-  
-  if(commonAncestorContainer.nodeType === 3){
+
+  if (commonAncestorContainer.nodeType === 3) {
     commonAncestorContainer = commonAncestorContainer.parentElement;
   }
-  if(!commonAncestorContainer){
+  if (!commonAncestorContainer) {
     return allSelected;
   }
-    const elements = commonAncestorContainer.querySelectorAll(querySelector);
+  const elements = commonAncestorContainer.querySelectorAll(querySelector);
   for (var i = 0, el; el = elements[i]; i++) {
     // The second parameter says to include the element 
     // even if it's not fully selected
     if (selection.containsNode(el, true)) {
-        allSelected.push(el);
-    }
-}
-if(allSelected.length === 0) {
-  const selected = getSelectedElement();
-  if(selected){
-    const closestElement = selected.closest(querySelector);
-    if(closestElement){
-
-      allSelected.push(closestElement);
+      allSelected.push(el);
     }
   }
-}
-return allSelected;
+  if (allSelected.length === 0) {
+    const selected = getSelectedElement();
+    if (selected) {
+      const closestElement = selected.closest(querySelector);
+      if (closestElement) {
+
+        allSelected.push(closestElement);
+      }
+    }
+  }
+  return allSelected;
 }
 export function getAllNodes() {
   var nodes, range;
@@ -331,7 +333,7 @@ export function getAllNodes() {
 export function wrapRangeText(wrapperEl, range) {
   var nodes, wrapNode;
 
-  if (typeof range === 'undefined') {
+  if (!range) {
     // get the current selection if no range is specified
     range = window.getSelection().getRangeAt(0)
   }
@@ -341,7 +343,7 @@ export function wrapRangeText(wrapperEl, range) {
     return []
   }
 
-  if (typeof wrapperEl === 'undefined') {
+  if (!wrapperEl) {
     wrapperEl = 'span'
   }
 
@@ -351,9 +353,7 @@ export function wrapRangeText(wrapperEl, range) {
   }
 
   wrapNode = createWrapperFunction(wrapperEl, range)
-
-  nodes = getRangeTextNodes(range)
-
+  nodes = getRangeTextNodes(range);
   nodes = nodes.map(wrapNode);
   return nodes
 }
