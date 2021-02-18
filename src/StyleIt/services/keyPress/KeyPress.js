@@ -17,12 +17,12 @@ export default class KeyPress {
     
 
         this.keypress = (e) => {
-            const sel = window.getSelection();
-            if(sel.focusNode.nodeType === 3 && !sel.focusNode.parentElement.closest(block_elments_queryString)){
-                const p = document.createElement("P");
-                sel.focusNode.wrap(p);
-                setCaretAt(p,1)
-            }
+            // const sel = window.getSelection();
+            // if(sel.focusNode.nodeType === 3 && !sel.focusNode.parentElement.closest(block_elments_queryString)){
+            //     const p = document.createElement("P");
+            //     sel.focusNode.wrap(p);
+            //     setCaretAt(p,1)
+            // }
             if (e.keyCode === 8) {
                 const target = e.target;
                 if (getCleanText(target.textContent) === "") {
