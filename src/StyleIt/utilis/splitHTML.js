@@ -6,7 +6,11 @@ import { getInheirtClassNames } from "../services/className.service";
 
 export function splitHTML(fromElement, toElement,options = {}) {
     const {tag = "span"} = options;
+    if(fromElement === toElement){
+        return null;
+    }
     if (!fromElement.ischildOf(toElement)) {
+        console.log(fromElement,toElement)
         console.error('fromElement must be child of toElement')
         return null;
     }
