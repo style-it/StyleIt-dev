@@ -23,9 +23,12 @@ export default class CopyPaste {
       if (sel.rangeCount) {
         const container = document.createElement("div");
         for (var i = 0, len = sel.rangeCount; i < len; ++i) {
-          let copiedNode = sel.getRangeAt(i).cloneContents();
+          const range = sel.getRangeAt(i);
+          let copiedNode = range.cloneContents();
           container.appendChild(copiedNode);
-
+          if(event.type === "cut"){
+            range.extractContents();
+          }
           Array.from(container.childNodes).forEach(n => {
             if (n.nodeType === 3) {
               const parentCopiedNode = sel.getRangeAt(i).startContainer.parentNode;
@@ -138,10 +141,12 @@ export default class CopyPaste {
   start() {
     this.target.addEventListener("paste", this.paste);
     this.target.addEventListener("copy", this.copy);
+    this.target.addEventListener("cut", this.copy);
   }
   destroy() {
     this.target.removeEventListener("paste", this.paste);
     this.target.removeEventListener("copy", this.copy);
+    this.target.addEventListener("cut", this.copy);
 
   }
 }
