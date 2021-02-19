@@ -14,7 +14,7 @@ import { setStyle, toggleStyle, collectStyleFromSelectedElement, findBlockAndSty
 import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
 import Connector from './connector';
 import './components/custom/textSelected';
-import { elementToJson, JsonToElement, getSelectedElement } from "./services/elements.service";
+import { elementToJson, JsonToElement, getSelectedElement, wrapNakedTextNodes } from "./services/elements.service";
 import { EVENTS } from './services/events/events';
 import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
@@ -182,7 +182,7 @@ export default class Core {
         normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
     }
     formatBlock(tagName, options) {
-        if(!block_elments[tagName.toUpperCase()]){
+        if (!block_elments[tagName.toUpperCase()]) {
             throw Error(`valid tags: ${block_elments_queryString}`);
         }
         const elements = querySelectorUnderSelection(block_elments_queryString);
@@ -198,7 +198,7 @@ export default class Core {
                 block.wrap(tag);
                 block.unwrap();
             });
-            Array.from(ranges).forEach(range=>range.unwrap());
+            Array.from(ranges).forEach(range => range.unwrap());
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
         }
 
@@ -286,8 +286,8 @@ export default class Core {
                 ToggleMode = result;
         });
         const normalizedParents = [];
-        this.ELEMENTS.forEach(el=>{
-            if(el.parentElement &&  normalizedParents.findIndex(n=>n === el.parentElement) < 0){
+        this.ELEMENTS.forEach(el => {
+            if (el.parentElement && normalizedParents.findIndex(n => n === el.parentElement) < 0) {
                 normalizeElement(el.parentElement);// merge siblings and parents with child as possible.. 
                 normalizedParents.push(el.parentElement);
             }
@@ -439,7 +439,14 @@ export default class Core {
         } else {
             let isSuccess = findBlockAndStyleIt(element, key, value);
             if (!isSuccess) {
-                console.log("text nodes and inline elements must be inside block element like p,h1,h2,h3,h4,h5,h6");
+                const contentEditable = element.closest("[contenteditable]");
+                if (contentEditable && contentEditable.isContentEditable) {
+                    wrapNakedTextNodes(contentEditable);
+                    isSuccess = findBlockAndStyleIt(element, key, value);
+                    if (!isSuccess) {
+                        console.log("text nodes and inline elements must be inside block element like p,h1,h2,h3,h4,h5,h6");
+                    }
+                }
             }
         }
     }
