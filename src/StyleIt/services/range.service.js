@@ -147,7 +147,7 @@ export function pasteHtmlAtCaret(html) {
   const contenteditable = selectedElement.closest("[contenteditable]");
   let isValid = true;
   if (contenteditable) {
-    if (!contenteditable.contentEditable) {
+    if (!contenteditable.isContentEditable) {
       isValid = false;
     }
   } else {
