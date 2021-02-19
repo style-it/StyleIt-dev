@@ -275,7 +275,7 @@ export default class Core {
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
-        removeZeroSpace(getTextNodes(this.connectedElement));
+        // removeZeroSpace(getTextNodes(this.connectedElement));
 
         let ToggleMode;//Declare toggle mode, The first element determines whether it is on or off
 
