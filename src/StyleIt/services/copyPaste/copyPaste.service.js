@@ -35,7 +35,6 @@ export default class CopyPaste {
               const collectedCSS = getInheirtCss(parentCopiedNode, this.target);
               const span = document.createElement("span");
               span.textContent = copiedNode.textContent;
-              debugger
               setStyles(span, collectedCSS);
               n.wrap(span);
 
