@@ -10,6 +10,9 @@ export default class KeyPress {
             console.error('[-] keyPress => target is null');
             return null;
         }
+        if(options.plugins && typeof options.plugins.keyPress === "boolean" && options.plugins.keyPress === false){
+            return;
+        }
         if (typeof options.onKeyPress === "function") {
             this.onKeyPress = options.onKeyPress;
         }
