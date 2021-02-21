@@ -9,6 +9,9 @@ import { getCleanText, normalizeElement } from "../textEditor.service";
 export default class CopyPaste {
 
   constructor(target, options) {
+    if(options.plugins && typeof options.plugins.copyPaste === "boolean" && options.plugins.copyPaste === false){
+      return;
+  }
     this.target = target;
     this.stylesToPaste = typeof options.stylesToPaste === "object" ? options.stylesToPaste : null;
     this.paste = this.paste.bind(this);
