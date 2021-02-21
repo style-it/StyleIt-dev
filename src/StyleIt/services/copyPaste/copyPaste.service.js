@@ -13,6 +13,7 @@ export default class CopyPaste {
     this.stylesToPaste = typeof options.stylesToPaste === "object" ? options.stylesToPaste : null;
     this.paste = this.paste.bind(this);
     this.copy = this.copy.bind(this);
+    this.destroy = this.destroy.bind(this);
     this.start();
   }
 
