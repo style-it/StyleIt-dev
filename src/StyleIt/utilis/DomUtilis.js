@@ -1,3 +1,5 @@
+import { block_elments } from "../constants/block_elms";
+
 class DomUtilis {
 
 
@@ -54,6 +56,21 @@ Element.prototype.createSelection = function() {
     selection.removeAllRanges();
     selection.addRange(range);
   } 
+}
+Element.prototype.__closest =function (s){
+      const el = this;
+      let ancestor = this;
+      if (!document.documentElement.contains(el)) return null;
+      do {
+        if (ancestor.matches(s) && ancestor.isContentEditable && !block_elments[ancestor.nodeName]) return ancestor;
+        if( ancestor.parentElement && block_elments[ ancestor.parentElement.nodeName]){
+          return null;
+        }
+        ancestor = ancestor.parentElement.isContentEditable ? ancestor.parentElement : null;
+      } while (ancestor !== null);
+      return null;
+  
+  
 }
 Element.prototype.ischildOf = function(parent) {
   if (!parent) return false;
