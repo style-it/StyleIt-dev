@@ -2,7 +2,6 @@ import {  wrapNakedTextNodes } from "../elements.service";
 import { GetClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from "../range.service";
 import {void_elements} from '../../constants/void_elms';
 import { getCleanText } from "../textEditor.service";
-import { block_elments_queryString } from "../../constants/block_elms";
 export default class KeyPress {
 
     constructor(target, options = {}) {
