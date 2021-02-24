@@ -19,7 +19,6 @@ import { EVENTS } from './services/events/events';
 import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
 import { block_elments, block_elments_queryString } from "./constants/block_elms";
-
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
@@ -80,7 +79,7 @@ export default class Core {
                 elementToUnwrap = baseNode.parentElement;
             }
             if (baseNode && baseNode.nodeType === 1) {
-                elementToUnwrap = elementToUnwrap.closest("a");
+                elementToUnwrap = elementToUnwrap.__closest("a");
             }
             if (elementToUnwrap) {
                 elementToUnwrap.unwrap();
@@ -89,7 +88,7 @@ export default class Core {
         }
         const linkElements = wrapRangeWithElement();
         Array.from(linkElements).forEach(r => {
-            const closestATag = r.closest("a");
+            const closestATag = r.__closest("a");
             if (closestATag) {
                 var a = splitHTML(r, closestATag, {
                     tag: "a"
@@ -122,7 +121,7 @@ export default class Core {
         const unwrapAtags = (linkElements) => {
             linkElements.forEach(link => {
                 Array.from(link.querySelectorAll("a")).forEach(aTag => aTag.unwrap());
-                const closestATag = link.parentElement ? link.parentElement.closest("a") : null;
+                const closestATag = link.parentElement ? link.parentElement.__closest("a") : null;
                 if (closestATag) {
                     var a = splitHTML(link, closestATag, {
                         tag: "a"
@@ -221,7 +220,7 @@ export default class Core {
             return;
         }
         if (!options) options = {};
-        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elements[0].closest(`[class='${className}']`);
+        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elements[0].__closest(`[class='${className}']`);
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
         } else {
@@ -330,7 +329,7 @@ export default class Core {
         } else {
             // detect if there is any parent with style to split.
             //TODO: use the catch from options to detect more than one style or tag element.
-            let elementToSplit = element.closest(`[style*='${value}']`);
+             let elementToSplit =  element.__closest(`[style*='${value}']`);
             //TODO: tests
             if (elementToSplit && block_elments[elementToSplit.nodeName]) {
                 let innerSpan = createInnerWrapperElement(elementToSplit);
@@ -369,7 +368,7 @@ export default class Core {
         if (options.target === "block") {
             this.createBlockStyle(options, element, key, value);
         } else {
-            const elementToSplit = element.closest(`[style*='${key}']`);
+            const elementToSplit = element.__closest(`[style*='${key}']`);
             if (elementToSplit) {
                 const splitBlocks = splitHTML(element, elementToSplit);
                 if (splitBlocks) {
