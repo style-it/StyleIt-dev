@@ -9,6 +9,7 @@ export const block_elments = {
     "LI":"LI",
     "OL":"OL",
     "ADDRESS":"ADDRESS",
-    "PRE":"PRE"
+    "PRE":"PRE",
+    "TD":"TD"
 }   
-export const block_elments_queryString = "h1,h2,h3,h4,h5,h6,p,pre,ol,li,address";
+export const block_elments_queryString = "h1,h2,h3,h4,h5,h6,p,pre,ol,li,address,td";
