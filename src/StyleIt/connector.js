@@ -60,7 +60,9 @@ export default class Connector {
         for (const key in this.plugins) {
             if (this.plugins.hasOwnProperty(key)) {
                 const plugin = this.plugins[key];
-                plugin.destroy();
+                if(plugin.destroy){
+                    plugin.destroy();
+                }
             }
         }
     }
