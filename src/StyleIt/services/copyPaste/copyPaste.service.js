@@ -1,4 +1,5 @@
 import { block_elments, block_elments_queryString } from "../../constants/block_elms";
+import { inline_elements } from "../../constants/inline_elems";
 import { void_elements } from "../../constants/void_elms";
 import { splitHTML } from "../../utilis/splitHTML";
 import { pasteHtmlAtCaret, setCaretAt } from "../range.service";
@@ -103,7 +104,7 @@ export default class CopyPaste {
       pastedContainer.innerHTML = copied;
       pasteHtmlAtCaret(pastedContainer);
       Array.from(pastedContainer.children).forEach(child => {
-        if (!getCleanText(child.textContent) && !void_elements[child.nodeName]) {
+        if (!getCleanText(child.textContent) && !void_elements[child.nodeName] && (block_elments[child.nodeName] || inline_elements[child.nodeName])) {
           child.parentElement.removeChild(child);
         }
       });
@@ -147,10 +148,11 @@ export default class CopyPaste {
     this.target.addEventListener("cut", this.copy);
   }
   destroy() {
-    this.target.removeEventListener("paste", this.paste);
+    if(this.target){
+      this.target.removeEventListener("paste", this.paste);
     this.target.removeEventListener("copy", this.copy);
     this.target.addEventListener("cut", this.copy);
-
+    }
   }
 }
 

@@ -104,8 +104,10 @@ export default class KeyPress {
         this.target.addEventListener('keydown', this.keypress);
 
         this.destroy = () => {
-            this.target.removeEventListener('keydown', this.keypress);
-            this.target = null;
+            if(this.target){
+                this.target.removeEventListener('keydown', this.keypress);
+                this.target = null;
+            }
         }
     }
 }
