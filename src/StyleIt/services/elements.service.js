@@ -14,13 +14,13 @@ export function wrapNakedTextNodes(target) {
             removeElement(c);
             return;
         }
-        if (c.parentElement === target  && c.textContent.trim() && ((c.nodeType === 1 && inline_elements[c.nodeName]  &&  !c.parentElement.closest(block_elments_queryString)) || c.nodeType === 3)) {
+        if (c.parentElement === target && c.textContent.trim() && ((c.nodeType === 1 && inline_elements[c.nodeName] && !c.parentElement.closest(block_elments_queryString)) || c.nodeType === 3)) {
             const p = document.createElement("p");
             c.wrap(p);
-            
-            while(p.nextSibling && (p.nextSibling.nodeType === 3 || inline_elements[p.nextSibling.nodeName]) ){
+
+            while (p.nextSibling && (p.nextSibling.nodeType === 3 || inline_elements[p.nextSibling.nodeName])) {
                 p.appendChild(p.nextSibling);
-            }     
+            }
 
             p.normalize();
         }
@@ -72,11 +72,11 @@ export function JsonToElement(jsonObject, parentElement) {
             const collectedStyle = JsonObjectToStyleString(jsElement.style);
             element.style = collectedStyle;
         }
-        if(jsElement.attrs){
+        if (jsElement.attrs) {
             for (const attr in jsElement.attrs) {
                 if (Object.hasOwnProperty.call(jsElement.attrs, attr)) {
                     const value = jsElement.attrs[attr];
-                    element.setAttribute(attr,value);
+                    element.setAttribute(attr, value);
                 }
             }
         }
@@ -90,6 +90,9 @@ export function JsonToElement(jsonObject, parentElement) {
             case "#text":
                 element = document.createTextNode(jsElement.textContent);
                 break;
+                case "#comment":
+                    element = document.createComment(jsElement.textContent)
+                    break;
             case "A":
                 element = document.createElement(nodeType);
                 element.href = jsElement.href;
@@ -137,6 +140,12 @@ export function elementToJson(node) {
             //question: replace \n ?
             if (!json.textContent.trim()) isValid = false;
             break;
+        case "#comment":
+            json.tag = nodeType;
+            json.textContent = node.textContent.replace(/\u200B/g, '');
+            isShouldRenderAttrs = false;
+            if (!json.textContent.trim()) isValid = false;
+            break;
         case "A":
             json.tag = nodeType;
             json.href = node.href;
@@ -151,7 +160,7 @@ export function elementToJson(node) {
     if (isShouldRenderAttrs) {
         json.attrs = {};
         //TODO: get attrs 
-        Array.from(node.attributes).forEach(attr=>{
+        Array.from(node.attributes).forEach(attr => {
             switch (attr.name) {
                 case "style":
                     const style = getStyle(node);
@@ -159,17 +168,17 @@ export function elementToJson(node) {
                         json.style = style;
                     }
                     break;
-                    case "class":
-                        if (node.classList && node.classList.length > 0)
+                case "class":
+                    if (node.classList && node.classList.length > 0)
                         json.classList = [...node.classList];
-                        break;
+                    break;
                 default:
                     json.attrs[attr.name] = attr.value;
                     break;
             }
         })
-      
- 
+
+
 
         if (node.childNodes && node.childNodes.length > 0)
             json.children = [...node.childNodes].map((cn) => elementToJson(cn)).filter(v => v);
