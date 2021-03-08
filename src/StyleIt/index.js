@@ -11,7 +11,7 @@ import {
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
 import { setStyle, toggleStyle, collectStyleFromSelectedElement, findBlockAndStyleIt } from "./services/style.service";
-import { normalizeElement, removeZeroSpace } from "./services/textEditor.service";
+import { normalizeElement } from "./services/textEditor.service";
 import Connector from './connector';
 import './components/custom/textSelected';
 import { elementToJson, JsonToElement, getSelectedElement, wrapNakedTextNodes } from "./services/elements.service";
@@ -178,7 +178,9 @@ export default class Core {
         setTargetToTag(linkElements, renderedLink, _target);
         const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
         setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-        normalizeElement(this.connectedElement);// merge siblings and parents with child as possible.. 
+        linkElements.forEach(aTag=>{
+            normalizeElement(aTag.parentElement);// merge siblings and parents with child as possible.. 
+        })
     }
     formatBlock(tagName, options) {
         if (!block_elments[tagName.toUpperCase()]) {
@@ -239,7 +241,7 @@ export default class Core {
             })
         }
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
-        normalizeElement(this.connectedElement);// merge siblings and parents with child as possible..
+        elements.forEach(el=>normalizeElement(el.parentElement));
 
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
