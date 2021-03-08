@@ -2,7 +2,6 @@ import {
     wrapRangeWithElement,
     setSelectionFlags,
     setSelectionBetweenTwoNodes,
-    getTextNodes,
     createInnerWrapperElement,
     setCaretAt,
     GetClosestBlockElement,
@@ -19,6 +18,7 @@ import { EVENTS } from './services/events/events';
 import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
 import { block_elments, block_elments_queryString } from "./constants/block_elms";
+
 export default class Core {
 
     // *target => can be Id of Element that should contain Editor instance or the element itself..
