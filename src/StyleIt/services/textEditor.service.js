@@ -6,6 +6,9 @@ import { mergeNodeContect, mergeTwoNodes } from "../utilis/merger";
  * @param {Element} el - element to normalize
  */
 export function normalizeElement(el) {
+    if(!el.isContentEditable){
+        return;
+    }
     const recurse = (element) => {
         Array.from(element.children).forEach((child) => {
             recurse(child);
