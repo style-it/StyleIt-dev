@@ -102,8 +102,11 @@ export default class Core {
             });
             r.unwrap();
         });
-        const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
-        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        if(linkElements.length){
+            const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        }
+     
     }
     //TODO: review
     //TODO: merge a tags..
@@ -176,11 +179,13 @@ export default class Core {
         const renderedLink = newURL.join("");
         unwrapAtags(linkElements);
         setTargetToTag(linkElements, renderedLink, _target);
-        const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
-        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
         linkElements.forEach(aTag=>{
             normalizeElement(aTag.parentElement);// merge siblings and parents with child as possible.. 
-        })
+        });
+        if(linkElements.length){
+            const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
+        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        }   
     }
     formatBlock(tagName, options) {
         if (!block_elments[tagName.toUpperCase()]) {
@@ -189,7 +194,10 @@ export default class Core {
         const elements = querySelectorUnderSelection(block_elments_queryString);
         if (elements.length > 0) {
             const ranges = wrapRangeWithElement();
-            const { firstFlag, lastFlag } = setSelectionFlags(ranges[0], ranges[ranges.length - 1]); //Set Flag at last
+            let flags; 
+            if(ranges.length){
+                flags = setSelectionFlags(ranges[0], ranges[ranges.length - 1]); //Set Flag at last
+            }
 
             elements.forEach(block => {
                 const tag = document.createElement(tagName);
@@ -200,7 +208,9 @@ export default class Core {
                 block.unwrap();
             });
             Array.from(ranges).forEach(range => range.unwrap());
-            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+            if(flags && flags.firstFlag && flags.lastFlag){
+                setSelectionBetweenTwoNodes(flags.firstFlag, flags.lastFlag);
+            }
         }
 
 
