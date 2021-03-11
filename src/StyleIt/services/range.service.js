@@ -366,7 +366,9 @@ export function setSelectionBetweenTwoNodes(firstFlag, lastFlag, options = {}) {
   }
 }
 export function setSelectionFlags(firstElement, LastElement) {
-  const selection = window.getSelection();
+  if(!firstElement || !LastElement){
+    return;
+  }
   const firstFlag = document.createElement('text-selection');
   firstFlag.setAttribute('zero-space', firstElement.textContent.length === 0)
   const lastFlag = document.createElement('text-selection');
