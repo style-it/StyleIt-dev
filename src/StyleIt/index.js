@@ -284,7 +284,7 @@ export default class Core {
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        const { firstFlag, lastFlag } = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
+        const flags =  setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
         // removeZeroSpace(getTextNodes(this.connectedElement));
 
@@ -304,8 +304,8 @@ export default class Core {
             }
         })
         //use the first and last flags to make the text selection and unwrap them..
-        if (firstFlag && lastFlag) {
-            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        if (flags && flags.firstFlag && flags.lastFlag) {
+            setSelectionBetweenTwoNodes(flags.firstFlag, flags.lastFlag);
         } else {
             const sel = window.getSelection();
             if (sel.removeAllRanges) {
