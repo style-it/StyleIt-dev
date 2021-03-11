@@ -76,12 +76,12 @@ export default class Core {
             let elementToUnwrap;
             const baseNode = selection.baseNode;
             if (baseNode && baseNode.nodeType === 3 && baseNode.parentElement) {
-                elementToUnwrap = baseNode.parentElement;
+                elementToUnwrap = baseNode.parentElement.__closest("a");
             }
             if (baseNode && baseNode.nodeType === 1) {
                 elementToUnwrap = elementToUnwrap.__closest("a");
             }
-            if (elementToUnwrap) {
+            if (elementToUnwrap ) {
                 elementToUnwrap.unwrap();
             }
             return null;
