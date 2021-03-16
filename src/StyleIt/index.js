@@ -6,6 +6,7 @@ import {
     setCaretAt,
     GetClosestBlockElement,
     querySelectorUnderSelection,
+    pasteHtmlAtCaret,
 } from "./services/range.service";
 import Modes from './constants/Modes.json';
 import { splitHTML } from "./utilis/splitHTML";
@@ -119,7 +120,9 @@ export default class Core {
 
         if (window.getSelection && !window.getSelection().toString()) {
             console.warn("no text selected..");
-            return null;
+            const aTag = document.createElement("a");
+            aTag.innerHTML = resetURL(options.href);
+            pasteHtmlAtCaret(aTag)
         }
         const unwrapAtags = (linkElements) => {
             linkElements.forEach(link => {
