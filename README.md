@@ -1,4 +1,4 @@
-StyleIt
+StyleIt (Beta)
 ==============
 
 StyleIt.js is a simple text editor API built for Developers.
