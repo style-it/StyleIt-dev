@@ -168,6 +168,7 @@ export default class Core {
         let _href = resetURL(href.trim());
 
         let _protocol = protocol.trim() || Atag.protocol;
+        
         let _target = null;
         const testTarget = TARGETS[target.trim().toLowerCase()];
         if (testTarget) {
@@ -177,6 +178,9 @@ export default class Core {
             _protocol = setProtocol(_protocol, newURL);
         }
         if (_href) {
+            while(_href.charAt(0) === "/"){
+                _href = _href.substring(1)
+            }
             newURL.push(_href);
         }
         const renderedLink = newURL.join("");
