@@ -9,7 +9,6 @@ export  const resetURL = (src) => {
     src = src.replace(/http:/g, '');
     src = src.replace(/mailto:/g, '');
     src = src.replace(/tel:/g, '');
-    src = src.replace(/\//g, '');
     return src;
 }
 export   const createTempLinkElement = (href) => {
