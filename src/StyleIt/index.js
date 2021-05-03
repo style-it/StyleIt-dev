@@ -96,6 +96,12 @@ export default class Core {
                 })
                 if (a) {
                     a.center.unwrap();
+                    if(a.left && a.left.textContent.trim() === ""){
+                        a.left.unwrap();
+                    }
+                    if(a.right && a.right.textContent.trim() === ""){
+                        a.right.unwrap();
+                    }
                 }
             }
             Array.from(r.querySelectorAll("a")).forEach(a => {
