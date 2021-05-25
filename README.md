@@ -1,12 +1,20 @@
 StyleIt (Beta)
 ==============
 
-StyleIt.js is a simple text editor API built for Developers.
-It can give your App superpowers to do things that you never thought possible.
+ ### StyleIt.js is A completely customizable for building rich text editors in the browser. its a simple editor API built for Developers.
+
+StyleIt have not any css or any design, this is up to you.
+
+Why I created StyleIt ?
+Before i was created StyleIt, I tried a lot of the other rich text libraries out there,
+and i had very bad hacky things to get the user experience exacly like i want.
+
 
 ## DEMO ##
 
-[Link](https://codesandbox.io/s/styleit-8irnj?file=/index.html)
+[try me](https://codesandbox.io/s/styleit-8irnj?file=/index.html)
+
+ StyleIt is currently in beta. It's useable now for production, but you might need to pull request a fix or two for advanced use cases.
 
 # API Overview #  
 
@@ -175,5 +183,8 @@ const styleIt = new StyleIt("editor-id");
 
 styleIt.destroy();
 ```
+
+### Contributing
+All contributions are super welcome! Check out the Contributing instructions for more info!
 
 [Home Page](https://style-it.github.io/home) | [Got questions?](mailto:styleit.api@gmail.com)
