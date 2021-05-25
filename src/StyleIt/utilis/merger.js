@@ -3,7 +3,7 @@ import { getStyle, normalizeStyle } from "../services/style.service";
 import { getClasses, normalizeClassName } from "../services/className.service";
 import { getAttributes } from "../services/attr.service";
 import { normalizeElement } from "../services/textEditor.service";
-import Config from '../_app.config.json';
+import { inline_elements } from "../constants/inline_elems";
 
 
 
@@ -17,17 +17,18 @@ export const mergeNodeContect = node => {
         // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
     }
-    if (node.nodeName !== "SPAN" || node.nodeType !== Node.ELEMENT_NODE) {
+    if (!inline_elements[node.nodeName]   || node.nodeType !== Node.ELEMENT_NODE) {
         // console.error('[mergeNodeContect] node is not a span');
         return null;
     }
+let commonTag = node.nodeName;
 
     const firstChild = node.firstElementChild;
     if (!firstChild) {
         // console.error('[mergeNodeContect] first child not found');
         return null;
     }
-    if (firstChild.nodeName !== "SPAN" || firstChild.nodeType !== Node.ELEMENT_NODE) {
+    if (firstChild.nodeName !== commonTag || firstChild.nodeType !== Node.ELEMENT_NODE) {
         // console.error('[mergeNodeContect] firstChild is not a span');
         return null;
     }
@@ -58,11 +59,17 @@ export const mergeNodeContect = node => {
     return firstChild;
 };
 export function mergeTwoNodes(elementOne, elementTwo) {
+    let tag;
+
     if (!DomUtilis.isElement(elementOne) || !DomUtilis.isElement(elementTwo)) {
         // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
     }
-    if (elementOne.nodeName !== "SPAN" || elementTwo.nodeName !== "SPAN") {
+    if(!inline_elements[elementOne.nodeName]){
+        return null
+    }
+    tag = elementOne.nodeName;
+    if (elementOne.nodeName !== elementTwo.nodeName) {
         // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
     }
@@ -100,7 +107,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
     const commoncLasses = getCommonClasses(_elementsData[0].classes, _elementsData[1].classes);
     const commonStyles = getCommonStyles(_elementsData[0].style, _elementsData[1].style);
     const buildWrappingElement = (commonStyles, commoncLasses) => {
-        const wrapper = document.createElement('span');
+        const wrapper = document.createElement(tag);
         // handle styles
         for (const s in commonStyles)
             wrapper.style[s] = commonStyles[s];

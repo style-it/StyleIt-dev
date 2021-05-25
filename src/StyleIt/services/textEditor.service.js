@@ -1,6 +1,7 @@
 import { normalizeClassName } from "./className.service";
 import { normalizeStyle } from "./style.service";
 import { mergeNodeContect, mergeTwoNodes } from "../utilis/merger";
+import { inline_elements } from "../constants/inline_elems";
 
 /**
  * @param {Element} el - element to normalize
@@ -8,6 +9,16 @@ import { mergeNodeContect, mergeTwoNodes } from "../utilis/merger";
 export function normalizeElement(el) {
     if(!el.isContentEditable){
         return;
+    }
+    function _normalize(element) {
+        element.normalize();
+        normalizeClassName(element);
+        normalizeStyle(element);
+        if (element && inline_elements[element.nodeName]  && (!element.textContent.trim() || element.attributes.length === 0)) {
+            element.unwrap();
+            return null;
+        }
+        return element;
     }
     const recurse = (element) => {
         Array.from(element.children).forEach((child) => {
@@ -53,16 +64,6 @@ export function normalizeElement(el) {
         } while (mergedContent && element);
     }
         recurse(el);
-    function _normalize(element) {
-        element.normalize();
-        normalizeClassName(element);
-        normalizeStyle(element);
-        if (element && element.nodeName === "SPAN" && (!element.textContent.trim() || element.attributes.length === 0)) {
-            element.unwrap();
-            return null;
-        }
-        return element;
-    }
 }
 
 
