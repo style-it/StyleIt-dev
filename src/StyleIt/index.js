@@ -82,7 +82,7 @@ export default class Core {
             if (baseNode && baseNode.nodeType === 1) {
                 elementToUnwrap = elementToUnwrap.__closest("a");
             }
-            if (elementToUnwrap ) {
+            if (elementToUnwrap) {
                 elementToUnwrap.unwrap();
             }
             return null;
@@ -96,10 +96,10 @@ export default class Core {
                 })
                 if (a) {
                     a.center.unwrap();
-                    if(a.left && a.left.textContent.trim() === ""){
+                    if (a.left && a.left.textContent.trim() === "") {
                         a.left.unwrap();
                     }
-                    if(a.right && a.right.textContent.trim() === ""){
+                    if (a.right && a.right.textContent.trim() === "") {
                         a.right.unwrap();
                     }
                 }
@@ -109,11 +109,11 @@ export default class Core {
             });
             r.unwrap();
         });
-        if(linkElements.length){
+        if (linkElements.length) {
             const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
         }
-     
+
     }
     //TODO: review
     //TODO: merge a tags..
@@ -122,28 +122,6 @@ export default class Core {
     link(options = {}) {
         if (!options || (options && !options.href) || !this.isValid()) {
             return;
-        }
-
-        if (window.getSelection && !window.getSelection().toString()) {
-            console.warn("no text selected..");
-            const aTag = document.createElement("a");
-            aTag.innerHTML = resetURL(options.href);
-            pasteHtmlAtCaret(aTag)
-        }
-        const unwrapAtags = (linkElements) => {
-            linkElements.forEach(link => {
-                Array.from(link.querySelectorAll("a")).forEach(aTag => aTag.unwrap());
-                const closestATag = link.parentElement ? link.parentElement.__closest("a") : null;
-                if (closestATag) {
-                    var a = splitHTML(link, closestATag, {
-                        tag: "a"
-                    });
-                    if (a) {
-                        a.center.unwrap();
-                    }
-                    // closestATag.unwrap();
-                }
-            });
         }
         const setTargetToTag = (linkElements, renderedLink, _target) => {
             linkElements.forEach(aTag => {
@@ -168,13 +146,12 @@ export default class Core {
 
         const { href = "", protocol = "", target = "" } = options;
 
-        const linkElements = wrapRangeWithElement("a");
         let newURL = [];
         const Atag = createTempLinkElement(href);
         let _href = resetURL(href.trim());
 
         let _protocol = protocol.trim() || Atag.protocol;
-        
+
         let _target = null;
         const testTarget = TARGETS[target.trim().toLowerCase()];
         if (testTarget) {
@@ -184,21 +161,26 @@ export default class Core {
             _protocol = setProtocol(_protocol, newURL);
         }
         if (_href) {
-            while(_href.charAt(0) === "/"){
+            while (_href.charAt(0) === "/") {
                 _href = _href.substring(1)
             }
             newURL.push(_href);
         }
         const renderedLink = newURL.join("");
-        unwrapAtags(linkElements);
-        setTargetToTag(linkElements, renderedLink, _target);
-        linkElements.forEach(aTag=>{
-            normalizeElement(aTag.parentElement);// merge siblings and parents with child as possible.. 
-        });
-        if(linkElements.length){
-            const { firstFlag, lastFlag } = setSelectionFlags(linkElements[0], linkElements[linkElements.length - 1]); //Set Flag at last
-        setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-        }   
+
+        if (window.getSelection && !window.getSelection().toString()) {
+            const selectedElement = getSelectedElement();
+            let aTag;
+            if(selectedElement){
+                 aTag = selectedElement.closest("a");
+                 if(aTag){
+                    aTag.href =renderedLink;
+                    return;
+                 }
+            }
+        }
+        document.execCommand("createLink",false,renderedLink);
+        // setTargetToTag(linkElements, renderedLink, _target);
     }
     formatBlock(tagName, options) {
         if (!block_elments[tagName.toUpperCase()]) {
@@ -207,8 +189,8 @@ export default class Core {
         const elements = querySelectorUnderSelection(block_elments_queryString);
         if (elements.length > 0) {
             const ranges = wrapRangeWithElement();
-            let flags; 
-            if(ranges.length){
+            let flags;
+            if (ranges.length) {
                 flags = setSelectionFlags(ranges[0], ranges[ranges.length - 1]); //Set Flag at last
             }
 
@@ -221,7 +203,7 @@ export default class Core {
                 block.unwrap();
             });
             Array.from(ranges).forEach(range => range.unwrap());
-            if(flags && flags.firstFlag && flags.lastFlag){
+            if (flags && flags.firstFlag && flags.lastFlag) {
                 setSelectionBetweenTwoNodes(flags.firstFlag, flags.lastFlag);
             }
         }
@@ -264,7 +246,7 @@ export default class Core {
             })
         }
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
-        elements.forEach(el=>normalizeElement(el.parentElement));
+        elements.forEach(el => normalizeElement(el.parentElement));
 
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
@@ -297,7 +279,7 @@ export default class Core {
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
         //This is how i make the text selection, i dont know if this is good way, but it works..
-        const flags =  setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
+        const flags = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
         // removeZeroSpace(getTextNodes(this.connectedElement));
 
@@ -354,7 +336,7 @@ export default class Core {
         } else {
             // detect if there is any parent with style to split.
             //TODO: use the catch from options to detect more than one style or tag element.
-             let elementToSplit =  element.__closest(`[style*='${value}']`);
+            let elementToSplit = element.__closest(`[style*='${value}']`);
             //TODO: tests
             if (elementToSplit && block_elments[elementToSplit.nodeName]) {
                 let innerSpan = createInnerWrapperElement(elementToSplit);
