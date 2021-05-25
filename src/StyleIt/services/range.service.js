@@ -288,11 +288,14 @@ export const querySelectorUnderSelection = (querySelector) => {
   if (!commonAncestorContainer) {
     return allSelected;
   }
-  const elements = commonAncestorContainer.querySelectorAll(querySelector);
+  if(!commonAncestorContainer.isContentEditable){
+    return [];
+    }
+  const elements = Array.from(commonAncestorContainer.querySelectorAll(querySelector));
   for (var i = 0, el; el = elements[i]; i++) {
     // The second parameter says to include the element 
     // even if it's not fully selected
-    if (selection.containsNode(el, true)) {
+    if (selection.containsNode(el, true) ) {
       allSelected.push(el);
     }
   }
