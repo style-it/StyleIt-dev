@@ -115,6 +115,20 @@ export default class Core {
         }
 
     }
+    wrapWith(tagName,options){
+        
+        //==============review===============//
+        const elements = wrapRangeWithElement(tagName);
+        //This is how i make the text selection, i dont know if this is good way, but it works..
+        //======================================================================//
+        // removeZeroSpace(getTextNodes(this.connectedElement));
+        const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
+        elements.forEach(el => normalizeElement(el.parentElement));
+        if (firstFlag && lastFlag) {
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        } 
+        this.connectedElement.normalize();
+    }
     //TODO: review
     //TODO: merge a tags..
     //TODO: remove a childs
@@ -269,8 +283,6 @@ export default class Core {
         if (!this.isValid() || !this.isVAlidKeyValue(key, value)) {
             return;
         }
-        this.connectedElement.normalize();
-
         this.ELEMENTS = [];
         mode = mode ? mode : Modes.Extend;
         if (!options) options = {};
@@ -278,6 +290,7 @@ export default class Core {
 
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
+        
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const flags = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
@@ -317,6 +330,7 @@ export default class Core {
             EVENTS["inspect"](collectedStyles);
         }
         this.dispatchEvent('styleChanged', collectedStyles);
+        this.connectedElement.normalize();
     }
     createCaretPlacement(atNode) {
         if (!atNode) return null;
