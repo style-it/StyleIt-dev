@@ -1,4 +1,5 @@
 import { block_elments_queryString } from "../constants/block_elms";
+import { inline_elements } from "../constants/inline_elems";
 import { getSelectedElement } from "./elements.service";
 import { getCleanText } from "./textEditor.service";
 
@@ -358,6 +359,12 @@ export function wrapRangeText(wrapperEl, range) {
   wrapNode = createWrapperFunction(wrapperEl, range)
   nodes = getRangeTextNodes(range);
   nodes = nodes.map(wrapNode);
+  nodes.forEach((n,index)=>{
+    if(!n.textContent.trim() && inline_elements[n.nodeName] ){
+      n.unwrap();
+      nodes.splice(index,1);
+    }
+  })
   return nodes
 }
 export function setSelectionBetweenTwoNodes(firstFlag, lastFlag, options = {}) {
