@@ -185,6 +185,6 @@ styleIt.destroy();
 ```
 
 ### Contributing
-All contributions are super welcome! Check out the Contributing instructions for more info!
+All contributions are super welcome!
 
 [Home Page](https://style-it.github.io/home) | [Got questions?](mailto:styleit.api@gmail.com)
