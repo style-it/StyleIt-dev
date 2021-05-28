@@ -60,7 +60,6 @@ let commonTag = node.nodeName;
 };
 export function mergeTwoNodes(elementOne, elementTwo) {
     let tag;
-
     if (!DomUtilis.isElement(elementOne) || !DomUtilis.isElement(elementTwo)) {
         // console.error('one of the props is not dom element.., please insert two element to merge..');
         return null;
@@ -117,7 +116,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         if (commoncLasses.length > 0) {
             wrapper.classList.add(...commoncLasses);
         }
-        if (wrapper.attributes.length === 0) {
+        if (wrapper.nodeName==="SPAN" &&wrapper.attributes.length === 0) {
             wrapper.unwrap();
             return null;
         }else{
@@ -130,7 +129,6 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         // console.error('wrapper is null')
         return null;
     }
-
     const clearElementClasses = (node, commoncLasses) => {
         node.classList.remove(...commoncLasses);
         normalizeClassName(node);
