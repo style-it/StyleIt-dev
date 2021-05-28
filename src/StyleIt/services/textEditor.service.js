@@ -14,7 +14,7 @@ export function normalizeElement(el) {
         element.normalize();
         normalizeClassName(element);
         normalizeStyle(element);
-        if (element && inline_elements[element.nodeName]  && (!element.textContent.trim() || element.attributes.length === 0)) {
+        if (element && inline_elements[element.nodeName]  && (!element.textContent.trim() || (element.parentElement && element.parentElement.__closest(element.nodeName) && element.attributes.length === 0))) {
             element.unwrap();
             return null;
         }
@@ -34,7 +34,7 @@ export function normalizeElement(el) {
                     if (!nextElement){
                         break;
                     }
-                    wrapper = mergeTwoNodes(wrapper, nextElement);
+                    wrapper = mergeTwoNodes(wrapper, nextElement);                   
                     merged = merged || wrapper !== null;
                 }
             })
