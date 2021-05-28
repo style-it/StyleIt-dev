@@ -7,6 +7,7 @@ import { inline_elements } from "../constants/inline_elems";
  * @param {Element} el - element to normalize
  */
 export function normalizeElement(el) {
+    if(!el) return;
     if(!el.isContentEditable){
         return;
     }
