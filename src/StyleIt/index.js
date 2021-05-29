@@ -19,6 +19,7 @@ import { EVENTS } from './services/events/events';
 import { createTempLinkElement, resetURL, TARGETS } from "./services/link.service";
 import { void_elements } from "./constants/void_elms";
 import { block_elments, block_elments_queryString } from "./constants/block_elms";
+import { inline_elements, inline_elemets_arr } from "./constants/inline_elems";
 
 export default class Core {
 
@@ -115,18 +116,43 @@ export default class Core {
         }
 
     }
-    wrapWith(tagName,options){
-        
+    wrapWith(tagName, options) {
+        if(!tagName){
+            return console.warn("tagName not valid");
+        }
+        if(!inline_elements[tagName.toUpperCase()]){
+            return console.warn("valid tags for wrapWith mehtod: "+inline_elemets_arr.join(","))
+        }
+        const selectedElements = querySelectorUnderSelection(tagName);
+        let isToggleOn = false;
+        if (selectedElements.length > 0) {
+            isToggleOn = true;
+        }
         //==============review===============//
         const elements = wrapRangeWithElement(tagName);
         //This is how i make the text selection, i dont know if this is good way, but it works..
         //======================================================================//
         // removeZeroSpace(getTextNodes(this.connectedElement));
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
-        elements.forEach(el => normalizeElement(el.parentElement));
+        if(isToggleOn){
+            elements.forEach(el=>{
+                const closestTag = el.parentElement.__closest(tagName);
+                if(!closestTag){
+                    el.unwrap();
+                }else{
+                    const fromSplit = splitHTML(el,closestTag,{tag:el.nodeName});
+                    if(fromSplit && fromSplit.center){
+                        Array.from(fromSplit.center.querySelectorAll(tagName)).forEach(child=>child.unwrap());
+                        fromSplit.center.unwrap();
+                    }
+                }
+
+            })
+        }
+        normalizeElement(this.connectedElement);
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
-        } 
+        }
         this.connectedElement.normalize();
     }
     //TODO: review
@@ -185,15 +211,15 @@ export default class Core {
         if (window.getSelection && !window.getSelection().toString()) {
             const selectedElement = getSelectedElement();
             let aTag;
-            if(selectedElement){
-                 aTag = selectedElement.closest("a");
-                 if(aTag){
-                    aTag.href =renderedLink;
+            if (selectedElement) {
+                aTag = selectedElement.closest("a");
+                if (aTag) {
+                    aTag.href = renderedLink;
                     return;
-                 }
+                }
             }
         }
-        document.execCommand("createLink",false,renderedLink);
+        document.execCommand("createLink", false, renderedLink);
         // setTargetToTag(linkElements, renderedLink, _target);
     }
     formatBlock(tagName, options) {
@@ -235,32 +261,32 @@ export default class Core {
             console.warn("className must be a string..");
             return null;
         }
-
         const elements = wrapRangeWithElement();
         if (elements.length === 0) {
             return;
         }
         if (!options) options = {};
-        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elements[0].__closest(`[class='${className}']`);
+        const elementUnderSelection = querySelectorUnderSelection(`[class='${className}']`);
+        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elementUnderSelection.length>0;
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
         } else {
             elements.forEach(el => {
                 if (el.parentElement) {
-                    const closestClass = el.parentElement.closest(`[class='${className}']`);
+                    const closestClass = el.parentElement.__closest(`[class='${className}']`);
                     if (closestClass) {
                         const split = splitHTML(el, closestClass);
                         if (split) {
                             split.center.removeClassName(className);
                         }
+                    }else {
+                        el.removeClassName(className);
                     }
-                } else {
-                    el.removeClassName(className);
-                }
+                } 
             })
         }
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
-        elements.forEach(el => normalizeElement(el.parentElement));
+        normalizeElement(this.connectedElement);
 
         if (firstFlag && lastFlag) {
             setSelectionBetweenTwoNodes(firstFlag, lastFlag);
@@ -290,7 +316,7 @@ export default class Core {
 
         //==============review===============//
         this.ELEMENTS = wrapRangeWithElement();
-        
+
         //This is how i make the text selection, i dont know if this is good way, but it works..
         const flags = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);//Set Flag at last
         //======================================================================//
