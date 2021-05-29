@@ -113,7 +113,33 @@ const styleIt = new StyleIt("editor-id");
 const toggleClass = (tagName)=> styleIt.formatBlock(tagName);
 
 ```
+## Style with Tags (toggle mode) ##
 
+| Tag Name    | 
+| ----------- |
+| B |
+| STRONG      |
+| MARK      |
+| EM      |
+| I      |
+| S      |
+| STRIKE      |
+| DEL      |
+| U      |
+| SUB      |
+| SUP      |
+| SMALL      |
+| SUB      |
+
+### How to use ###
+
+```js
+import StyleIt from 'styleit-api';
+const styleIt = new StyleIt("editor-id");
+
+styleIt.toggleWith("strong");
+
+```
 
 ## Css Class API ##
 
