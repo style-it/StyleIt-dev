@@ -135,7 +135,10 @@ export default class Core {
         // removeZeroSpace(getTextNodes(this.connectedElement));
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
         if(isToggleOn){
-            elements.forEach(el=>{
+            
+            [...elements,...selectedElements].forEach(el=>{
+                if(!el) return;
+                if(el && !el.parentElement) return;
                 const closestTag = el.parentElement.__closest(tagName);
                 if(!closestTag){
                     el.unwrap();
