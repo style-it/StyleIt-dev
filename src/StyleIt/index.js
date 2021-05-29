@@ -116,12 +116,12 @@ export default class Core {
         }
 
     }
-    wrapWith(tagName, options) {
+    toggleTag(tagName, options) {
         if(!tagName){
             return console.warn("tagName not valid");
         }
         if(!inline_elements[tagName.toUpperCase()]){
-            return console.warn("valid tags for wrapWith mehtod: "+inline_elemets_arr.join(","))
+            return console.warn("valid tags for toggleTag mehtod: "+inline_elemets_arr.join(","))
         }
         const selectedElements = querySelectorUnderSelection(tagName);
         let isToggleOn = false;
