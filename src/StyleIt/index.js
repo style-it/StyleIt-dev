@@ -116,12 +116,46 @@ export default class Core {
         }
 
     }
-    toggleWith(tagName, options) {
-        if(!tagName){
+    setTagWith(tagName, options = {}) {
+        const { attrs = {} } = options;
+        if (!tagName) {
             return console.warn("tagName not valid");
         }
-        if(!inline_elements[tagName.toUpperCase()]){
-            return console.warn("valid tags for toggleWith mehtod: "+inline_elemets_arr.join(","))
+        if (!inline_elements[tagName.toUpperCase()]) {
+            return console.warn("valid tags for toggleWith mehtod: " + inline_elemets_arr.join(","))
+        }
+        const selectedElements = querySelectorUnderSelection(tagName);
+
+        //==============review===============//
+        const elements = wrapRangeWithElement(tagName);
+        //This is how i make the text selection, i dont know if this is good way, but it works..
+        //======================================================================//
+        // removeZeroSpace(getTextNodes(this.connectedElement));
+        const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
+        [...elements, ...selectedElements].forEach(el => {
+            if (!el) return;
+            if (el && !el.parentElement) return;
+            for (const key in attrs) {
+                if (Object.hasOwnProperty.call(attrs, key)) {
+                    const value = attrs[key];
+                    el.setAttribute(key, value);
+                }
+            }
+
+        })
+
+        normalizeElement(this.connectedElement);
+        if (firstFlag && lastFlag) {
+            setSelectionBetweenTwoNodes(firstFlag, lastFlag);
+        }
+        this.connectedElement.normalize();
+    }
+    toggleWith(tagName, options = {}) {
+        if (!tagName) {
+            return console.warn("tagName not valid");
+        }
+        if (!inline_elements[tagName.toUpperCase()]) {
+            return console.warn("valid tags for toggleWith mehtod: " + inline_elemets_arr.join(","))
         }
         const selectedElements = querySelectorUnderSelection(tagName);
         let isToggleOn = false;
@@ -134,18 +168,18 @@ export default class Core {
         //======================================================================//
         // removeZeroSpace(getTextNodes(this.connectedElement));
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
-        if(isToggleOn){
-            
-            [...elements,...selectedElements].forEach(el=>{
-                if(!el) return;
-                if(el && !el.parentElement) return;
+        if (isToggleOn) {
+
+            [...elements, ...selectedElements].forEach(el => {
+                if (!el) return;
+                if (el && !el.parentElement) return;
                 const closestTag = el.parentElement.__closest(tagName);
-                if(!closestTag){
+                if (!closestTag) {
                     el.unwrap();
-                }else{
-                    const fromSplit = splitHTML(el,closestTag,{tag:el.nodeName});
-                    if(fromSplit && fromSplit.center){
-                        Array.from(fromSplit.center.querySelectorAll(tagName)).forEach(child=>child.unwrap());
+                } else {
+                    const fromSplit = splitHTML(el, closestTag, { tag: el.nodeName });
+                    if (fromSplit && fromSplit.center) {
+                        Array.from(fromSplit.center.querySelectorAll(tagName)).forEach(child => child.unwrap());
                         fromSplit.center.unwrap();
                     }
                 }
@@ -166,14 +200,7 @@ export default class Core {
         if (!options || (options && !options.href) || !this.isValid()) {
             return;
         }
-        const setTargetToTag = (linkElements, renderedLink, _target) => {
-            linkElements.forEach(aTag => {
-                aTag.href = renderedLink;
-                if (_target) {
-                    aTag.setAttribute("target", _target);
-                }
-            });
-        }
+
         const setProtocol = (_protocol, newURL) => {
             _protocol = _protocol.replace(/:/g, "");
             _protocol = _protocol.replace(/\/\//g, "");
@@ -222,8 +249,14 @@ export default class Core {
                 }
             }
         }
-        document.execCommand("createLink", false, renderedLink);
-        // setTargetToTag(linkElements, renderedLink, _target);
+        // document.execCommand("createLink", false, renderedLink);
+        this.setTagWith("a", {
+            attrs: {
+                href: renderedLink,
+                target: _target || "_blank"
+            }
+        })
+        //  setTargetToTag(linkElements, renderedLink, _target);
     }
     formatBlock(tagName, options) {
         if (!block_elments[tagName.toUpperCase()]) {
@@ -270,7 +303,7 @@ export default class Core {
         }
         if (!options) options = {};
         const elementUnderSelection = querySelectorUnderSelection(`[class='${className}']`);
-        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elementUnderSelection.length>0;
+        const isToggleOn = (typeof (options.isON) === "boolean") ? options.isON : elementUnderSelection.length > 0;
         if (!isToggleOn) {
             elements.forEach(el => el.classList.add(className));
         } else {
@@ -282,10 +315,10 @@ export default class Core {
                         if (split) {
                             split.center.removeClassName(className);
                         }
-                    }else {
+                    } else {
                         el.removeClassName(className);
                     }
-                } 
+                }
             })
         }
         const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); //Set Flag at last
