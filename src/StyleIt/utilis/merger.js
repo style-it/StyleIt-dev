@@ -46,10 +46,9 @@ let commonTag = node.nodeName;
         firstChild.style[style] = (firstChild.style[style] + " " + styleValue).trim();
     }
     normalizeStyle(firstChild);
-
     for (const attr in _elementProps.attrs) {
         const attrValue = _elementProps.attrs[attr];
-        firstChild.setAttribute(attr, attrValue);
+            firstChild.setAttribute(attr, attrValue);
     }
     firstChild.classList.add(..._elementProps.classes);
     normalizeClassName(firstChild);
@@ -103,10 +102,32 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         }
         return commmonStyles;
     };
+    const collectedAttrs = {};
+    const isShouldBeWrapped = true;
+    for (const attr in _elementsData[0].attrs) {
+        const firstAttrValue = _elementsData[0].attrs[attr];
+        const SecAttrValue = _elementsData[1].attrs[attr];
+        if(firstAttrValue !== SecAttrValue){
+            isShouldBeWrapped = false;
+            break;
+        }
+        collectedAttrs[attr] = firstAttrValue;
+       
+    }
+    if(!isShouldBeWrapped){
+        return null;
+    }
     const commoncLasses = getCommonClasses(_elementsData[0].classes, _elementsData[1].classes);
     const commonStyles = getCommonStyles(_elementsData[0].style, _elementsData[1].style);
-    const buildWrappingElement = (commonStyles, commoncLasses) => {
+    const buildWrappingElement = (commonStyles, commoncLasses,collectedAttrs) => {
         const wrapper = document.createElement(tag);
+
+        for (const key in collectedAttrs) {
+            if (Object.hasOwnProperty.call(collectedAttrs, key)) {
+                const value = collectedAttrs[key];
+                wrapper.setAttribute(key,value);
+            }
+        }
         // handle styles
         for (const s in commonStyles)
             wrapper.style[s] = commonStyles[s];
@@ -124,7 +145,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         }
         return wrapper;
     }
-    const wrapper = buildWrappingElement(commonStyles, commoncLasses);
+    const wrapper = buildWrappingElement(commonStyles, commoncLasses,collectedAttrs);
     if (!wrapper) {
         // console.error('wrapper is null')
         return null;
@@ -137,10 +158,18 @@ export function mergeTwoNodes(elementOne, elementTwo) {
         for (const s in commonStyles)
             node.style[s] = null;
     }
+    const clearAttrs = (node,attrs)=>{
+        for (const key in attrs) {
+            if (Object.hasOwnProperty.call(attrs, key)) {
+                node.removeAttribute(key);
+            }
+        }
+    }
     const elements = [elementOne, elementTwo];
     elements.forEach(e => {
         clearElementClasses(e, commoncLasses);
         clearElementStyles(e, commonStyles);
+        clearAttrs(e,collectedAttrs);
     })
 
     DomUtilis.wrap(elements, wrapper);
