@@ -105,7 +105,24 @@ export function setStyle(element, key, value) {
 }
 export const collectStyleFromSelectedElement = connectecElement => {
   const selectedElement = getSelectedElement();
-  return getInheirtCss(selectedElement, connectecElement);
+  if (!selectedElement) {return {};}
+  const collectedStyles = getInheirtCss(selectedElement, connectecElement);
+  if (selectedElement.closest('u')) {
+    collectedStyles.underline = true;
+  }
+  if (selectedElement.closest('b,strong,bold')) {
+    collectedStyles.bold = true;
+  }
+  if (selectedElement.closest('s')) {
+    collectedStyles.lineThrough = true;
+  }
+  if (selectedElement.closest('i,em')) {
+    collectedStyles.italic = true;
+  }
+  if (selectedElement.closest('mark')) {
+    collectedStyles.mark = true;
+  }
+  return collectedStyles;
 };
 export function JsonObjectToStyleString(styles) {
   let collectStyles = [];
