@@ -62,8 +62,8 @@ export function getSelectedElement() {
         return null;
     }
 }
-export function JsonToElement(jsonObject, parentElement) {
-    //TODO: create parentelement and jsonobject validation   
+export function jsonToElement(jsonObject, parentElement) {
+  //TODO: create parentelement and jsonobject validation   
     const renderAttrs = (jsElement, element) => {
         if (jsElement.classList) {
             element.classList = [...jsElement.classList];
@@ -116,7 +116,7 @@ export function JsonToElement(jsonObject, parentElement) {
             const htmlElement = createHtmlElement(jsChild);
             if (htmlElement) {
                 parentElement.appendChild(htmlElement);
-                JsonToElement(jsChild, htmlElement);
+                jsonToElement(jsChild, htmlElement);
             } else {
                 console.error('cant create dom element from json', jsChild);
             }

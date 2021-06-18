@@ -1,5 +1,4 @@
 import { block_elments_queryString } from "../constants/block_elms";
-import { inline_elements } from "../constants/inline_elems";
 import { getSelectedElement } from "./elements.service";
 import { getCleanText } from "./textEditor.service";
 
@@ -10,7 +9,7 @@ export function createInnerWrapperElement(element, options) {
   element.appendChild(innerSpan);
   return innerSpan;
 }
-export function GetClosestBlockElement(element) {
+export function getClosestBlockElement(element) {
   if (!element) {
     return null;
   }
