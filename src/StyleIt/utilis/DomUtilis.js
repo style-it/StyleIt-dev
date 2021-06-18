@@ -1,21 +1,20 @@
-import { block_elments } from "../constants/block_elms";
+/* eslint consistent-this: ["error", "that"]*/
+import { block_elments } from '../constants/block_elms';
 
 class DomUtilis {
-
 
   isElement(obj) {
     try {
       return obj instanceof HTMLElement;
-    }
-    catch (e) {
-      return (typeof obj === "object") &&
-        (obj.nodeType === 1) && (typeof obj.style === "object") &&
-        (typeof obj.ownerDocument === "object");
+    } catch (e) {
+      return typeof obj === 'object' &&
+        obj.nodeType === 1 && typeof obj.style === 'object' &&
+        typeof obj.ownerDocument === 'object';
     }
   }
-  
+
   wrap(el, wrapper) {
-    //el should be array
+    // el should be array
     let elements = [];
     if (Array.isArray(el)) {
       elements = el;
@@ -24,27 +23,34 @@ class DomUtilis {
     }
 
     const parents = elements.map(e => e.parentNode);
-    var parentsDiff = parents.filter((p, _, self) => { return self[0] !== p });
+    let parentsDiff = parents.filter((p, _, self) => self[0] !== p);
     if (parentsDiff.length !== 0) {
-      console.log(`[wrap] found ${parentsDiff.length} different parents 😅`);
       return;
     }
-    parents[0].insertBefore(wrapper, elements[0])
-    elements.forEach(_el => wrapper.appendChild(_el))
+    parents[0].insertBefore(wrapper, elements[0]);
+    elements.forEach(_el => wrapper.appendChild(_el));
 
     return true;
   }
 }
-export default new DomUtilis(); 
+export default new DomUtilis();
 
-Document.prototype.getSelectedElement=function(){var e=document.getSelection();if(null!==e){var t=e.anchorNode;if(null!==t){for(;3===t.nodeType;)t=t.parentNode;return t}return null}}
-Element.prototype.wrap = ( wrapper) => {
-  if (typeof wrapper === "string") wrapper = document.createElement(wrapper);
+Document.prototype.getSelectedElement = function () {
+  let e = document.getSelection();
+  if (e !== null) {
+    let t = e.anchorNode;
+    if (t !== null) {
+      for (; t.nodeType === 3;) {t = t.parentNode;} return t;
+    } return null;
+  }
+};
+Element.prototype.wrap = wrapper => {
+  if (typeof wrapper === 'string') {wrapper = document.createElement(wrapper);}
   this.parentNode.insertBefore(wrapper, this);
   wrapper.appendChild(this);
   return wrapper;
-}
-Element.prototype.createSelection = function() {
+};
+Element.prototype.createSelection = function () {
   if (document.body.createTextRange) {
     const range = document.body.createTextRange();
     range.moveToElementText(this);
@@ -55,25 +61,27 @@ Element.prototype.createSelection = function() {
     range.selectNodeContents(this);
     selection.removeAllRanges();
     selection.addRange(range);
-  } 
-}
-Element.prototype.__closest =function (s){
-      const el = this;
-      let ancestor = this;
-      if (!document.documentElement.contains(el)) return null;
-      do {
-        if (ancestor.matches(s) && ancestor.isContentEditable && !block_elments[ancestor.nodeName]) return ancestor;
-        if( ancestor.parentElement && block_elments[ ancestor.parentElement.nodeName]){
-          return null;
-        }
-        ancestor = ancestor.parentElement.isContentEditable ? ancestor.parentElement : null;
-      } while (ancestor !== null);
+  }
+};
+Element.prototype.__closest = function (s) {
+  let that;
+  that = this;
+  if (!document.documentElement.contains(that)) {return null;}
+  do {
+    if (that.matches(s) && that.isContentEditable && !block_elments[that.nodeName]) {
+      return that;
+    }
+    if (that.parentElement && block_elments[that.parentElement.nodeName]) {
       return null;
-  
-  
-}
-Element.prototype.ischildOf = function(parent) {
-  if (!parent) return false;
+    }
+    // eslint-disable-next-line consistent-this
+    that = that.parentElement.isContentEditable ? that.parentElement : null;
+  } while (that !== null);
+  return null;
+
+};
+Element.prototype.ischildOf = function (parent) {
+  if (!parent) {return false;}
   let node = this.parentNode;
   while (node != null) {
     if (node === parent) {
@@ -82,29 +90,29 @@ Element.prototype.ischildOf = function(parent) {
     node = node.parentNode;
   }
   return false;
-}
-const _wrap = function(wrapper) {
-  if (!this.parentNode) return false;
+};
+const _wrap = function (wrapper) {
+  if (!this.parentNode) {return false;}
   this.parentNode.insertBefore(wrapper, this);
   wrapper.appendChild(this);
   return wrapper;
-}
+};
 Text.prototype.wrap = _wrap;
 Element.prototype.wrap = _wrap;
 Element.prototype.insertAfter = function (newNode) {
   this.parentNode.insertBefore(newNode, this.nextSibling);
-}
-Element.prototype.replaceNode = function(replacementNode) {
+};
+Element.prototype.replaceNode = function (replacementNode) {
   if (this.parentNode) {
-    this.parentNode.insertBefore(replacementNode, this)
+    this.parentNode.insertBefore(replacementNode, this);
     this.remove();
     return replacementNode;
   }
-}
-Element.prototype.unwrap = function() {
-  var range = document.createRange()
-  range.selectNodeContents(this)
-  var extraContents = range.extractContents();
-  this.replaceNode(extraContents)
+};
+Element.prototype.unwrap = function () {
+  const range = document.createRange();
+  range.selectNodeContents(this);
+  const extraContents = range.extractContents();
+  this.replaceNode(extraContents);
   return extraContents;
-}
+};
