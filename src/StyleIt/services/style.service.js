@@ -31,7 +31,7 @@ export function normalizeStyle(element) {
     const collectStyles = getStyle(element);
     for (const key in collectStyles) {
       if (Object.prototype.hasOwnProperty.call(collectStyles, key)) {
-        Array.from(element.querySelectorAll(`[style*='${collectStyles[key]}']`)).forEach(el => {
+        Array.from(element.querySelectorAll(`span[style*='${key}=${collectStyles[key]}']`)).forEach(el => {
           el.style[key] = null;
           normalizeStyle(el);
         });
