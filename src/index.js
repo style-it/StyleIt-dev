@@ -1,5 +1,5 @@
 import Core from './StyleIt/index';
-import  MODES  from './StyleIt/constants/Modes.json';
+import MODES from './StyleIt/constants/Modes.json';
 
 /**
  * Create a new instance of StyleIt
@@ -9,11 +9,11 @@ import  MODES  from './StyleIt/constants/Modes.json';
  * @public
  */
 export default class StyleIt {
-  //expose only the relevant methods..
+  // expose only the relevant methods..
   constructor(target, config) {
-    //TODO: validate target & config..
+    // TODO: validate target & config..
     const styleIt = new Core(target, config);
-    if (styleIt) {  
+    if (styleIt) {
       this.toggleWith = styleIt.toggleWith;
       this.execCmd = styleIt.execCmd;
       this.toggleClass = styleIt.toggleClass;
@@ -25,7 +25,7 @@ export default class StyleIt {
       this.destroy = styleIt.destroy;
       this.on = styleIt.on;
       this.MODES = MODES;
-      //========================================//
+      // ========================================//
       this.toggleWith = this.toggleWith.bind(styleIt);
       this.toggleClass = this.toggleClass.bind(styleIt);
       this.execCmd = this.execCmd.bind(styleIt);
