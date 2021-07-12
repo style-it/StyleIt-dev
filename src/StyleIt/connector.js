@@ -4,6 +4,7 @@ import CopyPaste from './services/copyPaste/copyPaste.service';
 import Inpsector from './services/Inspector/Inspector.service';
 import KeyPress from './services/keyPress/KeyPress';
 import { wrapNakedTextNodes } from './services/elements.service';
+import { normalizeElement } from './services/textEditor.service';
 
 // TODO:review
 export default class Connector {
@@ -31,9 +32,12 @@ export default class Connector {
       inspector: new Inpsector(_element, _options.onInspect),
       keyPress: new KeyPress(_element, _options)
     });
+
     Array.from(element.querySelectorAll('[contenteditable]')).forEach(editable => {
       wrapNakedTextNodes(editable);
+      normalizeElement(editable);
     });
+
     this.createDefaultStyle();
     this.plugins = usePlugins(element, options);
     return element;
