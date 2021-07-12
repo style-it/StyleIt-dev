@@ -386,7 +386,7 @@ export default class Core {
   normalizeContentEditable() {
     const selectedEl = getSelectedElement();
     if (selectedEl) {
-      let contenteditableEl = selectedEl.__closest('[contenteditable]');
+      let contenteditableEl = selectedEl.closest('[contenteditable]');
       if (!contenteditableEl) {contenteditableEl = this.connectedElement;}
       normalizeElement(contenteditableEl);
       contenteditableEl.normalize();
@@ -436,7 +436,6 @@ export default class Core {
           options.onOff = true;
         }
         toggleStyle(element, key, value, options.onOff);
-        normalizeElement(element);
       }
 
       return options.onOff;
