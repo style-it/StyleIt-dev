@@ -1,38 +1,36 @@
-
-
-//class and style not includes yet..
+// class and style not includes yet..
 export function getInheirtAttributes(fromElement, toElement) {
-    var attributes = {};
-    var currectElement = fromElement;
-    while (currectElement && currectElement.ischildOf(toElement.parentElement)) {
-        var attrs = currectElement.attributes;
-        for(var i = attrs.length - 1; i >= 0; i--) {
-            if(attrs[i].name  !=="class" && attrs[i].name  !== "style"){
-                if(!attributes[attrs[i].name ]){
-                    attributes[attrs[i].name ] = attrs[i].value;
-                }
-            }
-          }
-      currectElement = currectElement.parentElement;
-    }
-    return attributes;
-  }
-  export function getAttributes(element,getAll){
-    var attributes = {};
-    var attrs = element.attributes;
-    for(var i = attrs.length - 1; i >= 0; i--) {
-        if(getAll  || (!getAll && attrs[i].name  !=="class" && attrs[i].name  !== "style")){
-            if(!attributes[attrs[i].name ]){
-                attributes[attrs[i].name ] = attrs[i].value;
-            }
+  let attributes = {};
+  let currectElement = fromElement;
+  while (currectElement && currectElement.ischildOf(toElement.parentElement)) {
+    let attrs = currectElement.attributes;
+    for (let i = attrs.length - 1; i >= 0; i--) {
+      if (attrs[i].name !== 'class' && attrs[i].name !== 'style') {
+        if (!attributes[attrs[i].name]) {
+          attributes[attrs[i].name] = attrs[i].value;
         }
       }
-      return attributes;
+    }
+    currectElement = currectElement.parentElement;
   }
-  export function removeAllAttrs(element){
-      if(element && !element.attributes){
-          console.error("element not have attributes..");
-          return null;
+  return attributes;
+}
+export function getAttributes(element, getAll) {
+  let attributes = {};
+  let attrs = element.attributes;
+  for (let i = attrs.length - 1; i >= 0; i--) {
+    if (getAll || !getAll && attrs[i].name !== 'class' && attrs[i].name !== 'style') {
+      if (!attributes[attrs[i].name]) {
+        attributes[attrs[i].name] = attrs[i].value;
       }
-    Array.from(element.attributes).forEach(attr=>element.removeAttribute(attr.nodeName))
+    }
   }
+  return attributes;
+}
+export function removeAllAttrs(element) {
+  if (element && !element.attributes) {
+    console.error('element not have attributes..');
+    return null;
+  }
+  Array.from(element.attributes).forEach(attr => element.removeAttribute(attr.nodeName));
+}
