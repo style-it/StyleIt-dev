@@ -22,7 +22,7 @@ export function splitHTML(fromElement, toElement, options = {}) {
     const styles = getInheirtCss(_fromElement, _toElement);
     const attrs = getInheirtAttributes(_fromElement, _toElement);
     const className = getInheirtClassNames(_fromElement, _toElement);
-    const template = document.createElement(tag);
+    const template = document.createElement(typeof attrs.href === 'string' ? 'a' : tag);
     template.className = className.join(' ');
     for (const style in styles) {
       if (Object.prototype.hasOwnProperty.call(styles, style)) {
