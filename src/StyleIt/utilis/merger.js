@@ -56,7 +56,6 @@ export const mergeNodeContect = node => {
   }
   firstChild.classList.add(..._elementProps.classes);
   normalizeClassName(firstChild);
-  normalizeElement(firstChild);
   if (firstChild.parentElement) {firstChild.parentElement.unwrap();}
   return firstChild;
 };
