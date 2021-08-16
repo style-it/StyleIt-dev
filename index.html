@@ -19,9 +19,12 @@
     margin-top: 140px;
 
   }
-
+.style-it-col{
+  width: 100%;
+}
   #editor {
     min-height: 100px;
+    margin-top: 300px;;
     background: rgb(240, 238, 238);
   }
 </style>
@@ -31,61 +34,10 @@
     <div id="textEditor">
 
     </div>
-    <div contenteditable="true" id="editor" spellcheck="false" >
-      <h1 style="font-family: Arial, Helvetica, sans-serif;" class="foo">
-        Heading 1 <span style="color:red;">Heading 1</span>
-      </h1>
-      <p>
-        StyleIt.js is a simple text editor API built for Developers.
-      </p>
-      <input/>
-      <div>
-        text in div and hr on the bottom
-        <hr/>
-      </div>
-      this text node have no wrapper...
-      
-      <ul><li>Life doesn't allow us to execute every single plan perfectly.&nbsp;</li><li>This especially seems to be the case when you travel.&nbsp;</li><li>You plan it down to every minute with a big checklist;&nbsp;</li></ul>
-<h2>HTML Table</h2>
-
-<table>
-  <tr>
-    <th>Company</th>
-    <th>Contact</th>
-    <th>Country</th>
-  </tr>
-  <tr>
-    <td>Alfreds Futterkiste</td>
-    <td>Maria Anders</td>
-    <td>Germany</td>
-  </tr>
-  <tr>
-    <td>Centro comercial Moctezuma</td>
-    <td>Francisco Chang</td>
-    <td>Mexico</td>
-  </tr>
-  <tr>
-    <td>Ernst Handel</td>
-    <td>Roland Mendel</td>
-    <td>Austria</td>
-  </tr>
-  <tr>
-    <td>Island Trading</td>
-    <td>Helen Bennett</td>
-    <td>UK</td>
-  </tr>
-  <tr>
-    <td>Laughing Bacchus Winecellars</td>
-    <td>Yoshi Tannamuri</td>
-    <td>Canada</td>
-  </tr>
-  <tr>
-    <td>Magazzini Alimentari Riuniti</td>
-    <td>Giovanni Rovelli</td>
-    <td>Italy</td>
-  </tr>
-</table>
-<blockquote><h2>The three greatest things you learn from traveling</h2><p>Like all the great things on earth traveling teaches us by example. Here are some of the most precious lessons I’ve learned over the years of traveling.</p></blockquote>
+    <div id="editor" spellcheck="false" >
+     <div contenteditable="">
+      <p>Hello world</p>
+     </div>
     </div>
     
     <style>
@@ -122,6 +74,10 @@ tr:nth-child(even) {
           document.body.appendChild(root);
           //================================================================
           const config = {
+            plugins:{
+              keyPress:false,
+              copyPaste:false
+            },
             stylesToPaste: {
               "textDecoration": true,
               "fontSize": true,
@@ -132,7 +88,7 @@ tr:nth-child(even) {
               "textShadow": true,
               "fontFamily": "Arial"
             },
-         
+            children:[".style-it-col"],
             onKeyPress: ()=>{
             
             },
@@ -157,18 +113,96 @@ tr:nth-child(even) {
           styleIt.on("inspectLink", (link) => {
             console.log("inspectLink", link);
           });
+          styleIt.on("change", (what) => {
+            console.log("change", what);
+          });
           //================================================================
           const btns = [{
             text: "toggle class",
             onclick: () => styleIt.toggleClass("test")
           },
           {
+            text: "underline as tag",
+            onclick: () => styleIt.toggleWith("u")
+          },
+          {
+            text: "del tag",
+            onclick: () => styleIt.toggleWith("del")
+          }, {
+            text: "MARK tag",
+            onclick: () => styleIt.toggleWith("MARK")
+          }, {
+            text: "EM tag",
+            onclick: () => styleIt.toggleWith("EM")
+          },
+          {
+            text: "strong as tag",
+            onclick: () => styleIt.toggleWith("strong")
+          },
+          {
+            text: "i as tag",
+            onclick: () => styleIt.toggleWith("i")
+          },
+          {
+            text: "bullets",
+            onclick: () => document.execCommand("insertUnorderedList")
+          },
+          {
+            text: "rtl",
+            onclick: () => styleIt.execCmd("direction", "rtl", styleIt.MODES.Toggle, {
+              target: "block",
+            })
+          },
+          {
+            text: "ltr",
+            onclick: () => styleIt.execCmd("direction", "ltr", styleIt.MODES.Toggle, {
+              target: "block",
+            })
+          },
+          {
             text: "B:Block",
             onclick: () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
+              unWrap:["b"],
               target: "block",
               as: "inline"
             })
           },
+          {
+            text: "change to h1",
+            onclick: () => styleIt.formatBlock("H1")
+          },
+          {
+            text: "change to h2",
+            onclick: () => styleIt.formatBlock("H2")
+          },
+          {
+            text: "change to h3",
+            onclick: () => styleIt.formatBlock("H3")
+          },
+          {
+            text: "change to h4",
+            onclick: () => styleIt.formatBlock("H4")
+          },
+          {
+            text: "change to address",
+            onclick: () => styleIt.formatBlock("address")
+          },
+          {
+            text: "change to code",
+            onclick: () => styleIt.formatBlock("code")
+          },
+          {
+            text: "change to pre",
+            onclick: () => styleIt.formatBlock("pre")
+          },
+          {
+            text: "change to p",
+            onclick: () => styleIt.formatBlock("p")
+          },
+          // {
+          //   text: "createList",
+          //   onclick: () => styleIt.createList()
+          // },
           {
             text: "B",
             onclick: () => styleIt.execCmd("font-weight", "bold", styleIt.MODES.Toggle, {
@@ -241,7 +275,7 @@ tr:nth-child(even) {
           https.innerHTML = "https://helloworld.com"
           https.onclick = () => {
             styleIt.link({
-              href: "https://helloworld.com",
+              href: "https://helloworld.com/asdasdas",
               target: "_parent"
             })
           }
@@ -278,7 +312,7 @@ tr:nth-child(even) {
           const key = root.addElement('input');
           const value = root.addElement('input');
 
-          const ok = root.addElement('button');
+          const ok = root.addElement('buttond');
           ok.innerHTML = "go"
           ok.onclick = () => {
             styleIt.execCmd(key.value, value.value, styleIt.MODES.Extend);
@@ -302,7 +336,7 @@ tr:nth-child(even) {
           const destroy = root.addElement('button');
           destroy.innerHTML = "Destroy";
           destroy.onclick = () => {
-            styleIt.Destroy();
+            styleIt.destroy();
           }
         });
       }
