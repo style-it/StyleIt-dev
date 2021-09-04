@@ -417,7 +417,7 @@ export default class Core {
         elementToSplit.style[key] = null;
         innerSpan.style[key] = value;
         options.onOff = false;
-        return this.onToggle(element, key, value, options);
+        return setStyle(element, key, value);
       }
       if (elementToSplit && elementToSplit !== element) {
         if (typeof options.onOff === 'undefined') {options.onOff = false;}
@@ -443,6 +443,7 @@ export default class Core {
 
   }
   onExtend(element, key, value, options = {}) {
+    
     if (options.target === 'block') {
       this.createBlockStyle(options, element, key, value);
     } else {
@@ -453,19 +454,11 @@ export default class Core {
           setStyle(splitBlocks.center, key, value);
         } else if (options.target === 'block') {
           elementToSplit.style[key] = value;
-        } else if (options.target !== 'block') {
+        } else {
           let innerSpan = createInnerWrapperElement(elementToSplit, { el: 'span' });
           setStyle(innerSpan, key, value);
           elementToSplit.style[key] = null;
-          return this.onExtend(element, key, value);
-
-        } else if (elementToSplit !== element) {
-          const splitElements = splitHTML(element, elementToSplit);
-          if (splitElements) {
-            setStyle(splitElements.center, key, value);
-          } else {
-            console.error('splitHTML return null');
-          }
+          return setStyle(element, key, value);
         }
 
       } else if (window.getComputedStyle(element).display !== 'block' && options.target === 'block') {
