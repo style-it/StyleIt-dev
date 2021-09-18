@@ -10,7 +10,6 @@ import {
   querySelectorUnderSelection
 } from './services/range.service';
 import Modes from './constants/Modes.json';
-import { splitHTML } from './utilis/splitHTML';
 import { setStyle, toggleStyle, collectStyleFromSelectedElement, findBlockAndStyleIt } from './services/style.service';
 import { normalizeElement } from './services/textEditor.service';
 import Connector from './connector';
@@ -21,7 +20,7 @@ import { createTempLinkElement, resetURL, TARGETS } from './services/link.servic
 import { void_elements } from './constants/void_elms';
 import { block_elments, block_elments_queryString } from './constants/block_elms';
 import { inline_elements, inline_elemets_arr } from './constants/inline_elems';
-
+import spliterHtml from 'spliter-html';
 export default class Core {
 
   // *target => can be Id of Element that should contain Editor instance or the element itself..
@@ -96,7 +95,7 @@ export default class Core {
     Array.from(wrappedEls).forEach(r => {
       const closestATag = r.__closest('a');
       if (closestATag) {
-        let a = splitHTML(r, closestATag, {
+        let a = spliterHtml(r, closestATag, {
           tag: 'a'
         });
         if (a) {
@@ -180,7 +179,7 @@ export default class Core {
         if (!closestTag) {
           el.unwrap();
         } else {
-          const fromSplit = splitHTML(el, closestTag, { tag: el.nodeName });
+          const fromSplit = spliterHtml(el, closestTag, { tag: el.nodeName });
           if (fromSplit && fromSplit.center) {
             Array.from(fromSplit.center.querySelectorAll(tagName)).forEach(child => child.unwrap());
             fromSplit.center.unwrap();
@@ -308,7 +307,7 @@ export default class Core {
         if (el.parentElement) {
           const closestClass = el.parentElement.__closest(`[class='${className}']`);
           if (closestClass) {
-            const split = splitHTML(el, closestClass);
+            const split = spliterHtml(el, closestClass);
             if (split) {
               split.center.removeClassName(className);
             }
@@ -349,7 +348,7 @@ export default class Core {
 
     // ==============review===============//
     this.ELEMENTS = wrapRangeWithElement();
-
+    debugger
     // This is how i make the text selection, i dont know if this is good way, but it works..
     const flags = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);// Set Flag at last
     // ======================================================================//
@@ -362,7 +361,7 @@ export default class Core {
       const result = this.modeHandlers[mode](element, key, value, options);
       if (mode === Modes.Toggle && typeof ToggleMode === 'undefined') {ToggleMode = result;}
     });
-    this.normalizeContentEditable();
+    this.ELEMENTS.length > 1 && this.normalizeContentEditable();
     // use the first and last flags to make the text selection and unwrap them..
     if (flags && flags.firstFlag && flags.lastFlag) {
       setSelectionBetweenTwoNodes(flags.firstFlag, flags.lastFlag);
@@ -422,12 +421,12 @@ export default class Core {
       if (elementToSplit && elementToSplit !== element) {
         if (typeof options.onOff === 'undefined') {options.onOff = false;}
         // unbold
-        const splitElements = splitHTML(element, elementToSplit);
+        const splitElements = spliterHtml(element, elementToSplit);
         // if there is no split elements, its error!
         if (splitElements) {
           toggleStyle(splitElements.center, key, value, options.onOff);
         } else {
-          console.error('splitHTML return null');
+          console.error('spliterHtml return null');
         }
       } else {
         if (typeof options.onOff === 'undefined' && elementToSplit) {
@@ -449,7 +448,7 @@ export default class Core {
     } else {
       const elementToSplit = element.__closest(`[style*='${key}']`);
       if (elementToSplit) {
-        const splitBlocks = splitHTML(element, elementToSplit);
+        const splitBlocks = spliterHtml(element, elementToSplit);
         if (splitBlocks) {
           setStyle(splitBlocks.center, key, value);
         } else if (options.target === 'block') {
