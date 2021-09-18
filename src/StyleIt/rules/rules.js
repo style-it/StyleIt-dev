@@ -1,14 +1,13 @@
 import { setStyle, normalizeStyle } from '../services/style.service';
-import { splitHTML } from '../utilis/splitHTML';
 import { normalizeElement } from '../services/textEditor.service';
-
+import spliterHtml from 'spliter-html';
 // TODO:review
 export function useRules(data) {
   const colorTextDecorationRule = _data => {
     if (_data.key === 'color') {
       const textDecoration = _data.element.closest(`[style*='text-decoration']`);
       if (textDecoration) {
-        const splits = splitHTML(_data.element, textDecoration);
+        const splits = spliterHtml(_data.element, textDecoration);
         if (splits) {
           normalizeStyle();
           setStyle(splits.center, 'text-decoration-color', `${_data.value}`);

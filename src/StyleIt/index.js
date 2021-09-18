@@ -348,7 +348,6 @@ export default class Core {
 
     // ==============review===============//
     this.ELEMENTS = wrapRangeWithElement();
-    debugger
     // This is how i make the text selection, i dont know if this is good way, but it works..
     const flags = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);// Set Flag at last
     // ======================================================================//
