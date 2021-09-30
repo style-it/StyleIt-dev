@@ -369,11 +369,6 @@ export default class Core {
       if (sel.removeAllRanges) {
         sel.removeAllRanges();
       }
-      if (this.caretHolder) {
-        setCaretAt(this.caretHolder, this.caretHolder.textContent.length);
-        this.caretHolder.unwrap();
-        this.caretHolder = null;
-      }
     }
     const collectedStyles = collectStyleFromSelectedElement(this.connectedElement);
     if (typeof EVENTS.inspect === 'function') {
