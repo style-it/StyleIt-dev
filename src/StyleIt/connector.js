@@ -4,7 +4,7 @@ import CopyPaste from './services/copyPaste/copyPaste.service';
 import Inpsector from './services/Inspector/Inspector.service';
 import KeyPress from './services/keyPress/KeyPress';
 import { wrapNakedTextNodes } from './services/elements.service';
-import { normalizeElement } from './services/textEditor.service';
+import { normalizeElement, removeZeroSpace } from './services/textEditor.service';
 
 // TODO:review
 export default class Connector {
@@ -26,7 +26,6 @@ export default class Connector {
       console.error('[-] =>connectWith should be element id or dom element..');
       return null;
     }
-
     const usePlugins = (_element, _options) => ({
       copyPaste: new CopyPaste(_element, _options),
       inspector: new Inpsector(_element, _options.onInspect),
@@ -40,7 +39,12 @@ export default class Connector {
 
     this.createDefaultStyle();
     this.plugins = usePlugins(element, options);
+    this.target.addEventListener('keydown', this.handleContentByUserEvents);
+
     return element;
+  }
+  handleContentByUserEvents(target) {
+    removeZeroSpace(target.childNodes);
   }
   createDefaultStyle() {
     const style = document.createElement('style');
@@ -54,6 +58,7 @@ export default class Connector {
 
   // TODO: destory events..
   destroy() {
+    this.target.removeEventListener('keydown', this.handleContentByUserEvents);
     for (const key in this.plugins) {
       if (Object.prototype.hasOwnProperty.call(this.plugins, key)) {
         const plugin = this.plugins[key];
