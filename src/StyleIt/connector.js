@@ -3,7 +3,7 @@ import DomUtilis from './utilis/DomUtilis';
 import CopyPaste from './services/copyPaste/copyPaste.service';
 import Inpsector from './services/Inspector/Inspector.service';
 import KeyPress from './services/keyPress/KeyPress';
-import { wrapNakedTextNodes } from './services/elements.service';
+import { wrapNakedTextNodes, getSelectedElement } from './services/elements.service';
 import { normalizeElement, removeZeroSpace } from './services/textEditor.service';
 
 // TODO:review
@@ -39,12 +39,15 @@ export default class Connector {
 
     this.createDefaultStyle();
     this.plugins = usePlugins(element, options);
-    this.target.addEventListener('keydown', this.handleContentByUserEvents);
+    element.addEventListener('keydown', this.handleContentByUserEvents);
 
     return element;
   }
-  handleContentByUserEvents(target) {
-    removeZeroSpace(target.childNodes);
+  handleContentByUserEvents() {
+    const selectedElement = getSelectedElement();
+    if (selectedElement && selectedElement.childNodes) {
+      removeZeroSpace(selectedElement.childNodes);
+    }
   }
   createDefaultStyle() {
     const style = document.createElement('style');
