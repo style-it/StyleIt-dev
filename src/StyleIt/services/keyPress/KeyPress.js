@@ -1,6 +1,6 @@
 import { wrapNakedTextNodes } from '../elements.service';
-import { getClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from '../range.service';
-import {void_elements} from '../../constants/void_elms';
+import { getClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt, getCaretCharacterOffsetWithin } from '../range.service';
+import { void_elements } from '../../constants/void_elms';
 import { getCleanText } from '../textEditor.service';
 
 export default class KeyPress {
@@ -90,7 +90,6 @@ export default class KeyPress {
     };
 
     this.target.addEventListener('keydown', this.keypress);
-
     this.destroy = () => {
       if (this.target) {
         this.target.removeEventListener('keydown', this.keypress);
