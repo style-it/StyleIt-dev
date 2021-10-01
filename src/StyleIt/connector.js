@@ -3,8 +3,8 @@ import DomUtilis from './utilis/DomUtilis';
 import CopyPaste from './services/copyPaste/copyPaste.service';
 import Inpsector from './services/Inspector/Inspector.service';
 import KeyPress from './services/keyPress/KeyPress';
-import { wrapNakedTextNodes, getSelectedElement } from './services/elements.service';
-import { normalizeElement, removeZeroSpace } from './services/textEditor.service';
+import { wrapNakedTextNodes } from './services/elements.service';
+import { normalizeElement } from './services/textEditor.service';
 
 // TODO:review
 export default class Connector {
@@ -14,13 +14,15 @@ export default class Connector {
       element = document.getElementById(element);
       if (!element) {
         // TODO: use the validator
-        console.error('[-] =>connectWith should be element id or dom element..');
+        console.error('[-] =>target should be element id or dom element..');
         return null;
       }
     }
     if (DomUtilis.isElement(element)) {
-      document.execCommand('defaultParagraphSeparator', false, 'p');
-      document.execCommand('styleWithCSS', true, null);
+      if (document.execCommand) {
+        document.execCommand('defaultParagraphSeparator', false, 'p');
+        document.execCommand('styleWithCSS', true, null);
+      }
     } else {
       // TODO: use the validator
       console.error('[-] =>connectWith should be element id or dom element..');
@@ -39,15 +41,7 @@ export default class Connector {
 
     this.createDefaultStyle();
     this.plugins = usePlugins(element, options);
-    element.addEventListener('keydown', this.handleContentByUserEvents);
-
     return element;
-  }
-  handleContentByUserEvents() {
-    const selectedElement = getSelectedElement();
-    if (selectedElement && selectedElement.childNodes) {
-      removeZeroSpace(selectedElement.childNodes);
-    }
   }
   createDefaultStyle() {
     const style = document.createElement('style');
@@ -61,7 +55,6 @@ export default class Connector {
 
   // TODO: destory events..
   destroy() {
-    this.target.removeEventListener('keydown', this.handleContentByUserEvents);
     for (const key in this.plugins) {
       if (Object.prototype.hasOwnProperty.call(this.plugins, key)) {
         const plugin = this.plugins[key];
