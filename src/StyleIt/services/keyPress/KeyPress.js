@@ -103,19 +103,17 @@ export default class KeyPress {
   }
   onDefaultKeyPress(e) {
     const key = e.key;
-    if (key === "ArrowLeft" || key === "ArrowRight") {
-      const removeZeroWidthOnDetected = (textNode) =>{
-        console.log(textNode.textContent.indexOf('​') !== -1, textNode.nextSibling && textNode.nextSibling.textContent.indexOf('​') !== -1);
-        if(textNode.nodeType === 3 && textNode.textContent.indexOf('​') !== -1 && !getCleanText(textNode.textContent)){
-          textNode.textContent = "";
+    if (key === 'ArrowLeft' || key === 'ArrowRight') {
+      const removeZeroWidthOnDetected = textNode => {
+        if (!textNode) {return;}
+        if (textNode.nodeType === 3 && textNode.textContent.indexOf('​') !== -1 && !getCleanText(textNode.textContent)) {
+          textNode.textContent = '';
         }
-      }
-      const getSelectionStart = () => {
-        return document.getSelection().anchorNode;
-      }
+      };
+      const getSelectionStart = () => document.getSelection().anchorNode;
       let selectedNode = getSelectionStart();
       removeZeroWidthOnDetected(selectedNode);
-      if(selectedNode.nextSibling && selectedNode.nextSibling.nodeType === 1 && selectedNode.nextSibling.firstChild && selectedNode.nextSibling.firstChild.nodeType === 3){
+      if (selectedNode.nextSibling && selectedNode.nextSibling.nodeType === 1 && selectedNode.nextSibling.firstChild && selectedNode.nextSibling.firstChild.nodeType === 3) {
         removeZeroWidthOnDetected(selectedNode.nextSibling.firstChild);
       }
     }
