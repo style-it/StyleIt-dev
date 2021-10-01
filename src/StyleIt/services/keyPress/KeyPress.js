@@ -1,5 +1,5 @@
 import { wrapNakedTextNodes } from '../elements.service';
-import { getClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt, getCaretCharacterOffsetWithin } from '../range.service';
+import { getClosestBlockElement, insertAfter, pasteHtmlAtCaret, setCaretAt } from '../range.service';
 import { void_elements } from '../../constants/void_elms';
 import { getCleanText } from '../textEditor.service';
 
@@ -9,13 +9,14 @@ export default class KeyPress {
     if (!target) {
       return null;
     }
+    this.target = target;
+    this.target.addEventListener('keydown', this.onDefaultKeyPress);
     if (options.plugins && typeof options.plugins.keyPress === 'boolean' && options.plugins.keyPress === false) {
       return;
     }
     if (typeof options.onKeyPress === 'function') {
       this.onKeyPress = options.onKeyPress;
     }
-    this.target = target;
     this.keypress = e => {
       if (e.keyCode === 8) {
         const _target = e.target;
@@ -84,17 +85,39 @@ export default class KeyPress {
         selection.removeAllRanges();
         wrapNakedTextNodes(this.target, { expect: blockElement });
         setCaretAt(el, 0);
-      } else if (typeof this.onKeyPress === 'function') {
+      }
+      if (typeof this.onKeyPress === 'function') {
         this.onKeyPress(e);
       }
     };
 
     this.target.addEventListener('keydown', this.keypress);
+
     this.destroy = () => {
       if (this.target) {
+        this.target.addEventListener('keydown', this.onDefaultKeyPress);
         this.target.removeEventListener('keydown', this.keypress);
         this.target = null;
       }
     };
+  }
+  onDefaultKeyPress(e) {
+    const key = e.key;
+    if (key === "ArrowLeft" || key === "ArrowRight") {
+      const removeZeroWidthOnDetected = (textNode) =>{
+        console.log(textNode.textContent.indexOf('​') !== -1, textNode.nextSibling && textNode.nextSibling.textContent.indexOf('​') !== -1);
+        if(textNode.nodeType === 3 && textNode.textContent.indexOf('​') !== -1 && !getCleanText(textNode.textContent)){
+          textNode.textContent = "";
+        }
+      }
+      const getSelectionStart = () => {
+        return document.getSelection().anchorNode;
+      }
+      let selectedNode = getSelectionStart();
+      removeZeroWidthOnDetected(selectedNode);
+      if(selectedNode.nextSibling && selectedNode.nextSibling.nodeType === 1 && selectedNode.nextSibling.firstChild && selectedNode.nextSibling.firstChild.nodeType === 3){
+        removeZeroWidthOnDetected(selectedNode.nextSibling.firstChild);
+      }
+    }
   }
 }
