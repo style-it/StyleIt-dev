@@ -138,7 +138,9 @@ export function pasteHtmlAtCaret(html) {
         let frag = document.createDocumentFragment();
         do {
           node = el.firstChild;
-          lastNode = frag.appendChild(node);
+          if (node) {
+            lastNode = frag.appendChild(node);
+          }
         }
         while (node);
         range.insertNode(frag);
