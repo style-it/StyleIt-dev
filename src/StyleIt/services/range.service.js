@@ -284,8 +284,9 @@ export function getAllNodes() {
     // get the current selection if no range is specified
     range = window.getSelection().getRangeAt(0);
   }
-  if (range.isCollapsed) {
+  if (range.collapsed) {
     // nothing to wrap
+
     return [];
   }
   nodes = getRangeTextNodes(range);
@@ -308,9 +309,13 @@ export function wrapRangeText(wrapperEl, range) {
     range = window.getSelection().getRangeAt(0);
   }
 
-  if (range.isCollapsed) {
+  if (range.collapsed) {
+    const ghostSpan = document.createElement('span');
+    ghostSpan.innerHTML = '&#8203;';
+    pasteHtmlAtCaret(ghostSpan);
+    setCaretAt(ghostSpan);
     // nothing to wrap
-    return [];
+    return [ghostSpan];
   }
 
   if (!wrapperEl) {
