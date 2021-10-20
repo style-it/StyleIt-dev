@@ -3,7 +3,6 @@ import { inline_elements } from '../../constants/inline_elems';
 import { void_elements } from '../../constants/void_elms';
 import spliterHtml from 'spliter-html';
 import { pasteHtmlAtCaret, setCaretAt } from '../range.service';
-import { getInheirtCss, setStyles } from '../style.service';
 import { getCleanText, normalizeElement } from '../textEditor.service';
 
 export default class CopyPaste {
@@ -34,15 +33,7 @@ export default class CopyPaste {
             range.extractContents();
           }
           Array.from(container.childNodes).forEach(n => {
-            if (n.nodeType === 3) {
-              const parentCopiedNode = sel.getRangeAt(i).startContainer.parentNode;
-              const collectedCSS = getInheirtCss(parentCopiedNode, this.target);
-              const span = document.createElement('span');
-              span.textContent = copiedNode.textContent;
-              setStyles(span, collectedCSS);
-              n.wrap(span);
-
-            } else if (void_elements[n.nodeName] && n.nodeName !== 'BR') {
+            if (void_elements[n.nodeName] && n.nodeName !== 'BR' && n.nodeName !== 'HR') {
               n.parentElement.removeChild(n);
             }
           });
