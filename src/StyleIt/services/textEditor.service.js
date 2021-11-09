@@ -19,7 +19,7 @@ export function normalizeElement(el) {
     element.normalize();
     normalizeClassName(element);
     normalizeStyle(element);
-    if (element && inline_elements[element.nodeName] && !isEmptyTextNode(element.textContent)) {
+    if (element && inline_elements[element.nodeName] && element.childNodes.length === 0) {
       element.unwrap();
       return null;
     }
