@@ -50,7 +50,7 @@ Element.prototype.wrap = wrapper => {
   wrapper.appendChild(this);
   return wrapper;
 };
-  function _createSelection () {
+function _createSelection() {
   if (document.body.createTextRange) {
     const range = document.body.createTextRange();
     range.moveToElementText(this);
@@ -62,7 +62,7 @@ Element.prototype.wrap = wrapper => {
     selection.removeAllRanges();
     selection.addRange(range);
   }
-};
+}
 Element.prototype.createSelection = _createSelection;
 Text.prototype.createSelection = _createSelection;
 Element.prototype.__closest = function (s) {
