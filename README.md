@@ -1,16 +1,12 @@
 StyleIt (Beta)
 ==============
 
- ### StyleIt.js is A completely customizable for building rich text editors in the browser. its a simple editor API built for Developers.
+ ### StyleIt.js is A completely customizable for building rich text editors in the browser.
 
 ## Keep the following in mind
 * StyleIt.js is an abstraction, please know that there is no UI.
-* StyleIt is currently in beta. It's useable now for production, but you might need to pull request a fix or two for advanced use cases.
+* StyleIt is built for study purposes. 
 * Undo/Redo will come in the future
-
-### Why I created StyleIt ?
-Before i was created StyleIt, I tried a lot of the other rich text libraries out there,
-and i had very bad hacky things to get the user experience exacly like i want.
 
 
 ## DEMO ##

@@ -5,7 +5,6 @@ import {
   setSelectionFlags,
   setSelectionBetweenTwoNodes,
   createInnerWrapperElement,
-  setCaretAt,
   getClosestBlockElement,
   querySelectorUnderSelection
 } from './services/range.service';
@@ -436,7 +435,6 @@ export default class Core {
 
   }
   onExtend(element, key, value, options = {}) {
-    
     if (options.target === 'block') {
       this.createBlockStyle(options, element, key, value);
     } else {
