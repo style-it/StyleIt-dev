@@ -1,11 +1,11 @@
-StyleIt (Beta)
+StyleIt
 ==============
 
  ### StyleIt.js is A completely customizable for building rich text editors in the browser.
 
 ## Keep the following in mind
 * StyleIt.js is an abstraction, please know that there is no UI.
-* StyleIt is built for study purposes. 
+* This repo was built for study purposes, Please go to [styleIt2](https://github.com/adi-L/styleit2).
 * Undo/Redo will come in the future
 
 
