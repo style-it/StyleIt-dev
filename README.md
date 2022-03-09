@@ -5,7 +5,7 @@ StyleIt
 
 ## Keep the following in mind
 * StyleIt.js is an abstraction, please know that there is no UI.
-* This repo was built for study purposes, Please go to [styleIt2](https://github.com/adi-L/styleit2).
+* This repo was built for study purposes.
 * Undo/Redo will come in the future
 
 

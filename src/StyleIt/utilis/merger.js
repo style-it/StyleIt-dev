@@ -56,7 +56,7 @@ export const mergeNodeContect = node => {
   }
   firstChild.classList.add(..._elementProps.classes);
   normalizeClassName(firstChild);
-  if (firstChild.parentElement) {firstChild.parentElement.unwrap();}
+  if (firstChild.parentElement) { firstChild.parentElement.unwrap(); }
   return firstChild;
 };
 export function mergeTwoNodes(elementOne, elementTwo) {
@@ -84,7 +84,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
     attrs: getAttributes(elementTwo)
   }];
   const getCommonClasses = (classes1, classes2) => {
-    if (!classes1 || !classes2) {return [];}
+    if (!classes1 || !classes2) { return []; }
     const c1 = [...classes1];
     const c2 = [...classes2];
     return c1.filter(c => c2.includes(c));
@@ -92,7 +92,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
   const getCommonStyles = (style1, style2) => {
     const commmonStyles = {};
     for (const s in style1) {
-      if (!style2[s]) {continue;}
+      if (!style2[s]) { continue; }
 
       const style1Values = style1[s];
       const style2Values = style2[s];
@@ -179,6 +179,7 @@ export function mergeTwoNodes(elementOne, elementTwo) {
   });
 
   DomUtilis.wrap(elements, wrapper);
+  elements.forEach(el => el.unwrap());
   [...wrapper.children].forEach(c => {
     normalizeElement(c);
   });

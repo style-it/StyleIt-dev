@@ -14,6 +14,7 @@ export default class StyleIt {
     // TODO: validate target & config..
     const styleIt = new Core(target, config);
     if (styleIt) {
+      this.execCmd2 = styleIt.execCmd2;
       this.toggleWith = styleIt.toggleWith;
       this.execCmd = styleIt.execCmd;
       this.toggleClass = styleIt.toggleClass;
@@ -26,6 +27,7 @@ export default class StyleIt {
       this.on = styleIt.on;
       this.MODES = MODES;
       // ========================================//
+      this.execCmd2 = styleIt.execCmd2.bind(styleIt);
       this.toggleWith = this.toggleWith.bind(styleIt);
       this.toggleClass = this.toggleClass.bind(styleIt);
       this.execCmd = this.execCmd.bind(styleIt);

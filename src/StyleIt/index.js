@@ -5,9 +5,12 @@ import {
   setSelectionFlags,
   setSelectionBetweenTwoNodes,
   createInnerWrapperElement,
+  saveSelection,
+  restoreSelection,
   getClosestBlockElement,
   querySelectorUnderSelection
 } from './services/range.service';
+import kebabize from './utilis/kebabcase';
 import Modes from './constants/Modes.json';
 import { setStyle, toggleStyle, collectStyleFromSelectedElement, findBlockAndStyleIt } from './services/style.service';
 import { normalizeElement } from './services/textEditor.service';
@@ -328,6 +331,68 @@ export default class Core {
       }
     }
   }
+
+  execCmd2(attributes, options) {
+    const savedSelection = saveSelection();
+
+    if (!this.isValid()) {
+      return;
+    }
+    this.ELEMENTS = [];
+    const mode = Modes.Extend;
+    if (!options) {
+      options = {
+        tagName: "SPAN"
+      };
+    }
+
+    // ==============review===============//
+    this.ELEMENTS = wrapRangeWithElement(options.tagName);
+    // This is how i make the text selection, i dont know if this is good way, but it works..
+    const flags = setSelectionFlags(this.ELEMENTS[0], this.ELEMENTS[this.ELEMENTS.length - 1]);// Set Flag at last
+    // ======================================================================//
+    // removeZeroSpace(getTextNodes(this.connectedElement));
+
+    let ToggleMode;// Declare toggle mode, The first element determines whether it is on or off
+
+    this.ELEMENTS.forEach(element => {
+      options.onOff = ToggleMode;
+      for (const attribute in attributes) {
+        if (Object.hasOwnProperty.call(attributes, attribute)) {
+          const attributeData = attributes[attribute];
+          if (attribute === 'style') {
+            for (const key in attributeData) {
+              if (Object.hasOwnProperty.call(attributeData, key)) {
+                const value = attributeData[key];
+                this.modeHandlers[mode](element, key, value, options);
+
+              }
+            }
+          } else if (typeof attribute === 'string' && typeof attributeData === 'string') {
+            element.setAttribute(attribute, attributeData);
+          }
+        }
+      }
+    });
+    this.normalizeContentEditable();
+    // use the first and last flags to make the text selection and unwrap them..
+    if (flags && flags.firstFlag && flags.lastFlag) {
+      setSelectionBetweenTwoNodes(flags.firstFlag, flags.lastFlag);
+    } else {
+      const sel = window.getSelection();
+      if (sel.removeAllRanges) {
+        sel.removeAllRanges();
+      }
+    }
+    if (this.ELEMENTS.length === 0) {
+      restoreSelection(savedSelection);
+    }
+    const collectedStyles = collectStyleFromSelectedElement(this.connectedElement);
+    if (typeof EVENTS.inspect === 'function') {
+      EVENTS.inspect(collectedStyles);
+    }
+    this.dispatchEvent('styleChanged', collectedStyles);
+  }
   /**
     * @param {String} key  key of css
     *  @param {String} value - value of css
@@ -338,6 +403,8 @@ export default class Core {
     * @returns {number} The sum of the two numbers.
     */
   execCmd(key, value, mode, options) {
+    const savedSelection = saveSelection();
+
     if (!this.isValid() || !this.isVAlidKeyValue(key, value)) {
       return;
     }
@@ -368,6 +435,9 @@ export default class Core {
       if (sel.removeAllRanges) {
         sel.removeAllRanges();
       }
+    }
+    if (this.ELEMENTS.length === 0) {
+      restoreSelection(savedSelection);
     }
     const collectedStyles = collectStyleFromSelectedElement(this.connectedElement);
     if (typeof EVENTS.inspect === 'function') {
@@ -438,7 +508,7 @@ export default class Core {
     if (options.target === 'block') {
       this.createBlockStyle(options, element, key, value);
     } else {
-      const elementToSplit = element.__closest(`[style*='${key}']`);
+      const elementToSplit = element.__closest(`[style*='${kebabize(key)}']`);
       if (elementToSplit) {
         const splitBlocks = spliterHtml(element, elementToSplit);
         if (splitBlocks) {
@@ -516,10 +586,10 @@ export default class Core {
       console.error('please create new instance..');
       return false;
     }
-    const selection = window.getSelection();
-    if (selection.isCollapsed) {
-      return false;
-    }
+    // const selection = window.getSelection();
+    // if (selection.isCollapsed) {
+    //   return false;
+    // }
     const selectedElement = getSelectedElement();
     if (selectedElement && ((selectedElement.ischildOf(this.connectedElement) || selectedElement === this.connectedElement) && selectedElement.isContentEditable)) {
       return true;

@@ -146,6 +146,32 @@
             onclick: () => styleIt.toggleWith("u")
           },
           {
+            text: "execCmd2",
+            onclick: () => styleIt.execCmd2({
+            class:"hello world this is class name",
+            style:{
+              fontSize:"50px" ,
+              color:"red"
+            },
+            href:"www.google.com"
+            },{
+              tagName:"A"
+            })
+          },
+          {
+            text: "execCmd3",
+            onclick: () => styleIt.execCmd2({
+            class:"hello",
+            style:{
+              fontSize:"50px" ,
+              color:"red"
+            },
+            href:"www.google.com"
+            },{
+              tagName:"A"
+            })
+          },
+          {
             text: "del tag",
             onclick: () => styleIt.toggleWith("del")
           }, {
