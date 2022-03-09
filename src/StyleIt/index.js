@@ -135,8 +135,8 @@ export default class Core {
     // removeZeroSpace(getTextNodes(this.connectedElement));
     const { firstFlag, lastFlag } = setSelectionFlags(elements[0], elements[elements.length - 1]); // Set Flag at last
     [...elements, ...selectedElements].forEach(el => {
-      if (!el) {return;}
-      if (el && !el.parentElement) {return;}
+      if (!el) { return; }
+      if (el && !el.parentElement) { return; }
       for (const key in attrs) {
         if (Object.hasOwnProperty.call(attrs, key)) {
           const value = attrs[key];
@@ -172,8 +172,8 @@ export default class Core {
     if (isToggleOn) {
 
       [...elements, ...selectedElements].forEach(el => {
-        if (!el) {return;}
-        if (el && !el.parentElement) {return;}
+        if (!el) { return; }
+        if (el && !el.parentElement) { return; }
         const closestTag = el.parentElement.__closest(tagName);
         if (!closestTag) {
           el.unwrap();
@@ -296,7 +296,7 @@ export default class Core {
     if (elements.length === 0) {
       return;
     }
-    if (!options) {options = {};}
+    if (!options) { options = {}; }
     const elementUnderSelection = querySelectorUnderSelection(`[class='${className}']`);
     const isToggleOn = typeof options.isON === 'boolean' ? options.isON : elementUnderSelection.length > 0;
     if (!isToggleOn) {
@@ -343,7 +343,7 @@ export default class Core {
     }
     this.ELEMENTS = [];
     mode = mode ? mode : Modes.Extend;
-    if (!options) {options = {};}
+    if (!options) { options = {}; }
 
     // ==============review===============//
     this.ELEMENTS = wrapRangeWithElement();
@@ -357,9 +357,9 @@ export default class Core {
     this.ELEMENTS.forEach(element => {
       options.onOff = ToggleMode;
       const result = this.modeHandlers[mode](element, key, value, options);
-      if (mode === Modes.Toggle && typeof ToggleMode === 'undefined') {ToggleMode = result;}
+      if (mode === Modes.Toggle && typeof ToggleMode === 'undefined') { ToggleMode = result; }
     });
-    this.ELEMENTS.length > 1 && this.normalizeContentEditable();
+    this.normalizeContentEditable();
     // use the first and last flags to make the text selection and unwrap them..
     if (flags && flags.firstFlag && flags.lastFlag) {
       setSelectionBetweenTwoNodes(flags.firstFlag, flags.lastFlag);
@@ -379,14 +379,14 @@ export default class Core {
     const selectedEl = getSelectedElement();
     if (selectedEl) {
       let contenteditableEl = selectedEl.closest('[contenteditable]');
-      if (!contenteditableEl) {contenteditableEl = this.connectedElement;}
+      if (!contenteditableEl) { contenteditableEl = this.connectedElement; }
       normalizeElement(contenteditableEl);
       contenteditableEl.normalize();
     }
   }
 
   createCaretPlacement(atNode) {
-    if (!atNode) {return null;}
+    if (!atNode) { return null; }
     const caretHolder = document.createElement('text-selection');
     caretHolder.setAttribute('zero-space', 'true');
     atNode.appendChild(caretHolder);
@@ -394,7 +394,7 @@ export default class Core {
   }
 
   dispatchEvent(event, payload) {
-    if (this.events[event]) {this.events[event](payload);}
+    if (this.events[event]) { this.events[event](payload); }
   }
   onToggle(element, key, value, options = {}) {
     if (options.target === 'block') {
@@ -412,7 +412,7 @@ export default class Core {
         return setStyle(element, key, value);
       }
       if (elementToSplit && elementToSplit !== element) {
-        if (typeof options.onOff === 'undefined') {options.onOff = false;}
+        if (typeof options.onOff === 'undefined') { options.onOff = false; }
         // unbold
         const splitElements = spliterHtml(element, elementToSplit);
         // if there is no split elements, its error!
@@ -514,6 +514,10 @@ export default class Core {
   isValid() {
     if (!this.connectedElement) {
       console.error('please create new instance..');
+      return false;
+    }
+    const selection = window.getSelection();
+    if (selection.isCollapsed) {
       return false;
     }
     const selectedElement = getSelectedElement();
